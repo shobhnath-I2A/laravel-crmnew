@@ -115,18 +115,6 @@ class QueryController extends Controller
                 ->with('error', 'Query not found.');
         }
     }
-    // public function show(string $id)
-    // {
-    //     try {
-    //         $query = Query::findOrFail($id);
-    //         return view('queries.view-query', compact('query'));
-    //     } catch (Exception $e) {
-
-    //         Log::error('Error fetching query: ' . $e->getMessage());
-    //         return redirect()->route('queries.index')
-    //             ->with('error','Query not found');
-    //     }
-    // }
 
     /**
      * Show the form for editing the specified resource.

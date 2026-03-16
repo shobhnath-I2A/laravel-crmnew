@@ -111,8 +111,6 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        // $('#queryForm').submit(function(e) {
-        // $(document).on('submit', '#queryForm', function(e) {
         $(document).on('submit', '.ajax-form', function(e){
             e.preventDefault();
 
@@ -184,5 +182,23 @@
                 toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
             });
         </script>
+        <script>
+        $(function() {
+            $("#startDate").datepicker({
+                dateFormat: 'dd-mm-yy',
+                maxDate: new Date(),
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-90:+0"
+            });
+            $("#endDate").datepicker({
+                dateFormat: 'dd-mm-yy',
+                maxDate: new Date(),
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-90:+0"
+            });
+        });
+    </script>
 </body>
 </html>

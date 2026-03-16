@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Query extends Model
 {
-   protected $fillable = [
+    protected $fillable = [
         'mobile',
         'email',
         'submitName',
@@ -27,4 +27,9 @@ class Query extends Model
         'statusId',
         'details'
     ];
+
+    public function tasks()
+    {
+        return $this->hasMany(QueryTask::class,'queryId');
+    }
 }

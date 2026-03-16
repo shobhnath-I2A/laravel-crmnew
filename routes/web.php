@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\QueryTaskController;
+
 
 Route::get('/', function () {
     return view('dashboard');
@@ -15,6 +17,8 @@ Route::post('/queries',[QueryController::class,'store'])->name('queries.store');
 Route::get('/queries/{id}/edit',[QueryController::class,'edit'])->name('queries.edit');
 Route::put('/queries/{id}',[QueryController::class,'update'])->name('queries.update');
 Route::get('/queries/{id}', [QueryController::class, 'show'])->name('queries.show');
+
+Route::post('/query-tasks/store',[QueryTaskController::class,'store'])->name('query-tasks.store');
 
 Route::get('/clients/create',[ClientController::class,'create'])->name('clients.create');
 

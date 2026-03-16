@@ -39,35 +39,28 @@
                         <div class="newhead">Queries
                             <div class="newoptionmenu">
                                 <div>
-                                    <a onclick="$('.searchquerymain').toggle();"><button type="button"
-                                            class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
-                                            style="margin-bottom:10px;">
-                                            <i class="fa fa-filter" aria-hidden="true"></i> Filter</button></a>
+                                    <a onclick="$('.searchquerymain').toggle();">
+                                        <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray" style="margin-bottom:10px;">
+                                            <i class="fa fa-filter" aria-hidden="true"></i> Filter
+                                        </button>
+                                    </a>
                                 </div>
                                 <div>
-                                    <button type="button"
-                                        class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray hideinmobile"
-                                        data-toggle="dropdown" aria-expanded="false" style="margin-bottom:10px;">
-                                        Options <i class="fa fa-angle-down" aria-hidden="true"></i></button>
-                                    <div class="dropdown-menu"
-                                        style="position: absolute; transform: translate3d(1222px, 224px, 0px); top: 0px; left: 0px; will-change: transform;"
-                                        x-placement="bottom-start">
-                                        <a class="dropdown-item" style="cursor:pointer;" href="client-Import.xls"
-                                            target="_blank">Download Excel Format</a><a class="dropdown-item"
-                                            style="cursor:pointer;" onclick="loadpop('Import',this,'400px')"
-                                            data-toggle="modal" data-target=".bs-example-modal-center"
-                                            popaction="action=importFBleads">Import Excel</a><a class="dropdown-item"
-                                            style="cursor:pointer;"
-                                            href="http://localhost:8081/crmreview/exportQuery.php?startDate=&endDate=&statusid=&searchcity=&searchsource=&searchconfirmproposal=&searchusers=&keyword=&keyword="
-                                            target="_blank">Export Data</a>
+                                    <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray hideinmobile" data-toggle="dropdown" aria-expanded="false" style="margin-bottom:10px;">
+                                        Options <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="dropdown-menu" style="position: absolute; transform: translate3d(1222px, 224px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="bottom-start">
+                                        <a class="dropdown-item" style="cursor:pointer;" href="client-Import.xls" target="_blank">Download Excel Format</a>
+                                        <a class="dropdown-item" style="cursor:pointer;" onclick="loadpop('Import',this,'400px')" data-toggle="modal" data-target=".bs-example-modal-center" popaction="action=importFBleads">Import Excel</a>
+                                        <a class="dropdown-item" style="cursor:pointer;" href="http://localhost:8081/crmreview/exportQuery.php?startDate=&endDate=&statusid=&searchcity=&searchsource=&searchconfirmproposal=&searchusers=&keyword=&keyword=" target="_blank">Export Data</a>
                                     </div>
                                 </div>
                                 <div>
-                                    <a href="getloadfromdocs.php" target="actoinfrm"><button type="button"
-                                            class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
-                                            style="margin-bottom:10px;" onclick="$('#loadleads').show();">
-                                            Load Leads <img src="loadleads.webp" style="width:16px;display:none;"
-                                                id="loadleads" /></button></a>
+                                    <a href="getloadfromdocs.php" target="actoinfrm">
+                                        <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray" style="margin-bottom:10px;" onclick="$('#loadleads').show();">
+                                            Load Leads <img src="loadleads.webp" style="width:16px;display:none;" id="loadleads" />
+                                        </button>
+                                    </a>
                                 </div>
                                 <div>
                                     <a onclick="openSidebar('Create Query','{{ route('queries.create') }}')">
