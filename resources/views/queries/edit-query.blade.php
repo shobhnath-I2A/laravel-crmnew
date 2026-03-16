@@ -1,202 +1,241 @@
 
-<form action="" method="POST" id="queryForm">
-    @csrf
-    <div class="container-fluid">
-        <!-- CLIENT INFORMATION -->
-        <div class="card shadow-sm mb-3">
-            <div class="card-header bg-light">
-                <strong>Client Information</strong>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Mobile <span class="redmtext">*</span></label>
-                        <input type="text" name="mobile" id="mobile" class="form-control reqfield" maxlength="10" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Email <span class="redmtext">*</span></label>
-                        <input type="email" name="email" class="form-control reqfield" required>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Title</label>
-                        <select name="submitName" class="form-control">
-                            <option>Mr.</option>
-                            <option>Mrs.</option>
-                            <option>Ms.</option>
-                            <option>Dr.</option>
-                        </select>
-                    </div>
-                    <div class="col-md-10">
-                        <label class="form-label">Client Name <span class="redmtext">*</span></label>
-                        <input type="text" name="name" class="form-control reqfield" required>
-                    </div>
+<div class="wrapper" style="margin-top: 0px; padding:15px;">
+    {{-- <form action="{{ route('queries.store') }}" method="POST" id="queryForm" class="custom-validation ajax-form"> --}}
+        <form action="{{ isset($query) ? route('queries.update',$query->id) : route('queries.store') }}" method="POST" id="queryForm" class="custom-validation ajax-form">
+        @csrf
+        @isset($query)
+        @method('PUT')
+        @endisset
+        <div class="container-fluid ">
+            <!-- CLIENT INFORMATION -->
+            <div class="card shadow-sm mb-3 ">
+                <div class="card-header bg-light">
+                    <strong>Client Information</strong>
                 </div>
-            </div>
-        </div>
-
-        <!-- TRAVEL DETAILS -->
-
-        <div class="card shadow-sm mb-3">
-            <div class="card-header bg-light">
-                <strong>Travel Details</strong>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        {{-- <label class="form-label">Travel Type</label> --}}
-
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input"
-                                type="radio"
-                                name="querytype"
-                                id="domestic"
-                                value="Domestic"
-                                checked>
-
-                            <label class="form-check-label" for="domestic">
-                                Domestic
-                            </label>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Mobile <span class="redmtext">*</span></label>
+                            <input type="text" name="mobile" id="mobile" value="{{ old('mobile', $query->mobile ?? '') }}"
+                                class="form-control reqfield @error('mobile') is-invalid @enderror" maxlength="10">
+                            @error('mobile')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
                         </div>
-
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input"
-                                type="radio"
-                                name="querytype"
-                                id="international"
-                                value="International">
-
-                            <label class="form-check-label" for="international">
-                                International
-                            </label>
+                        <div class="col-md-6">
+                            <label class="form-label">Email <span class="redmtext">*</span></label>
+                            <input type="email" name="email" value="{{ old('email', $query->email ?? '') }}"
+                                class="form-control reqfield @error('email') is-invalid @enderror" required>
+                            @error('email')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Title</label>
+                            <select name="submitName" class="form-control">
+                                <option value="Mr." {{ old('submitName', $query->submitName ?? '') == 'Mr.' ? 'selected' : '' }}>Mr.</option>
+                                <option value="Mrs." {{ old('submitName', $query->submitName ?? '') == 'Mrs.' ? 'selected' : '' }}>Mrs.</option>
+                                <option value="Ms." {{ old('submitName', $query->submitName ?? '') == 'Ms.' ? 'selected' : '' }}>Ms.</option>
+                                <option value="Dr." {{ old('submitName', $query->submitName ?? '') == 'Dr.' ? 'selected' : '' }}>Dr.</option>
+                            </select>
+                            @error('submitName')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
+                        </div>
+                        <div class="col-md-10">
+                            <label class="form-label">Client Name <span class="redmtext">*</span></label>
+                            <input type="text" name="name" value="{{ old('name', $query->name ?? '') }}"
+                                class="form-control reqfield @error('name') is-invalid @enderror" required>
+                            @error('name')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Travel Month </label>
-                        <input type="text" name="travelMonth" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Origin <span class="redmtext">*</span></label>
-                        <input type="text" name="origin" class="form-control reqfield" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Destination <span class="redmtext">*</span></label>
-                        <input type="text" name="destination" class="form-control reqfield" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">From Date <span class="redmtext">*</span></label>
-                        <input type="date" name="startDate" class="form-control reqfield" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">To Date <span class="redmtext">*</span></label>
-                        <input type="date" name="endDate" class="form-control reqfield" required>
-                    </div>
-
                 </div>
             </div>
-        </div>
 
-        <!-- PASSENGER DETAILS -->
+            <!-- TRAVEL DETAILS -->
 
-        <div class="card shadow-sm mb-3">
-            <div class="card-header bg-light">
-                <strong>Passengers</strong>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <label>Adult <span class="redmtext">*</span></label>
-                        <input type="number" name="adult" class="form-control reqfield" min="1" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label>Child</label>
-                        <input type="number" name="child" class="form-control">
-                    </div>
-                    <div class="col-md-4">
-                        <label>Infant</label>
-                        <select name="infant" class="form-control">
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select>
-                    </div>
-
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light">
+                    <strong>Travel Details</strong>
                 </div>
-            </div>
-        </div>
-        <!-- SALES DETAILS -->
-        <div class="card shadow-sm mb-3">
-            <div class="card-header bg-light">
-                <strong>Sales Information</strong>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label>Lead Source</label>
-                        <select name="leadSource" class="form-control">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{-- <label class="form-label">Travel Type</label> --}}
 
-                            <option>Website</option>
-                            <option>Google</option>
-                            <option>Facebook</option>
-                            <option>Referral</option>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="querytype" id="domestic"
+                                    value="Domestic" {{ old('querytype', $query->querytype ?? '') == 'Domestic' ? 'checked' : '' }}>
 
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Priority</label>
-                        <select name="priorityStatus" class="form-control">
-                            <option value="0">General</option>
-                            <option value="1">Hot</option>
-                            <option value="2">Warm</option>
-                            <option value="3">Cold</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Assign To</label>
-                        <select name="assignTo" class="form-control">
-                            <option>Assign to me</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Service</label>
-                        <select id="serviceId" name="serviceId" class="form-control" displayname="country" autocomplete="off">
-                            <option value="0">Select Service</option>
-                            <option value="5">Activities only</option>
-                            <option value="3">Flight only</option>
-                            <option value="1">Full package</option>
-                            <option value="7">Hotel + Flight</option>
-                            <option value="8">Hotel + Transport</option>
-                            <option value="2">Hotel only</option>
-                            <option value="6">Transport only</option>
-                            <option value="4">Visa only</option>
-                        </select>
+                                <label class="form-check-label" for="domestic">
+                                    Domestic
+                                </label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="querytype" id="international"
+                                    value="International" {{ old('querytype', $query->querytype ?? '') == 'International' ? 'checked' : '' }}>
+
+                                <label class="form-check-label" for="international">
+                                    International
+                                </label>
+                            </div>
+
+                            @error('querytype')
+                                <div class="text-danger">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Travel Month </label>
+                            <input type="text" name="travelMonth" value="{{ old('travelMonth', $query->travelMonth ?? '') }}" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Origin <span class="redmtext">*</span></label>
+                            <input type="text" name="origin" value="{{ old('origin', $query->origin ?? '') }}" class="form-control reqfield" required>
+                            @error('origin')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Destination <span class="redmtext">*</span></label>
+                            <input type="text" name="destination" value="{{ old('destination', $query->destination ?? '') }}" class="form-control reqfield" required>
+                            @error('destination')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">From Date <span class="redmtext">*</span></label>
+                            <input type="text" name="startDate" value="{{ old('startDate', $query->startDate ?? '') }}" id="fromdate" class="form-control reqfield"
+                                required>
+                            @error('startDate')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">To Date <span class="redmtext">*</span></label>
+                            <input type="text" name="endDate" value="{{ old('endDate', $query->endDate ?? '') }}" id="todate" class="form-control reqfield"
+                                required>
+                            @error('endDate')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
+                        </div>
+
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- REMARK -->
-        <div class="card shadow-sm mb-3">
-            <div class="card-header bg-light">
-                <strong>Remark</strong>
+
+            <!-- PASSENGER DETAILS -->
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light">
+                    <strong>Passengers</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Adult <span class="redmtext">*</span></label>
+                            <input type="number" name="adult" value="{{ old('adult', $query->adult ?? '') }}" class="form-control reqfield" min="1"
+                                required>
+                            @error('adult')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label>Child</label>
+                            <input type="number" name="child" value="{{ old('child', $query->child ?? '') }}" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Infant</label>
+                            <select name="infant" class="form-control">
+                                <option value="0" {{ old('infant', $query->infant ?? '') == '0' ? 'selected' : '' }}>0</option>
+                                <option value="1" {{ old('infant', $query->infant ?? '') == '1' ? 'selected' : '' }}>1</option>
+                                <option value="2" {{ old('infant', $query->infant ?? '') == '2' ? 'selected' : '' }}>2</option>
+                                <option value="3" {{ old('infant', $query->infant ?? '') == '3' ? 'selected' : '' }}>3</option>
+                                <option value="4" {{ old('infant', $query->infant ?? '') == '4' ? 'selected' : '' }}>4</option>
+                                <option value="5" {{ old('infant', $query->infant ?? '') == '5' ? 'selected' : '' }}>5</option>
+                                <option value="6" {{ old('infant', $query->infant ?? '') == '6' ? 'selected' : '' }}>6</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <textarea name="details" rows="3" class="form-control"></textarea>
+            <!-- SALES DETAILS -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light">
+                    <strong>Sales Information</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Lead Source</label>
+                            <select name="leadSource" class="form-control">
+                                <option value="Website" {{ old('leadSource', $query->leadSource ?? '') == 'Website' ? 'selected' : '' }}>Website</option>
+                                <option value="Google" {{ old('leadSource', $query->leadSource ?? '') == 'Google' ? 'selected' : '' }}>Google</option>
+                                <option value="Facebook" {{ old('leadSource', $query->leadSource ?? '') == 'Facebook' ? 'selected' : '' }}>Facebook</option>
+                                <option value="Referral" {{ old('leadSource', $query->leadSource ?? '') == 'Referral' ? 'selected' : '' }}>Referral</option>
+
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Priority</label>
+                            <select name="priorityStatus" class="form-control">
+                                <option value="0" {{ old('priorityStatus', $query->priorityStatus ?? '') == '0' ? 'selected' : '' }}>General</option>
+                                <option value="1" {{ old('priorityStatus', $query->priorityStatus ?? '') == '1' ? 'selected' : '' }}>Hot</option>
+                                <option value="2" {{ old('priorityStatus', $query->priorityStatus ?? '') == '2' ? 'selected' : '' }}>Warm</option>
+                                <option value="3" {{ old('priorityStatus', $query->priorityStatus ?? '') == '3' ? 'selected' : '' }}>Cold</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Assign To</label>
+                            <select name="assignTo" class="form-control">
+                                <option value="me" {{ old('assignTo', $query->assignTo ?? '') == 'me' ? 'selected' : '' }}>Assign to me</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Service</label>
+                            <select id="serviceId" name="serviceId" class="form-control" displayname="country"
+                                autocomplete="off">
+                                <option value="0" {{ old('serviceId', $query->serviceId ?? '') == '0' ? 'selected' : '' }}>Select Service</option>
+                                <option value="5" {{ old('serviceId', $query->serviceId ?? '') == '5' ? 'selected' : '' }}>Activities only</option>
+                                <option value="3" {{ old('serviceId', $query->serviceId ?? '') == '3' ? 'selected' : '' }}>Flight only</option>
+                                <option value="1" {{ old('serviceId', $query->serviceId ?? '') == '1' ? 'selected' : '' }}>Full package</option>
+                                <option value="7" {{ old('serviceId', $query->serviceId ?? '') == '7' ? 'selected' : '' }}>Hotel + Flight</option>
+                                <option value="8" {{ old('serviceId', $query->serviceId ?? '') == '8' ? 'selected' : '' }}>Hotel + Transport</option>
+                                <option value="2" {{ old('serviceId', $query->serviceId ?? '') == '2' ? 'selected' : '' }}>Hotel only</option>
+                                <option value="6" {{ old('serviceId', $query->serviceId ?? '') == '6' ? 'selected' : '' }}>Transport only</option>
+                                <option value="4" {{ old('serviceId', $query->serviceId ?? '') == '4' ? 'selected' : '' }}>Visa only</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- REMARK -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light">
+                    <strong>Remark</strong>
+                </div>
+                <div class="card-body">
+                    <textarea name="details" rows="3" class="form-control">{{ old('details', $query->details ?? '') }}</textarea>
+                </div>
+            </div>
+            <!-- FOOTER BUTTONS -->
+            <div class="text-end mb-3">
+                <button type="button" onclick="closeSidebar()"
+                    class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray valid">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    {{ isset($query) ? 'Update Query' : 'Save Query' }}
+                </button>
             </div>
         </div>
-        <!-- FOOTER BUTTONS -->
-        <div class="text-end mb-3">
-            <button type="button" onclick="closeSidebar()" class="btn btn-light">
-                Cancel
-            </button>
-            <button type="submit" class="btn btn-primary">
-                Save Query
-            </button>
-        </div>
-    </div>
-</form>
+    </form>
+</div>

@@ -173,8 +173,7 @@
                         </li>
                         <li class="has-submenu last-elements"><a href="display.html?ga=flyerdesigner"
                                 data-toggle="tooltip" data-placement="right" title=""
-                                data-original-title="Flyer Designer"><img src="images/icons8-brochure-64.png"
-                                    width="30"></a></li>
+                                data-original-title="Flyer Designer"><img src="{{ asset('assets/images/icons8-brochure-64.png') }}" width="30"></a></li>
                     </ul>
                     <!-- End navigation menu -->
                 </div>

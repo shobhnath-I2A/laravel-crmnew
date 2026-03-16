@@ -10,9 +10,11 @@ Route::get('/', function () {
 });
 
 Route::get('/queries',[QueryController::class,'index'])->name('queries.index');
-
 Route::get('/queries/create',[QueryController::class,'create'])->name('queries.create');
 Route::post('/queries',[QueryController::class,'store'])->name('queries.store');
+Route::get('/queries/{id}/edit',[QueryController::class,'edit'])->name('queries.edit');
+Route::put('/queries/{id}',[QueryController::class,'update'])->name('queries.update');
+Route::get('/queries/{id}', [QueryController::class, 'show'])->name('queries.show');
 
 Route::get('/clients/create',[ClientController::class,'create'])->name('clients.create');
 

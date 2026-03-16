@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('assignTo')->nullable();
             $table->string('serviceId')->nullable();
             $table->text('details')->nullable();
+            $table->tinyInteger('statusId')->default(1);
             $table->timestamps();
         });
     }

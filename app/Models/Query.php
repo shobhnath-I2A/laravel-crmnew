@@ -24,6 +24,7 @@ class Query extends Model
         'priorityStatus',
         'assignTo',
         'serviceId',
+        'statusId',
         'details'
     ];
 }

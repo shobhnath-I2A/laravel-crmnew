@@ -13,15 +13,38 @@ class QueryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-       try {
-            $queries = Query::latest()->paginate(1);
-            return view('queries.index', compact('queries'));
+        try {
+
+            $queryBuilder = Query::query();
+
+            if ($request->statusid) {
+                $queryBuilder->where('statusId', $request->statusid);
+            }
+
+            $queries = $queryBuilder->latest()->paginate(3);
+
+            $totalQueries = Query::count();
+
+            $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
+                ->groupBy('statusId')
+                ->pluck('total', 'statusId');
+
+            return view('queries.index', compact(
+                'queries',
+                'statusCounts',
+                'totalQueries'
+            ));
+
         } catch (Exception $e) {
+
             Log::error('Error fetching queries: '.$e->getMessage());
+
             return view('queries.index', [
-                'queries' => collect(), 
+                'queries' => collect(),
+                'statusCounts' => [],
+                'totalQueries' => 0,
                 'error' => 'Unable to fetch queries at this time.'
             ]);
         }
@@ -32,7 +55,7 @@ class QueryController extends Controller
      */
     public function create()
     {
-       
+
        return view('queries.add-query');
     }
 
@@ -79,26 +102,96 @@ class QueryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, $id)
     {
-        //
+         try {
+            $query = Query::findOrFail($id);
+            $tab = $request->query('tab', 'details');
+            // $tab = $request->get('tab', 'details'); // default tab
+            return view('queries.view-query', compact('query', 'tab'));
+        } catch (Exception $e) {
+            Log::error('Error fetching query: ' . $e->getMessage());
+            return redirect()->route('queries.index')
+                ->with('error', 'Query not found.');
+        }
     }
+    // public function show(string $id)
+    // {
+    //     try {
+    //         $query = Query::findOrFail($id);
+    //         return view('queries.view-query', compact('query'));
+    //     } catch (Exception $e) {
+
+    //         Log::error('Error fetching query: ' . $e->getMessage());
+    //         return redirect()->route('queries.index')
+    //             ->with('error','Query not found');
+    //     }
+    // }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        //
+        try {
+            $query = Query::findOrFail($id);
+            return view('queries.edit-query', compact('query'));
+        } catch (Exception $e) {
+            Log::error('Error fetching query: ' . $e->getMessage());
+            return redirect()->route('queries.index')
+                ->with('error', 'Query not found.');
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+   public function update(Request $request, $id)
+{
+    $validated = $request->validate([
+        'mobile' => 'required|digits:10',
+        'email' => 'required|email',
+        'submitName' => 'nullable|string|max:255',
+        'name' => 'required|string|max:255',
+        'querytype' => 'required|string|max:100',
+        'travelMonth' => 'nullable|string|max:50',
+        'origin' => 'required|string|max:100',
+        'destination' => 'required|string|max:100',
+        'adult' => 'required|integer|min:1',
+        'child' => 'nullable|integer|min:0',
+        'infant' => 'nullable|integer|min:0',
+        'leadSource' => 'nullable|string|max:100',
+        'priorityStatus' => 'nullable|integer',
+        'assignTo' => 'nullable|string|max:100',
+        'serviceId' => 'nullable|string|max:100',
+        'details' => 'nullable|string'
+    ]);
+
+    try {
+
+        $query = Query::findOrFail($id);
+
+        $validated['startDate'] = Carbon::parse($request->startDate)->format('Y-m-d');
+        $validated['endDate'] = Carbon::parse($request->endDate)->format('Y-m-d');
+
+        $query->update($validated);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Query updated successfully',
+            'data' => $query
+        ]);
+
+    } catch (Exception $e) {
+
+        Log::error('Error updating query: ' . $e->getMessage());
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Update failed'
+        ], 500);
     }
+}
 
     /**
      * Remove the specified resource from storage.

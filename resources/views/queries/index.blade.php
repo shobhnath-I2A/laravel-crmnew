@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('content')
     </div>
-
     <style>
         .table td,
         .table th {
@@ -154,118 +153,107 @@
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                             <tr>
                                                 <td width="6%" align="left" valign="top">
-                                                    <a href="display.html?ga=query">
+                                                    <a href="{{ route('queries.index') }}">
                                                         <div class="statusbox" style="background-color:#000;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
                                                                 <div class="ripple" style="animation-delay: 0s"></div>
-                                                                12008
+                                                               {{ $totalQueries }}
                                                             </div>Total
                                                         </div>
                                                     </a>
                                                 </td>
                                                 <td width="10%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=1&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>1]) }}">
                                                         <div class="statusbox" style="background-color:#655be6;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                245
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                {{ $statusCounts[1] ?? 0 }}
                                                             </div>New
                                                         </div>
                                                     </a>
                                                 </td>
                                                 <td width="10%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=2&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>2]) }}">
                                                         <div class="statusbox" style="background-color:#0cb5b5;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                146</div>Active
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                 {{ $statusCounts[2] ?? 0 }}</div>Active
                                                         </div>
                                                     </a>
                                                 </td>
 
                                                 <td width="10%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=3&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>3]) }}">
                                                         <div class="statusbox" style="background-color:#0f1f3e;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                374</div>No Connect
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                 {{ $statusCounts[3] ?? 0 }}</div>No Connect
                                                         </div>
                                                     </a>
                                                 </td>
                                                 <td width="6%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=3&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>11]) }}">
                                                         <div class="statusbox" style="background-color:#0f1f3e;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                51</div>No Revert
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                 {{ $statusCounts[11] ?? 0 }}</div>No Revert
                                                         </div>
                                                     </a>
                                                 </td>
                                                 <td width="10%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=4&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>4]) }}">
                                                         <div class="statusbox" style="background-color:#e45555;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                3</div>Hot Lead
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                 {{ $statusCounts[4] ?? 0 }}</div>Hot Lead
                                                         </div>
                                                     </a>
                                                 </td>
                                                 <td width="10%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=9&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>9]) }}">
                                                         <div class="statusbox" style="background-color:#FF6600;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                108</div>Follow Up
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                 {{ $statusCounts[9] ?? 0 }}</div>Follow Up
                                                         </div>
                                                     </a>
                                                 </td>
                                                 <td width="10%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=8&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>8]) }}">
                                                         <div class="statusbox" style="background-color:#cc00a9;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                145</div>Proposal Sent
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                 {{ $statusCounts[8] ?? 0 }}</div>Proposal Sent
                                                         </div>
                                                     </a>
                                                 </td>
 
                                                 <td width="10%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=5&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>5]) }}">
                                                         <div class="statusbox" style="background-color:#46cd93;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                152</div>Confirmed
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                 {{ $statusCounts[5] ?? 0 }}</div>Confirmed
                                                         </div>
                                                     </a>
                                                 </td>
                                                 <td width="10%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=6&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>6]) }}">
                                                         <div class="statusbox" style="background-color:#6c757d;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                9903</div>Cancelled
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                 {{ $statusCounts[6] ?? 0 }}</div>Cancelled
                                                         </div>
                                                     </a>
                                                 </td>
 
                                                 <td width="10%" align="left" valign="top">
                                                     <a
-                                                        href="display.html?ga=query&statusid=7&startDate=&endDate=&keyword=&page=1&searchcity=&searchusers=">
+                                                        href="{{ route('queries.index',['statusid'=>7]) }}">
                                                         <div class="statusbox"
                                                             style="background-color:#f9392f; margin-right:0px;">
-                                                            <div
-                                                                style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
-                                                                881</div>
+                                                            <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                                                 {{ $statusCounts[7] ?? 0 }}</div>
                                                             Invalid
                                                         </div>
                                                     </a>
@@ -319,16 +307,47 @@
                                                                         style="width: 16px; height: 16px;"> </td>
                                                                 <td width="14%" align="left" valign="top"
                                                                     style="padding-right:20px;">
-                                                                    <div
-                                                                        style="font-size:15px; font-weight:500;line-height: 16px; margin-bottom:3px; font-weight:600;">
-                                                                        <a
-                                                                            href="display.html?ga=query&view=1&id=127368">{{ $query->id}}</a>
+                                                                    <div style="font-size:15px; font-weight:500;line-height: 16px; margin-bottom:3px; font-weight:600;">
+                                                                        <a href="{{ route('queries.show',$query->id) }}">{{ $query->id}}</a>
                                                                     </div>
+                                                                  @if($query->statusId == 1)
+                                                                    <span class="badge badge-primary">New Lead</span>
+
+                                                                    @elseif($query->statusId == 2)
+                                                                    <span class="badge badge-info">Active</span>
+
+                                                                    @elseif($query->statusId == 3)
+                                                                    <span class="badge badge-warning">Follow Up</span>
+
+                                                                    @elseif($query->statusId == 4)
                                                                     <span class="badge badge-blue">Proposal Sent</span>
+
+                                                                    @elseif($query->statusId == 5)
+                                                                    <span class="badge badge-secondary">Negotiation</span>
+
+                                                                    @elseif($query->statusId == 6)
+                                                                    <span class="badge badge-success">Confirmed</span>
+
+                                                                    @elseif($query->statusId == 7)
+                                                                    <span class="badge badge-danger">Cancelled</span>
+
+                                                                    @elseif($query->statusId == 8)
+                                                                    <span class="badge badge-dark">On Hold</span>
+
+                                                                    @elseif($query->statusId == 9)
+                                                                    <span class="badge badge-success">Completed</span>
+
+                                                                    @elseif($query->statusId == 10)
+                                                                    <span class="badge badge-danger">Lost</span>
+
+                                                                    @elseif($query->statusId == 11)
+                                                                    <span class="badge badge-dark">Closed</span>
+
+                                                                    @endif
                                                                 </td>
                                                                 <td width="20%" align="left" valign="top" style="padding-right:20px;">
                                                                     <div style="font-size:13px; line-height: 16px; margin-bottom:3px;white-space: nowrap; max-width:200px; overflow: hidden; text-overflow: ellipsis;font-weight:600;">
-                                                                     {{ $query->submitName}}   {{ $query->name }} 
+                                                                     {{ $query->submitName}}   {{ $query->name }}
                                                                     </div>
                                                                     <div style="font-size:13px; color:#686868;">{{ $query->mobile }}
                                                                     </div>
@@ -340,9 +359,8 @@
                                                                 </td>
                                                                 <td width="17%" align="left" valign="top"
                                                                     style="padding-right:20px;">
-                                                                    <div style="font-size:13px; line-height: 16px;"><span
-                                                                            style="color:#686868; font-weight: 600;">International</span><br /><span
-                                                                            style="color:#686868;">Origin<br />
+                                                                    <div style="font-size:13px; line-height: 16px;">
+                                                                        <span style="color:#686868;">Origin<br />
                                                                         </span><span
                                                                             style="max-width:180px; overflow:hidden;overflow-wrap: break-word;">
                                                                             <span class="badge badge-boxed  badge-soft-success"
@@ -393,7 +411,7 @@
                                                                                 type="button" class="btn btn-secondary"><i
                                                                                     class="fa fa-envelope-o"
                                                                                     aria-hidden="true"></i></button></a>
-                                                                        <a onclick="createquery('127368');"><button
+                                                                        <a onclick="openSidebar('Edit Query','{{ route('queries.edit',$query->id) }}')"><button
                                                                                 type="button" class="btn btn-secondary"><i
                                                                                     class="fa fa-pencil"
                                                                                     aria-hidden="true"></i></button></a>
@@ -441,7 +459,7 @@
                                                                             <option value="4074">Adarsh Ojha</option>
                                                                             <option value="4069">Akash Shrestha</option>
                                                                             <option value="4021">Zuhair Abbas </option>
-                                                                        </select> 
+                                                                        </select>
                                                                     </div>
                                                                 </td>
                                                                 <td align="left" valign="top">
@@ -476,7 +494,7 @@
                                                         <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp;Mr. Ajay
                                                         Trail's To Malaysia 4N/5D (&#8377; 51,400 ) &nbsp; </a>
                                                 </div>
-                                            </div>                                            
+                                            </div>
                                         @empty
                                         <tr>
                                         <td colspan="6" class="text-center">No records found</td>
