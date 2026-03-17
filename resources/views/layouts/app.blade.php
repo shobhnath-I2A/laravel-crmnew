@@ -11,27 +11,24 @@
 
     <link href="{{ asset('assets/images/favicon.png') }}" rel="icon" />
 
-    <!-- Stylesheets -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/plugins/summernote-bs4.css') }}">
 
-    <!-- Font Awesome (One version only) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Fjalla+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Additional custom styles -->
     <link href="{{ asset('assets/css/customstyle.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assets/css/pagestyle.css') }}" rel="stylesheet" type="text/css">
 
-    @stack('styles') <!-- For any page-specific styles -->
+    @stack('styles')
 </head>
+
 <body>
 
     @include('partials.navigation')
@@ -69,49 +66,44 @@
             </div>
         </div>
         {{-- end side bar popup forms --}}
+
     </div>
 
     @include('partials.footer')
 
     <!-- Scripts -->
-    @stack('scripts') <!-- For any page-specific scripts -->
+    @stack('scripts')
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
-    <!-- jQuery UI -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-    <!-- Bootstrap JS -->
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/modernizr.min.js') }}"></script>
     <script src="{{ asset('assets/js/waves.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.slimscroll.js') }}"></script>
 
-    <!-- Additional plugins -->
     <script src="{{ asset('assets/plugins/jquery.peity.min.js') }}"></script>
 
-    <!-- Main app.js (your custom JS) -->
     <script src="{{ asset('assets/js/app.js') }}"></script>
     {{-- <script src="{{ asset('assets/js/dashboard.js') }}"></script> --}}
 
-    <!-- TinyMCE -->
     <script src="{{ asset('assets/tinymce/tinymce.min.js') }}"></script>
 
-    <!-- jQuery Validation (for form validation) -->
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 
-    <!-- amCharts (for charts) -->
     <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+
     <script>
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        $(document).on('submit', '.ajax-form', function(e){
+        $(document).on('submit', '.ajax-form', function(e) {
             e.preventDefault();
 
             let form = $(this);
@@ -165,13 +157,15 @@
                 initCRMUI();
             });
         }
+
         function closeSidebar() {
             $('.crm-sidebar').hide();
             $('#sidebar-content').html('Loading...');
             $('body').css('overflow', 'auto');
         }
     </script>
-     <script type="text/javascript">
+    <script type="text/javascript">
+        function initCRMUI() {
             tinymce.init({
                 selector: "#EmailDetails",
                 themes: "modern",
@@ -181,24 +175,89 @@
                 ],
                 toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
             });
-        </script>
-        <script>
-        $(function() {
-            $("#startDate").datepicker({
-                dateFormat: 'dd-mm-yy',
-                maxDate: new Date(),
-                changeMonth: true,
-                changeYear: true,
-                yearRange: "-90:+0"
+
+            $(function() {
+
+                // ✅ Start Date
+                $("#startDate").datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    minDate: 0, // 🚀 only future dates
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "0:+5",
+
+                    onSelect: function(selectedDate) {
+
+                        let start = $(this).datepicker('getDate');
+
+                        // ✅ Set minimum end date = start date
+                        $("#endDate").datepicker("option", "minDate", start);
+
+                        // ✅ Auto set end date (start + 1 day)
+                        let end = new Date(start);
+                        end.setDate(end.getDate() + 1);
+                        $("#endDate").datepicker("setDate", end);
+
+                        calculateDays();
+                    }
+                });
+
+                // ✅ End Date
+                $("#endDate").datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    minDate: 0,
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "0:+5",
+
+                    onSelect: function() {
+                        calculateDays();
+                    }
+                });
+
+                // ✅ Validity Date
+                $("#websiteValidity").datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    minDate: 0,
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "0:+5",
+                });
+
+                // ✅ Calculate total days
+                function calculateDays() {
+                    let start = $("#startDate").datepicker('getDate');
+                    let end = $("#endDate").datepicker('getDate');
+
+                    if (start && end) {
+                        let diff = end - start;
+                        let days = Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
+
+                        $("#totalDays").val(days + " Days");
+                    }
+                }
+
+                // ✅ Prevent manual typing
+                $("#startDate, #endDate").attr('readonly', true);
+
             });
-            $("#endDate").datepicker({
+        }
+        // query task popup form js
+        $(document).on('click', '[data-target="#taskModal"]', function() {
+            var queryId = $(this).data('queryid');
+            // console.log('Query ID:', queryId); // debug
+            $('#queryId').val(queryId);
+
+        });
+        $(document).ready(function() {
+            $("#reminderDate").datepicker({
                 dateFormat: 'dd-mm-yy',
-                maxDate: new Date(),
+                minDate: 0,
                 changeMonth: true,
-                changeYear: true,
-                yearRange: "-90:+0"
+                changeYear: true
             });
         });
     </script>
 </body>
+
 </html>

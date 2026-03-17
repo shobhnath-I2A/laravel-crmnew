@@ -1,4 +1,4 @@
-<div style="height:30px;"></div>
+{{-- <div style="height:30px;"></div> --}}
 <div class="footerstripboxouter">
     <div class="leftar">
         <a style="cursor:pointer;" title="Online Users" onclick="openfooterpop2('onlineusers','Online Users',this,'online_user','300px','400px','10px','531px');">
@@ -15,4 +15,4 @@
     </div>
 </div>
 
-
+@include('followups.task-reminder')

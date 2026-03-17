@@ -30,6 +30,6 @@ class Query extends Model
 
     public function tasks()
     {
-        return $this->hasMany(QueryTask::class,'queryId');
+        return $this->hasMany(\App\Models\QueryTask::class, 'queryId', 'id');
     }
 }

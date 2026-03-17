@@ -87,7 +87,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Travel Month </label>
-                            <input type="text" name="travelMonth" value="{{ old('travelMonth') }}" class="form-control" required>
+                            <input type="text" name="travelMonth" value="{{ old('travelMonth') }}" class="form-control">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Origin <span class="redmtext">*</span></label>
@@ -107,7 +107,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label">From Date <span class="redmtext">*</span></label>
-                            <input type="text" name="startDate" value="{{ old('startDate') }}" id="fromdate" class="form-control reqfield"
+                            <input type="text" name="startDate" value="{{ old('startDate') }}" id="startDate" class="form-control reqfield"
                                 required>
                             @error('startDate')
                                 <div class="text-danger">{{ $message }} </div>
@@ -116,7 +116,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label">To Date <span class="redmtext">*</span></label>
-                            <input type="text" name="endDate" value="{{ old('endDate') }}" id="todate" class="form-control reqfield"
+                            <input type="text" name="endDate" value="{{ old('endDate') }}" id="endDate" class="form-control reqfield"
                                 required>
                             @error('endDate')
                                 <div class="text-danger">{{ $message }} </div>

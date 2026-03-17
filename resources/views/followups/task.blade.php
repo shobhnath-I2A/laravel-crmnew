@@ -9,27 +9,19 @@
                 </button>
             </div>
             <div class="modal-body" id="popcontent">
-                <script src="/tinymce/tinymce.min.js"></script>
-                <script type="text/javascript">
-                    tinymce.init({
-                        selector: ".editorclass",
-                        themes: "modern",
-                        plugins: [
-                            "advlist autolink lists link image charmap print preview anchor",
-                            "searchreplace visualblocks code fullscreen"
-                        ],
-                        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
-                    });
-                </script>
                 <form action="{{ route('query-tasks.store') }}" method="post" enctype="multipart/form-data" id="task-form" class="custom-validation ajax-form">
                     <div class="form-group mb-3">
                         <div style="margin-bottom:2px; font-size:12px;">Type</div>
-                        <select name="taskType" class="form-control" autocomplete="off"
+                        <select name="taskType" class="form-control reqfield" autocomplete="off"
                             style="width:100%; margin-bottom:20px;">
+                            <option value="">-- Select Task Type --</option>
                             <option value="Task">Task</option>
                             <option value="Call">Call</option>
                             <option value="Meeting">Meeting</option>
                         </select>
+                        @error('taskType')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                         <div style="margin-bottom:2px; font-size:12px;">Description</div>
                         <textarea name="details" rows="4" class="form-control"></textarea>
                     </div>
@@ -42,72 +34,53 @@
                                     <td style=" font-size:12px;">&nbsp;&nbsp;&nbsp;Set Reminder </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2"><input type="text" class="form-control hasDatepicker" id="reminderDate" name="reminderDate" readonly="" value="16-03-2026">
+                                    <td colspan="2">
+                                        <input type="text" name="reminderDate" value="{{ old('reminderDate', $query->reminderDate ?? '') }}" id="reminderDate" class="form-control reqfield">
+                                         @error('reminderDate')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
                                     </td>
-                                    <script>
-                                        $(function() {
-                                            $("#reminderDate").datepicker({
-                                                dateFormat: 'dd-mm-yy',
-                                                minDate: 0
-                                            });
-                                        });
-                                    </script>
-                                    <td style="padding-left:10px;"><select id="reminderTime" name="reminderTime"
-                                            class="form-control" autocomplete="off" style="width:130px;">
-                                            <option value="1970-01-01 00:00:00">12:00 AM</option>;
-                                            <option value="1970-01-01 00:15:00">12:15 AM</option>;
-                                            <option value="1970-01-01 00:30:00">12:30 AM</option>;                                          
+
+                                    <td style="padding-left:10px;">
+                                        <select id="reminderTime" name="reminderTime" autocomplete="off"
+                                            class="form-control" style="width:130px;">
+                                            @for ($i = 0; $i < 24 * 60; $i += 15)
+                                                @php
+                                                    $time = \Carbon\Carbon::createFromTime(0, 0)->addMinutes($i);
+                                                @endphp
+                                                <option value="1970-01-01 {{ $time->format('H:i:s') }}">
+                                                    {{ $time->format('h:i A') }}
+                                                </option>
+                                            @endfor
                                         </select>
                                     </td>
-                                    <td style="padding-left:10px;"><select name="status" class="form-control"
+                                    <td style="padding-left:10px;">
+                                        <select name="status" class="form-control"
                                             autocomplete="off" style="width:100px;">
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
-                                        </select></td>
+                                        </select>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="form-group mb-2">
-                        <select id="assignTo" name="assignTo" class="form-control" autocomplete="off"
-                            onchange="changeAssignTo('');">
+                        <select id="assignTo" name="assignTo" class="form-control" autocomplete="off" onchange="changeAssignTo('');">
                             <option value="0">Assign To</option>
-                            <option value="4041">Aaron AK</option>                          
+                            <option value="4041">Aaron AK</option>
                         </select>
                     </div>
                     <div class="form-group" style="overflow:hidden;">
                         <div style="margin-top:5px;">
-                            {{-- <button type="submit" id="savingbutton"
-                                class="btn btn-primary"
-                                onclick="this.form.submit(); this.disabled=true; this.value='Saving...';"
-                                style="float:right;"><i class="fa fa-plus" aria-hidden="true"></i> Save</button> --}}
-                                <button type="submit" class="btn btn-primary">
-                                    Save
-                                </button>
+                            <button type="submit" class="btn btn-primary">
+                                Save
+                            </button>
                         </div>
                     </div>
                     <input type="hidden" name="queryId" id="queryId">
                 </form>
-                <script>
-                    $(document).ready(function() {
-                        $('.custom-validation').validate({
-                            submitHandler: function(form) {
-                                // Form submission logic here, e.g., AJAX call
-                                $('.custom-validation #savingbutton').prop('disabled', true).val('Saving...');
-                                form.submit();
-                            }
-                        });
-                    });
-                </script>
-                <script>
-                $('#taskModal').on('show.bs.modal', function (event) {
-                    var button = $(event.relatedTarget); 
-                    var queryId = button.data('queryid');
-                    $(this).find('#queryId').val(queryId);
-                });
-                </script>
             </div>
         </div>
     </div>
 </div>
-{{-- End of task popup form --}}

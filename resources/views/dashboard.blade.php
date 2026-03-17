@@ -1092,15 +1092,5 @@
         <!-- end container-fluid -->
     </div>
     <div style="position:fixed; width:100%; height:100%; top:0; left:0; z-index:999; background-color:#00000094; display:none;" id="blackdiv"></div>
-    <div id="reminderouterrightbottom">
-        <div style="padding:20px;">
-            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td colspan="2"><img src="images/remonder-bell_192.gif" style="width:70px;" /></td>
-                    <td width="90%" id="loadremindertask" style="padding-left:10px;">&nbsp;</td>
-                </tr>
-            </table>
-        </div>
-    </div>
 </div>
 @endsection

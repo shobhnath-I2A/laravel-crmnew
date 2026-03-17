@@ -34,22 +34,20 @@
                                         d="M16.3 5.15977H3.7C3.51435 5.15977 3.3363 5.08602 3.20503 4.95474C3.07375 4.82346 3 4.64542 3 4.45977C3 4.27411 3.07375 4.09607 3.20503 3.96479C3.3363 3.83352 3.51435 3.75977 3.7 3.75977H16.3C16.4857 3.75977 16.6637 3.83352 16.795 3.96479C16.9263 4.09607 17 4.27411 17 4.45977C17 4.64542 16.9263 4.82346 16.795 4.95474C16.6637 5.08602 16.4857 5.15977 16.3 5.15977Z">
                                     </path>
                                 </svg></a></li>
-                        <li class="has-submenu"><a href="display.html?ga=itineraries" data-toggle="tooltip"
-                                data-placement="right" title="" data-original-title="Itineraries"><svg
-                                    class="unified360-icon unified360-valign" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20">
-                                    <g id="Layer_2" data-name="Layer 2">
-                                        <g id="Layer_1-2" data-name="Layer 1">
-                                            <path
-                                                d="M16.16,8.93l-3.6,1.64a.69.69,0,0,0-.41.63v3.28a.72.72,0,0,0,.7.7.59.59,0,0,0,.29-.07l3.6-1.63a.72.72,0,0,0,.41-.64V9.57a.7.7,0,0,0-1-.64Zm-.41,3.46-2.2,1V11.65l2.2-1Z">
-                                            </path>
-                                            <path
-                                                d="M19.92,4.44a.08.08,0,0,0,0,0,.7.7,0,0,0-.2-.22s0,0,0,0h0a.18.18,0,0,0-.07-.05l-9.3-4a.68.68,0,0,0-.56,0l-9.3,4a.18.18,0,0,0-.07.05h0l0,0a.7.7,0,0,0-.2.22.08.08,0,0,0,0,0,.64.64,0,0,0-.08.3V15.26a.71.71,0,0,0,.42.64l9.3,4h0a.65.65,0,0,0,.5,0h0l9.3-4a.71.71,0,0,0,.42-.64V4.74A.64.64,0,0,0,19.92,4.44ZM10,1.46l7.54,3.28L10,8,2.46,4.74ZM1.4,5.81,9.3,9.25v9L1.4,14.8Zm9.3,12.42v-9l7.9-3.44v9Z">
-                                            </path>
+                            <li class="has-submenu">
+                                <a href="{{ route('itineraries.index') }}" data-toggle="tooltip" data-placement="right" title="" data-original-title="Itineraries">
+                                    <svg class="unified360-icon unified360-valign" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <g id="Layer_2" data-name="Layer 2">
+                                            <g id="Layer_1-2" data-name="Layer 1">
+                                                <path d="M16.16,8.93l-3.6,1.64a.69.69,0,0,0-.41.63v3.28a.72.72,0,0,0,.7.7.59.59,0,0,0,.29-.07l3.6-1.63a.72.72,0,0,0,.41-.64V9.57a.7.7,0,0,0-1-.64Zm-.41,3.46-2.2,1V11.65l2.2-1Z">
+                                                </path>
+                                                <path d="M19.92,4.44a.08.08,0,0,0,0,0,.7.7,0,0,0-.2-.22s0,0,0,0h0a.18.18,0,0,0-.07-.05l-9.3-4a.68.68,0,0,0-.56,0l-9.3,4a.18.18,0,0,0-.07.05h0l0,0a.7.7,0,0,0-.2.22.08.08,0,0,0,0,0,.64.64,0,0,0-.08.3V15.26a.71.71,0,0,0,.42.64l9.3,4h0a.65.65,0,0,0,.5,0h0l9.3-4a.71.71,0,0,0,.42-.64V4.74A.64.64,0,0,0,19.92,4.44ZM10,1.46l7.54,3.28L10,8,2.46,4.74ZM1.4,5.81,9.3,9.25v9L1.4,14.8Zm9.3,12.42v-9l7.9-3.44v9Z">
+                                                </path>
+                                            </g>
                                         </g>
-                                    </g>
-                                </svg>
-                            </a></li>
+                                    </svg>
+                                </a>
+                            </li>
                         <li class="has-submenu"><a href="display.html?ga=clients" data-toggle="tooltip"
                                 data-placement="right" title="" data-original-title="Clients"><svg
                                     class="unified360-icon unified360-valign" xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +62,7 @@
                                             </path>
                                         </g>
                                     </g>
-                                </svg></a></li> <!-- vk.ak menu link -->
+                                </svg></a></li>
                         <li class="has-submenu"><a href="display.html?ga=package_query" data-toggle="tooltip"
                                 data-placement="right" title="" data-original-title="Package Queries"><svg
                                     class="unified360-icon" width="20" height="20" viewBox="0 0 20 20"
@@ -181,4 +179,3 @@
         </div>
     </header>
 </div>
-    

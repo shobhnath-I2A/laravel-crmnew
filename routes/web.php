@@ -18,8 +18,10 @@ Route::get('/queries/{id}/edit',[QueryController::class,'edit'])->name('queries.
 Route::put('/queries/{id}',[QueryController::class,'update'])->name('queries.update');
 Route::get('/queries/{id}', [QueryController::class, 'show'])->name('queries.show');
 
-Route::post('/query-tasks/store',[QueryTaskController::class,'store'])->name('query-tasks.store');
+Route::resource('query-tasks', QueryTaskController::class);
+Route::get('/check-reminders', [QueryTaskController::class, 'checkReminders']);
+Route::post('/task-done/{id}', [QueryTaskController::class, 'markDone']);
 
 Route::get('/clients/create',[ClientController::class,'create'])->name('clients.create');
 
-Route::get('/itineraries/create',[ItineraryController::class,'create'])->name('itineraries.create');
+Route::resource('/itineraries', ItineraryController::class);
