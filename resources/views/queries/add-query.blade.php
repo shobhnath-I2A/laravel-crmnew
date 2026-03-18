@@ -109,9 +109,7 @@
                             <label class="form-label">From Date <span class="redmtext">*</span></label>
                             <input type="text" name="startDate" value="{{ old('startDate') }}" id="startDate" class="form-control reqfield"
                                 required>
-                            @error('startDate')
-                                <div class="text-danger">{{ $message }} </div>
-                            @enderror
+                            @error('startDate') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6">
@@ -235,71 +233,4 @@
         </div>
     </form>
 </div>
-{{--
-<script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    // $('#queryForm').submit(function(e) {
-    $(document).on('submit', '#queryForm', function(e) {
-        e.preventDefault();
 
-        let form = $(this);
-        let formData = form.serialize();
-        $('.validation-error').remove();
-        $('.form-control').removeClass('is-invalid');
-        $('#ajaxLoader').show();
-        $.ajax({
-            url: form.attr('action'),
-            type: "POST",
-            data: formData,
-
-            success: function(response) {
-                $('#ajaxLoader').hide();
-
-                $('#toastMessage').html(
-                    '<div class="toast-box">' + response.message + '</div>'
-                );
-
-                setTimeout(function() {
-                    $('#toastMessage').fadeOut();
-                }, 3000);
-
-                closeSidebar();
-
-                setTimeout(function() {
-                    location.reload();
-                }, 1500);
-            },
-
-            error: function(xhr) {
-
-                $('#ajaxLoader').hide();
-
-                if (xhr.status === 422) {
-
-                    let errors = xhr.responseJSON.errors;
-
-                    $.each(errors, function(key, value) {
-
-                        let input = $('[name="' + key + '"]');
-
-                        input.addClass('is-invalid');
-
-                        input.after(
-                            '<div class="validation-error text-danger">' + value[0] +
-                            '</div>'
-                        );
-
-                    });
-
-                }
-
-            }
-
-        });
-
-    });
-</script> --}}

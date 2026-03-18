@@ -3,8 +3,7 @@
 </div>
 <!-- Resources -->
 <div class="wrapper">
-    <div class="container-fluid"
-        style="padding-left: 70px !important; padding-right: 25px !important; padding-top: 8px !important;">
+    <div class="container-fluid" style="padding-left: 25px !important; padding-right: 25px !important; padding-top: 8px !important;">
         <div class="row">
             <div class="col-xl-4">
                 <div class="row">

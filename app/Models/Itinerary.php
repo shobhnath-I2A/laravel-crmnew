@@ -22,5 +22,6 @@ class Itinerary extends Model
         'show_in_popular',
         'show_in_special',
         'about_package',
+        'total_days'
     ];
 }

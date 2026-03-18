@@ -25,3 +25,5 @@ Route::post('/task-done/{id}', [QueryTaskController::class, 'markDone']);
 Route::get('/clients/create',[ClientController::class,'create'])->name('clients.create');
 
 Route::resource('/itineraries', ItineraryController::class);
+Route::get('/itinerary/day-details', [ItineraryController::class, 'getDayDetails'])
+    ->name('itinerary.day.details');
