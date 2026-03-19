@@ -197,10 +197,24 @@ class ItineraryController extends Controller
     {
         //
     }
+
+    // public function getDayDetails(Request $request)
+    // {
+    //     $itinerary = Itinerary::findOrFail($request->itinerary_id);
+
+    //     return response()->json([
+    //         'html' => view('itinerary.itinerary-days-details', [
+    //             'day' => $request->day,
+    //             'date' => $request->date,
+    //             'destination' => $request->destination,
+    //             'itinerary' => $itinerary
+    //         ])->render()
+    //     ]);
+    // }
     public function getDayDetails(Request $request)
     {
         $key = "day_{$request->day}_{$request->date}";
-
+        // dd($key);
         return Cache::remember($key, 60, function () use ($request) {
 
             $day = $request->day;

@@ -5,7 +5,8 @@ use App\Http\Controllers\QueryController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\QueryTaskController;
-
+use App\Http\Controllers\HotelController;
+use App\Http\Controllers\HotelRateController;
 
 Route::get('/', function () {
     return view('dashboard');
@@ -27,3 +28,6 @@ Route::get('/clients/create',[ClientController::class,'create'])->name('clients.
 Route::resource('/itineraries', ItineraryController::class);
 Route::get('/itinerary/day-details', [ItineraryController::class, 'getDayDetails'])
     ->name('itinerary.day.details');
+
+Route::resource('hotels', HotelController::class);
+Route::resource('hotels-rates', HotelRateController::class);

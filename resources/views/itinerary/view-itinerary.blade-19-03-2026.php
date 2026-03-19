@@ -3,6 +3,9 @@
     </div>
 
     <style>
+        #load_build_day_details {
+    transition: all 0.3s ease;
+}
         .topnavigation .nav-pills .nav-link.active,
         .nav-tabs .nav-link.active {
             font-size: 16px;
@@ -266,63 +269,153 @@
         </div>
 
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
+       <script>
+class ItineraryBuilder {
+    constructor(config) {
+        this.container = document.querySelector(config.container);
+        this.wrapper = document.querySelector(config.wrapper);
+        this.endpoint = config.endpoint;
 
-                document.querySelectorAll('.itidaytab').forEach(tab => {
+        this.activeClass = config.activeClass || 'activedaytab';
 
-                    tab.addEventListener('click', function() {
+        this.state = {
+            activeDay: null,
+            activeDate: null
+        };
 
-                        let day = this.dataset.day;
-                        let date = this.dataset.date;
+        this.cache = {};
+        this.timer = null;
 
-                        loadDayDetails(day, date);
+        this.init();
+    }
 
-                        document.querySelectorAll('.itidaytab').forEach(t => t.classList.remove(
-                            'activedaytab'));
-                        this.classList.add('activedaytab');
-                    });
+    init() {
+        this.bindEvents();
+        this.autoLoadFirst();
+    }
 
-                });
+    // ✅ EVENT DELEGATION (IMPORTANT)
+    bindEvents() {
+        this.wrapper.addEventListener('click', (e) => {
 
-            });
-
-            function loadDayDetails(day, date) {
-
-                let container = document.getElementById('load_build_day_details');
-
-                container.innerHTML = "Loading...";
-
-                fetch(`/itinerary/day-details?day=${day}&date=${date}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.status) {
-                            container.innerHTML = data.html;
-                        }
-                    })
-                    .catch(() => {
-                        container.innerHTML = "Error loading data";
-                    });
+            const tab = e.target.closest('.itidaytab');
+            if (tab) {
+                this.handleTabClick(tab);
             }
-            let timer;
 
-            function loadDayDetails(day, date) {
+            const moveUp = e.target.closest('.btn-move-up');
+            const moveDown = e.target.closest('.btn-move-down');
 
-                clearTimeout(timer);
+            if (moveUp) this.moveDay(moveUp, 'up');
+            if (moveDown) this.moveDay(moveDown, 'down');
 
-                timer = setTimeout(() => {
+        });
+    }
 
-                    fetch(`/itinerary/day-details?day=${day}&date=${date}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            document.getElementById('load_build_day_details').innerHTML = data.html;
-                        });
+    handleTabClick(tab) {
+        const day = tab.dataset.day;
+        const date = tab.dataset.date;
 
-                }, 200);
-            }
-            document.addEventListener("DOMContentLoaded", function() {
-                document.querySelector('.itidaytab')?.click();
-            });
-        </script>
+        this.setActive(tab);
+        this.setState(day, date);
+        this.loadDay(day, date);
+    }
+
+    setActive(tab) {
+        this.wrapper.querySelectorAll('.itidaytab')
+            .forEach(t => t.classList.remove(this.activeClass));
+
+        tab.classList.add(this.activeClass);
+    }
+
+    setState(day, date) {
+        this.state.activeDay = day;
+        this.state.activeDate = date;
+    }
+
+    showLoading() {
+        this.container.innerHTML = `
+            <div style="padding:20px;text-align:center;">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </div>
+        `;
+    }
+
+    showError() {
+        this.container.innerHTML = `
+            <div style="padding:20px;color:red;text-align:center;">
+                Failed to load data
+            </div>
+        `;
+    }
+loadDay(day, date) {
+    const key = `${day}_${date}`;
+
+    if (this.cache[key]) {
+        this.container.innerHTML = this.cache[key];
+        return;
+    }
+
+    this.showLoading();
+
+    clearTimeout(this.timer);
+
+    this.timer = setTimeout(() => {
+        fetch(`${this.endpoint}?day=${day}&date=${date}&itinerary_id={{$itinerary->id}}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.html) {
+                    this.container.innerHTML = data.html;
+                    this.cache[key] = data.html;
+                } else {
+                    this.showError();
+                }
+            })
+            .catch(() => this.showError());
+    }, 200);
+}
+    // 🔥 DAY REORDER (Premium Feature)
+    moveDay(btn, direction) {
+        const tab = btn.closest('.itidaytab');
+
+        if (direction === 'up' && tab.previousElementSibling) {
+            tab.parentNode.insertBefore(tab, tab.previousElementSibling);
+        }
+
+        if (direction === 'down' && tab.nextElementSibling) {
+            tab.parentNode.insertBefore(tab.nextElementSibling, tab);
+        }
+
+        this.updateDayNumbers();
+    }
+
+    // 🔢 AUTO UPDATE DAY NUMBERS
+    updateDayNumbers() {
+        const tabs = this.wrapper.querySelectorAll('.itidaytab');
+
+        tabs.forEach((tab, index) => {
+            const span = tab.querySelector('span');
+            if (span) span.innerText = index + 1;
+
+            tab.dataset.day = index + 1;
+        });
+    }
+
+    autoLoadFirst() {
+        const firstTab = this.wrapper.querySelector('.itidaytab');
+        if (firstTab) firstTab.click();
+    }
+}
+
+// ✅ INIT
+document.addEventListener("DOMContentLoaded", function () {
+   new ItineraryBuilder({
+    container: '#load_build_day_details',
+    wrapper: 'body',
+    endpoint: "{{ url('/itinerary/day-details') }}",
+    itineraryId: "{{ $itinerary->id }}"
+});
+});
+</script>
     </div>
 @endsection
