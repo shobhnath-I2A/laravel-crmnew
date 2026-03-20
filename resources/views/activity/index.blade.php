@@ -50,7 +50,7 @@
                                             <tbody>
                                                 @foreach ($activities as $activity)
                                                     <tr>
-                                                        <td width="35%" style="cursor:pointer;" onclick="openPopup('Update Price test', '{{ route('activities-rates.show', $activity->id) }}')">
+                                                        <td width="35%" style="cursor:pointer;" onclick="openPopup('Update Price', '{{ route('activities-rates.show', $activity->id) }}')">
                                                             <table border="0" cellpadding="0" cellspacing="0"
                                                                 class="addbynewbadges">
                                                                 <tbody>
@@ -68,7 +68,7 @@
                                                             <div align="center">
                                                                 <a class="dropdown-item"
                                                                     style="cursor:pointer; font-size:12px; text-decoration:underline;"
-                                                                    onclick="openPopup('Update Price test', '{{ route('activities-rates.show', $activity->id) }}')"
+                                                                    onclick="openPopup('Update Price', '{{ route('activities-rates.show', $activity->id) }}')"
                                                                     >
                                                                     Update</a>
                                                             </div>

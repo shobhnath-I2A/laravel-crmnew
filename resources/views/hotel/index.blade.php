@@ -82,7 +82,7 @@
                                                             <div align="center">
                                                                 <a class="dropdown-item"
                                                                     style="cursor:pointer; font-size:12px; text-decoration:underline;"
-                                                                    onclick="openPopup('Update Price test', '{{ route('hotels-rates.show', $hotel->id) }}')"
+                                                                    onclick="openPopup('Update Price', '{{ route('hotels-rates.show', $hotel->id) }}')"
                                                                     >
                                                                     Update</a>
                                                             </div>
