@@ -51,7 +51,7 @@
                                             <tbody>
                                                 @foreach ($hotels as $hotel)
                                                     <tr>
-                                                        <td width="35%" style="cursor:pointer;" onclick="openPopup('Update Price', '{{ route('hotels-rates.show', $hotel->id) }}')">
+                                                        <td width="35%" style="cursor:pointer;" onclick="openPopup('Update Price test', '{{ route('hotels-rates.show', $hotel->id) }}')">
                                                             <table border="0" cellpadding="0" cellspacing="0"
                                                                 class="addbynewbadges">
                                                                 <tbody>

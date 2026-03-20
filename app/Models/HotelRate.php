@@ -19,4 +19,8 @@ class HotelRate extends Model
         'child_bed',
         'extra_adult'
     ];
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
+    }
 }

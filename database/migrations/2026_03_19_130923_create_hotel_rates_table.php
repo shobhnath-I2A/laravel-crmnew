@@ -19,12 +19,12 @@ return new class extends Migration
             $table->string('room_type')->nullable();
             $table->string('meal_plan')->nullable();
             // Pricing
-            $table->decimal('single', 10, 2)->nullable();
-            $table->decimal('double', 10, 2)->nullable();
-            $table->decimal('triple', 10, 2)->nullable();
-            $table->decimal('quad', 10, 2)->nullable();
-            $table->decimal('child_bed', 10, 2)->nullable();
-            $table->decimal('extra_adult', 10, 2)->nullable();
+            $table->decimal('single', 12, 2)->nullable();
+            $table->decimal('double', 12, 2)->nullable();
+            $table->decimal('triple', 12, 2)->nullable();
+            $table->decimal('quad', 12, 2)->nullable();
+            $table->decimal('child_bed', 12, 2)->nullable();
+            $table->decimal('extra_adult', 12, 2)->nullable();
             $table->timestamps();
         });
     }

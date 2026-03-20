@@ -65,6 +65,19 @@
                 </div>
             </div>
         </div>
+        <div class="crm-popup" style="display:none;">
+            <div class="popup-box">
+                <div class="modal-header">
+                    <h5 class="popup-title mt-0" >Popup Title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" onclick="closePopup();">×</span>
+                    </button>
+                </div>
+                <div id="popup-content">
+                    Loading...
+                </div>
+            </div>
+        </div>
         {{-- end side bar popup forms --}}
 
     </div>
@@ -163,7 +176,29 @@
             $('#sidebar-content').html('Loading...');
             $('body').css('overflow', 'auto');
         }
+        // new form popup  open js
+
     </script>
+    <script>
+        function openPopup(title, url) {
+            $('#popup-content').html('Loading...');
+            $('.popup-title').text(title);
+            $('.crm-popup').show();
+            $('body').css('overflow', 'hidden');
+
+            $('#popup-content').load(url, function () {
+                if (typeof initCRMUI === 'function') {
+                    initCRMUI();
+                }
+            });
+        }
+
+        function closePopup() {
+            $('.crm-popup').hide();
+            $('#popup-content').html('Loading...');
+            $('body').css('overflow', 'auto');
+        }
+        </script>
     <script type="text/javascript">
         function initCRMUI() {
             tinymce.init({

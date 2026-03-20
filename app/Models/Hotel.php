@@ -18,4 +18,9 @@ class Hotel extends Model
         'img_link',
         'status'
     ];
+
+    public function rates()
+    {
+        return $this->hasMany(HotelRate::class);
+    }
 }
