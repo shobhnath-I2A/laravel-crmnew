@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\ActivityRateController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\ClientController;
@@ -31,3 +33,6 @@ Route::get('/itinerary/day-details', [ItineraryController::class, 'getDayDetails
 
 Route::resource('hotels', HotelController::class);
 Route::resource('hotels-rates', HotelRateController::class);
+
+Route::resource('activities', ActivityController::class);
+Route::resource('activities-rates', ActivityRateController::class);

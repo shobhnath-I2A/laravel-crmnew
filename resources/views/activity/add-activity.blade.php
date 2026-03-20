@@ -1,47 +1,40 @@
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
-    <form class="custom-validation ajax-form" action="{{ route('hotels.store') }}" method="POST"  enctype="multipart/form-data">
+    <form class="custom-validation ajax-form" action="{{ route('activities.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="container-fluid">
-            {{-- Hotel Info --}}
+            {{-- Activity Info --}}
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
-                    <strong>Hotel Information</strong>
+                    <strong>Activity Information</strong>
                 </div>
                 <div class="card-body">
                     <div class="row">
 
+                        {{-- Activity Name --}}
                         <div class="col-md-12">
-                            <label>Hotel Name <span class="redmtext">*</span></label>
+                            <label>Activity Name <span class="text-danger">*</span></label>
                             <input type="text" name="name"
                                 class="form-control reqfield @error('name') is-invalid @enderror"
                                 value="{{ old('name') }}" required>
+
                             @error('name')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-
-                        <div class="col-md-6">
-                            <label>Category</label>
-                            <select name="category"
-                                class="form-control reqfield @error('category') is-invalid @enderror">
-                                <option value="">Select</option>
-                                <option value="1" {{ old('category') == 1 ? 'selected' : '' }}>1 Star</option>
-                                <option value="2" {{ old('category') == 2 ? 'selected' : '' }}>2 Star</option>
-                                <option value="3" {{ old('category') == 3 ? 'selected' : '' }}>3 Star</option>
-                                <option value="4" {{ old('category') == 4 ? 'selected' : '' }}>4 Star</option>
-                                <option value="5" {{ old('category') == 5 ? 'selected' : '' }}>5 Star</option>
-                            </select>
-                            @error('category')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6">
+                        {{-- Destination --}}
+                        <div class="col-md-12">
                             <label>Destination</label>
-                            <input type="text" name="destination"
-                                class="form-control reqfield @error('destination') is-invalid @enderror"
-                                value="{{ old('destination') }}" required>
-                            @error('destination')
+
+                            <input type="text"
+                                name="destination_id"
+                                class="form-control"
+                                id="destination_search"
+                                placeholder="Search city..."
+                                autocomplete="off">
+
+                            {{-- <input type="hidden" name="destination_id" id="destination_id" value="{{ old('destination_id') }}"> --}}
+
+                            @error('destination_id')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
@@ -50,43 +43,14 @@
                 </div>
             </div>
 
-            {{-- Hotel Details --}}
+            {{-- Activity Details --}}
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
-                    <strong>Hotel Details</strong>
+                    <strong>Activity Details</strong>
                 </div>
+
                 <div class="card-body">
                     <textarea name="details" rows="4" class="form-control">{{ old('details') }}</textarea>
-                </div>
-            </div>
-
-            {{-- Contact Info --}}
-            <div class="card shadow-sm mb-3">
-                <div class="card-header bg-light">
-                    <strong>Contact Information</strong>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-
-                        <div class="col-md-6">
-                            <label>Contact Person</label>
-                            <input type="text" name="contact_person" class="form-control"
-                                value="{{ old('contact_person') }}">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label>Email</label>
-                            <input type="email" name="contact_person_email" class="form-control"
-                                value="{{ old('contact_person_email') }}">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label>Phone</label>
-                            <input type="text" name="contact_person_phone" class="form-control"
-                                value="{{ old('contact_person_phone') }}">
-                        </div>
-
-                    </div>
                 </div>
             </div>
 
@@ -95,25 +59,23 @@
                 <div class="card-header bg-light">
                     <strong>Media & Status</strong>
                 </div>
+
                 <div class="card-body">
                     <div class="row">
 
+                        {{-- Image --}}
                         <div class="col-md-6">
-                            <label>Hotel Photo</label>
-                            <input type="file" name="image" class="form-control ">
+                            <label>Activity Image</label>
+                            <input type="file" name="image" class="form-control">
                         </div>
 
+                        {{-- Status --}}
                         <div class="col-md-6">
                             <label>Status</label>
-                            <select name="status" class="form-control reqfield">
+                            <select name="status" class="form-control">
                                 <option value="1" {{ old('status') == 1 ? 'selected' : '' }}>Active</option>
                                 <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>Inactive</option>
                             </select>
-                        </div>
-
-                        <div class="col-md-12">
-                            <label>Hotel Link</label>
-                            <input type="text" name="hotel_link" class="form-control" value="{{ old('hotel_link') }}">
                         </div>
 
                     </div>
@@ -126,7 +88,7 @@
                     Cancel
                 </button>
 
-                <button type="submit" class="btn btn-primary savingbutton">
+                <button type="submit" class="btn btn-primary">
                     Save
                 </button>
             </div>
@@ -134,4 +96,3 @@
         </div>
     </form>
 </div>
-
