@@ -26,6 +26,8 @@
     <link href="{{ asset('assets/css/customstyle.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assets/css/pagestyle.css') }}" rel="stylesheet" type="text/css">
 
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
     @stack('styles')
 </head>
 
@@ -276,6 +278,17 @@
                 $("#startDate, #endDate").attr('readonly', true);
 
             });
+
+             //  SELECT2 FIX dropdown
+            new TomSelect("#destination", {
+                plugins: ['remove_button'],
+                create: true,
+                maxItems: null,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                }
+            });
         }
         // query task popup form js
         $(document).on('click', '[data-target="#taskModal"]', function() {
@@ -292,6 +305,8 @@
                 changeYear: true
             });
         });
+
+
     </script>
 </body>
 

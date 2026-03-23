@@ -44,8 +44,18 @@
                         </div>
                         <div class="col-md-6">
                             <label>Destinations <span class="redmtext">*</span></label>
-                            <input type="text" name="destinations" value="{{ old('destinations') }}" class="form-control reqfield" required placeholder="Enter comma separated destinations">
-                                @error('destinations') <div class="text-danger">{{ $message }}</div> @enderror
+                            {{-- <input type="text" name="destinations" value="{{ old('destinations') }}" class="form-control reqfield" required placeholder="Enter comma separated destinations"> --}}
+                            <select name="destination_id[]" id="destination" multiple class="form-control">
+    @foreach($destinations as $id => $name)
+        <option value="{{ $id }}"
+            {{ in_array($id, old('destination_id', [])) ? 'selected' : '' }}>
+            {{ $name }}
+        </option>
+    @endforeach
+</select>
+@error('destination_id')
+<div class="text-danger">{{ $message }}</div>
+@enderror
                         </div>
                     </div>
                 </div>
@@ -128,3 +138,14 @@
         </div>
     </form>
 </div>
+<script>
+      new TomSelect("#destination", {
+                plugins: ['remove_button'], // ❗ important for multi select UI
+                create: true,               // allow new destination
+                maxItems: null,             // ❗ allows unlimited selection
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                }
+            });
+</script>

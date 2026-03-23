@@ -6,9 +6,11 @@ use App\Http\Controllers\ActivityRateController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\QueryTaskController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelRateController;
+
 
 Route::get('/', function () {
     return view('dashboard');
@@ -36,3 +38,5 @@ Route::resource('hotels-rates', HotelRateController::class);
 
 Route::resource('activities', ActivityController::class);
 Route::resource('activities-rates', ActivityRateController::class);
+
+Route::resource('destinations', DestinationController::class);

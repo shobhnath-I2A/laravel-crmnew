@@ -50,7 +50,7 @@
                                                                 <tr>
                                                                     <td>{{ $iti->name ??'' }}
                                                                         <div style="color:#999999; font-size:10px; margin-top:2px;">
-                                                                            ID:{{ $iti->id }} - {{ $iti->destinations }} &nbsp;|&nbsp; {{ $iti->adult ?? 0 }} Adult(s) - {{ $iti->child ?? 0 }}
+                                                                            ID:{{ $iti->id }} -  {{ $iti->destinations->pluck('name')->implode(', ') }} &nbsp;|&nbsp; {{ $iti->adult ?? 0 }} Adult(s) - {{ $iti->child ?? 0 }}
                                                                             Child(s)
                                                                         </div>
                                                                     </td>

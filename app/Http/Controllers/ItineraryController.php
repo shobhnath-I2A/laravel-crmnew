@@ -56,7 +56,9 @@ class ItineraryController extends Controller
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'adult' => 'required|integer|min:1',
                 'child' => 'nullable|integer|min:0',
-                'destinations' => 'required|string',
+                'destination_id' => 'required|array',
+                'destination_id.*' => 'exists:destinations,id',
+                // 'destinations' => 'required|string',
                 'notes' => 'nullable|string',
                 'package_theme_id' => 'nullable|integer',
                 'show_website' => 'nullable|integer',
@@ -66,6 +68,10 @@ class ItineraryController extends Controller
                 'show_in_special' => 'nullable|integer',
                 'about_package' => 'nullable|string',
             ]);
+
+            // Extract destination IDs
+            $destinationIds = $validated['destination_id'];
+            unset($validated['destination_id']);
             //  Format Dates
             $start = Carbon::parse($request->start_date);
             $end = Carbon::parse($request->end_date);
@@ -79,7 +85,9 @@ class ItineraryController extends Controller
 
             $validated['child'] = $validated['child'] ?? 0;
             $itinerary = Itinerary::create($validated);
-            // dd($itinerary);
+
+            $itinerary->destinations()->sync($destinationIds);
+
             return response()->json([
                 'status' => true,
                 'message' => 'Itinerary Created Successfully',
@@ -145,7 +153,8 @@ class ItineraryController extends Controller
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'adult' => 'required|integer|min:1',
                 'child' => 'nullable|integer|min:0',
-                'destinations' => 'required|string',
+                'destination_id' => 'required|array',
+                'destination_id.*' => 'exists:destinations,id',
                 'notes' => 'nullable|string',
                 'package_theme_id' => 'nullable|integer',
                 'show_website' => 'nullable|integer',
@@ -157,6 +166,10 @@ class ItineraryController extends Controller
             ]);
 
             $itinerary = Itinerary::findOrFail($id);
+             // ✅ Extract destinations
+            $destinationIds = $validated['destination_id'];
+            unset($validated['destination_id']);
+
             //  Format Dates
             $start = Carbon::parse($request->start_date);
             $end = Carbon::parse($request->end_date);
@@ -170,6 +183,9 @@ class ItineraryController extends Controller
 
             $validated['child'] = $validated['child'] ?? 0;
             $itinerary->update($validated);
+
+            // ✅ VERY IMPORTANT: update pivot table
+            $itinerary->destinations()->sync($destinationIds);
             // dd($itinerary);
             return response()->json([
                 'status' => true,

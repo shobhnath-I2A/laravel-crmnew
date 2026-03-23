@@ -12,7 +12,6 @@ class Itinerary extends Model
         'end_date',
         'adult',
         'child',
-        'destinations',
         'notes',
         'package_theme_id',
         'show_website',
@@ -24,4 +23,9 @@ class Itinerary extends Model
         'about_package',
         'total_days'
     ];
+
+    public function destinations()
+    {
+        return $this->belongsToMany(Destination::class, 'itinerary_destination')->withTimestamps();
+    }
 }

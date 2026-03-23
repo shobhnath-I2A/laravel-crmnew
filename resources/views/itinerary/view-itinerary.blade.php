@@ -226,9 +226,11 @@
                                                         <select id="destinationName{{ $i }}"
                                                             class="form-control"
                                                             onchange="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
-                                                            <option value="{{ $itinerary->destinations }}"
-                                                                selected="selected">{{ $itinerary->destinations }}
-                                                            </option>
+                                                            @foreach($itinerary->destinations as $destination)
+                                                                <option value="{{ $destination->id }}">
+                                                                    {{ $destination->name }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                         <div class="reorder-controls">
                                                             <button class="btn-move-up" data-day-order="1"

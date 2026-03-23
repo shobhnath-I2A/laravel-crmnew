@@ -32,4 +32,9 @@ class Query extends Model
     {
         return $this->hasMany(\App\Models\QueryTask::class, 'queryId', 'id');
     }
+
+    public function destinations()
+    {
+        return $this->belongsToMany(Destination::class);
+    }
 }
