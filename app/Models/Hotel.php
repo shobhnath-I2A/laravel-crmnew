@@ -23,4 +23,8 @@ class Hotel extends Model
     {
         return $this->hasMany(HotelRate::class);
     }
+    public function destinationCity()
+    {
+        return $this->belongsTo(Destination::class, 'destination');
+    }
 }

@@ -33,8 +33,16 @@ class Query extends Model
         return $this->hasMany(\App\Models\QueryTask::class, 'queryId', 'id');
     }
 
-    public function destinations()
+
+    //  Origin relation
+    public function originCity()
     {
-        return $this->belongsToMany(Destination::class);
+        return $this->belongsTo(Destination::class, 'origin');
+    }
+
+    //  Destination relation
+    public function destinationCity()
+    {
+        return $this->belongsTo(Destination::class, 'destination');
     }
 }

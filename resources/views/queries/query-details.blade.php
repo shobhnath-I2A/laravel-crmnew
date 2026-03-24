@@ -56,16 +56,16 @@
                     <div class="col-lg-3">
                         <div class="form-group input-group"
                             style="position:relative;">
-                            <label for="validationCustom02">Origin </label>
-                            {{ $query->origin ?? '' }}
+                            <label for="validationCustom02">Origin: </label>
+                         {{ $query->originCity->name ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group input-group"
                             style="position:relative;">
-                            <label for="validationCustom02">Destination
+                            <label for="validationCustom02">Destination:
                             </label>
-                            {{ $query->destination ?? '' }}
+                          {{ $query->destinationCity->name ?? '' }}
                         </div>
                     </div>
 

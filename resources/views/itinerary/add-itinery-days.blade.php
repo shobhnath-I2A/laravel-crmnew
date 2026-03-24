@@ -26,6 +26,7 @@
             </tbody>
         </table>
     </div>
+Destination: {{ $destinationId }}
     <div style="overflow:auto; height:100%;position: absolute; width:100%;">
         <div style="margin-top:70px; padding-left:15px;" id="loadeventlibrary">
             <style>
@@ -51,7 +52,7 @@
                                 </div>
                             </td>
                             <td width="90%" style="padding-left:10px;">
-                                <div class="eventheading" style="margin-bottom:0px;">Aquaria KLCC followed by free day
+                                <div class="eventheading" style="margin-bottom:0px;"> Aquaria KLCC followed by free day
                                     at leisure</div>
                                 <div><span style="color:#999999;; ">Aquaria KLCC is a state of the art locat...</span>
                                 </div>

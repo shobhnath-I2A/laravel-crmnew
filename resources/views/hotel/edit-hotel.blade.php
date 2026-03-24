@@ -46,9 +46,12 @@
 
                         <div class="col-md-6">
                             <label>Destination</label>
-                            <input type="text" name="destination"
-                                class="form-control reqfield @error('destination') is-invalid @enderror"
-                                value="{{ old('destination', $hotel->destination ?? '' ) }}" required>
+                            <select name="destination" class="form-control reqfield @error('destination') is-invalid @enderror">
+                                <option value="">Select Destination</option>
+                                @foreach($destinations as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
                             @error('destination')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror

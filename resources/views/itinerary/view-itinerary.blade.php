@@ -217,8 +217,9 @@
                                                     $i = 1;
                                                 @endphp
                                                 @for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay())
-                                                    <div class="itidaytab" data-day="{{ $i }}"
-                                                        data-date="{{ $date->format('Y-m-d') }}">
+                                                    <div class="itidaytab"
+                                                        onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');"
+                                                        >
                                                         {{-- <div class="itidaytab {{ $i == 1 ? 'activedaytab' : '' }}" id="dayid{{ $i }}"  onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');"> --}}
                                                         <strong><span>{{ $i }}</span>
                                                             {{ $date->format('d M - D') }}</strong>
@@ -260,7 +261,68 @@
                                     </tbody>
                                 </table>
                             </td>
-                            @include('itinerary.add-itinery-days')
+                            <td width="35%" align="left" valign="top" t="" style="position:relative; background-color:#f5f7f9;">
+                                <div style="padding: 15px; position: absolute; z-index: 1; width: 100%; box-sizing: border-box; padding-top: 0px; padding-right: 0px; background-color:#fff; border-bottom:1px solid #ddd;">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2" style="padding-right:5px;"><input name="searchevent" type="text" id="searchevent" style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #ddd;border-radius: 4px;height: 43px;" placeholder="Search" onkeyup="loadeventlibrary();"></td>
+                                            <td width="50%">
+                                                <select name="eventsection" id="eventsection" style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #ddd;border-radius: 4px;height: 43px;" onchange="loadeventlibrary();">
+                                                        <option value="DayItinerary">Day Itinerary</option>
+                                                    <option value="Accommodation">Accommodation</option>
+                                                    <option value="Activity">Activity</option>
+                                                    <option value="Transportation">Transportation</option>
+                                                    <option value="Insurance">Insurance / Visa</option>
+                                                    <option value="Meal">Meal</option>
+                                                    <option value="Flight">Flight</option>
+                                                    <option value="Leisure">Leisure</option>
+                                                    <option value="Cruise">Cruise</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                                <div style="overflow:auto; height:100%;position: absolute; width:100%;">
+                                <div style="margin-top:70px; padding-left:15px;" id="loadeventlibrary">
+                            <style>
+
+                            .custom_flex_wrapper{
+                                display: flex;
+                                flex-wrap:wrap;
+                                align-items:center;
+                                justify-content: space-between;
+                            }
+                            .custom_flex_wrapper input{
+                                width:48%;
+                            }
+                            </style>
+
+                            <input type="button" style="padding: 10px; color: #fff; background-color: #23ae73; outline: 0px; height: 46px; width: 100%; box-sizing: border-box; margin: 15px 0px; margin-top: 0px; border-radius: 4px; border: 0px; font-size: 16px; cursor:pointer;" value="+ Add Accommodation Manually" onclick="openPopup('Add Accomodation', '{{ route('itinerary.day.accomodation') }}')">
+
+                            <div style="margin-bottom: 15px; color: #000000; font-size: 12px; font-weight: 600;">Suggested Accommodation in <span style="font-weight:600; color:#0066CC;">delhi</span></div>
+
+                            <div class="daydetailsbox">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2"><div class="eventimgclass" style="width: 50px; height: 50px;"><img style="height:100%;" src="http://localhost:8081/API/package_image/Medhufushi_Island_Resort1718449880.jpg">
+                                        </div></td>
+                                        <td width="90%" style="padding-left:10px;"><div class="eventheading">Medhufushi Island Resort</div><div><span style="color:#FF9900; "><i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i></span></div></td>
+                                        <td width="10%">
+                                        <div class="addeventbtnn" onclick="loadpop('Accommodation in day 1',this,'600px')" data-toggle="modal" data-target=".bs-example-modal-center" popaction="action=addAccommodation&amp;pid=109130&amp;d=2026-01-07&amp;packageDays=1&amp;loaddestinationidload=delhi&amp;auto=1&amp;eventobjectid=92&amp;photo=Medhufushi_Island_Resort1718449880.jpg"><i class="fa fa-plus" aria-hidden="true"></i></div>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                            </div>
+
+                                </div>
+                                </td>
+                            {{-- @include('itinerary.add-itinery-days') --}}
                         </tr>
                     </tbody>
                 </table>
@@ -269,6 +331,12 @@
 
 
         <script>
+            function load_build_day_details(day, date) {
+                let destination_id = $('#destinationName' + day).val();
+                $('#load_build_day_details').load(
+                    `/itinerary/day-details?day=${day}&date=${date}&destination_id=${destination_id}&itinerary_id={{$itinerary->id}}`
+                );
+            }
             document.addEventListener("DOMContentLoaded", function() {
 
                 document.querySelectorAll('.itidaytab').forEach(tab => {
@@ -289,39 +357,6 @@
 
             });
 
-            function loadDayDetails(day, date) {
-
-                let container = document.getElementById('load_build_day_details');
-
-                container.innerHTML = "Loading...";
-
-                fetch(`/itinerary/day-details?day=${day}&date=${date}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.status) {
-                            container.innerHTML = data.html;
-                        }
-                    })
-                    .catch(() => {
-                        container.innerHTML = "Error loading data";
-                    });
-            }
-            let timer;
-
-            function loadDayDetails(day, date) {
-
-                clearTimeout(timer);
-
-                timer = setTimeout(() => {
-
-                    fetch(`/itinerary/day-details?day=${day}&date=${date}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            document.getElementById('load_build_day_details').innerHTML = data.html;
-                        });
-
-                }, 200);
-            }
             document.addEventListener("DOMContentLoaded", function() {
                 document.querySelector('.itidaytab')?.click();
             });

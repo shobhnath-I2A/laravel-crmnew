@@ -125,14 +125,16 @@
 
                         <div class="col-md-6">
                             <label class="form-label">From Date <span class="redmtext">*</span></label>
-                            <input type="text" name="startDate" value="{{ old('startDate') }}" id="startDate" class="form-control reqfield"
+                            <input type="text" name="startDate" value="{{ old('startDate', $query->startDate ?? '') }}" id="startDate" class="form-control reqfield"
                                 required>
-                            @error('startDate') <div class="text-danger">{{ $message }}</div> @enderror
+                            @error('startDate')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">To Date <span class="redmtext">*</span></label>
-                            <input type="text" name="endDate" value="{{ old('endDate') }}" id="endDate" class="form-control reqfield"
+                            <input type="text" name="endDate" value="{{ old('endDate', $query->endDate ?? '') }}" id="endDate" class="form-control reqfield"
                                 required>
                             @error('endDate')
                                 <div class="text-danger">{{ $message }} </div>
@@ -252,3 +254,70 @@
     </form>
 </div>
 
+<script>
+    $(function() {
+
+                // ✅ Start Date
+                $("#startDate").datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    minDate: 0, // 🚀 only future dates
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "0:+5",
+
+                    onSelect: function(selectedDate) {
+
+                        let start = $(this).datepicker('getDate');
+
+                        // ✅ Set minimum end date = start date
+                        $("#endDate").datepicker("option", "minDate", start);
+
+                        // ✅ Auto set end date (start + 1 day)
+                        let end = new Date(start);
+                        end.setDate(end.getDate() + 1);
+                        $("#endDate").datepicker("setDate", end);
+
+                        calculateDays();
+                    }
+                });
+
+                // ✅ End Date
+                $("#endDate").datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    minDate: 0,
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "0:+5",
+
+                    onSelect: function() {
+                        calculateDays();
+                    }
+                });
+
+                // ✅ Validity Date
+                $("#websiteValidity").datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    minDate: 0,
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "0:+5",
+                });
+
+                // ✅ Calculate total days
+                function calculateDays() {
+                    let start = $("#startDate").datepicker('getDate');
+                    let end = $("#endDate").datepicker('getDate');
+
+                    if (start && end) {
+                        let diff = end - start;
+                        let days = Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
+
+                        $("#totalDays").val(days + " Days");
+                    }
+                }
+
+                // ✅ Prevent manual typing
+                $("#startDate, #endDate").attr('readonly', true);
+
+            });
+</script>

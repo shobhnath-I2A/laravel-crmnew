@@ -45,4 +45,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function package()
+    {
+        return $this->belongsTo(Package::class);
+    }
+
 }

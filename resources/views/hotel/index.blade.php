@@ -77,7 +77,7 @@
                                                                 @endfor
                                                             </div>
                                                         </td>
-                                                        <td width="15%">{{ $hotel->destination ?? '' }}</td>
+                                                        <td width="15%">{{ $hotel->destinationCity->name ?? '' }}</td>
                                                         <td width="1%" align="left">
                                                             <div align="center">
                                                                 <a class="dropdown-item"

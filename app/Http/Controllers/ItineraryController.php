@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Models\PackageDayItem;
+
 use Exception;
 
 class ItineraryController extends Controller
@@ -58,7 +60,6 @@ class ItineraryController extends Controller
                 'child' => 'nullable|integer|min:0',
                 'destination_id' => 'required|array',
                 'destination_id.*' => 'exists:destinations,id',
-                // 'destinations' => 'required|string',
                 'notes' => 'nullable|string',
                 'package_theme_id' => 'nullable|integer',
                 'show_website' => 'nullable|integer',
@@ -166,7 +167,7 @@ class ItineraryController extends Controller
             ]);
 
             $itinerary = Itinerary::findOrFail($id);
-             // ✅ Extract destinations
+            // ✅ Extract destinations
             $destinationIds = $validated['destination_id'];
             unset($validated['destination_id']);
 
@@ -214,49 +215,67 @@ class ItineraryController extends Controller
         //
     }
 
-    // public function getDayDetails(Request $request)
-    // {
-    //     $itinerary = Itinerary::findOrFail($request->itinerary_id);
-
-    //     return response()->json([
-    //         'html' => view('itinerary.itinerary-days-details', [
-    //             'day' => $request->day,
-    //             'date' => $request->date,
-    //             'destination' => $request->destination,
-    //             'itinerary' => $itinerary
-    //         ])->render()
-    //     ]);
-    // }
     public function getDayDetails(Request $request)
     {
-        $key = "day_{$request->day}_{$request->date}";
-        // dd($key);
-        return Cache::remember($key, 60, function () use ($request) {
+        try {
 
+            $items = PackageDayItem::where('package_id', 1)
+                ->where('day', $request->day)
+                // ->where('destination_id', $request->destination_id)
+                // ->whereDate('check_in_date', $request->date)
+                ->get();
+            // dd($items);
             $day = $request->day;
-            $date = \Carbon\Carbon::parse($request->date)->format('d M Y');
+            $destinationId = $request->destination_id;
+            $date = Carbon::parse($request->date)->format('d M - D');
 
-            return [
-                'status' => true,
-                'html' => view('itinerary.itinerary-days-details', compact('day', 'date'))->render()
-            ];
-        });
+            return view('itinerary.itinerary-days-details', compact('items', 'day', 'destinationId', 'date'));
+        } catch (\Exception $e) {
+
+            Log::error('Unable to get day detail', [
+                'message' => $e->getMessage()
+            ]);
+
+            return response()->json(['error' => true], 500);
+        }
     }
-    // public function getDayDetails(Request $request)
-    // {
-    //     try {
-    //         $request->validate([
-    //             'day' => 'required|integer',
-    //             'date' => 'required|date'
-    //         ]);
-    //         $day  = $request->day;
-    //         $date = Carbon::parse($request->date)->format('d M Y');
-    //         return response()->json([
-    //             'status' => true,
-    //             'html' => view('itinerary.itinerary-days-details', compact('day', 'date'))->render()
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Unable to get day detail', $e->getMessage());
-    //     }
-    // }
+    public function loadEventLibrary(Request $request)
+    {
+        $eventsection = $request->eventsection;
+        $search = $request->searchevent;
+        $destinationId = $request->destination_id;
+        $date = $request->date;
+        $day = $request->day;
+
+        // Example: filter by type (Accommodation, Activity, etc.)
+        $query = PackageDayItem::query();
+
+        if ($eventsection == 'Accommodation') {
+            $query->where('type', 'accomodation');
+        }
+
+        if (!empty($destinationId)) {
+            $query->where('destination_id', $destinationId);
+        }
+
+        if (!empty($day)) {
+            $query->where('day', $day);
+        }
+
+        if (!empty($search)) {
+            $query->where('hotel_name', 'like', "%$search%");
+        }
+
+        $items = $query->get();
+
+        return view('itinerary.event-form', compact('items', 'eventsection'));
+    }
+
+    public function createAccomodation(){
+        return view('itinerary.popups.accommodation');
+    }
+
+    public function storeAccomodation(Request $request){
+        dd($request);
+    }
 }

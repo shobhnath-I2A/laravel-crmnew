@@ -32,6 +32,11 @@ Route::get('/clients/create',[ClientController::class,'create'])->name('clients.
 Route::resource('/itineraries', ItineraryController::class);
 Route::get('/itinerary/day-details', [ItineraryController::class, 'getDayDetails'])
     ->name('itinerary.day.details');
+Route::get('/itinerary/acccomodation', [ItineraryController::class, 'createAccomodation'])
+    ->name('itinerary.day.accomodation');
+Route::post('/itinerary/store-acccomodation', [ItineraryController::class, 'storeAccomodation'])
+    ->name('itinerary.storeaccomodation');
+Route::get('/event-library', [ItineraryController::class, 'loadEventLibrary']);
 
 Route::resource('hotels', HotelController::class);
 Route::resource('hotels-rates', HotelRateController::class);

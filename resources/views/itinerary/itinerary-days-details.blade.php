@@ -257,11 +257,10 @@
               vertical-align: sub
           }
       </style>
-
       <div style="padding: 8px 20px; border-bottom: 1px solid #ecf0f2; font-size: 18px;">
 
-          <strong>Day 1 - 01 Apr - Wed &nbsp;<i class="fa fa-long-arrow-right" aria-hidden="true"></i>&nbsp;
-              delhi</strong>
+          <strong>Day {{ $day ?? '' }} - {{ $date ?? '' }} &nbsp;<i class="fa fa-long-arrow-right" aria-hidden="true"></i>&nbsp;
+              delhi {{ $destinationId ?? '' }}</strong>
 
       </div>
       <div class="daydetailsbox">

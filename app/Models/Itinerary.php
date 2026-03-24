@@ -28,4 +28,8 @@ class Itinerary extends Model
     {
         return $this->belongsToMany(Destination::class, 'itinerary_destination')->withTimestamps();
     }
+    public function packages()
+    {
+        return $this->hasMany(Package::class);
+    }
 }

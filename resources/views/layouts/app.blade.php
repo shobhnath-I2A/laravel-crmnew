@@ -204,7 +204,7 @@
     <script type="text/javascript">
         function initCRMUI() {
             tinymce.init({
-                selector: "#EmailDetails",
+                selector: "#description",
                 themes: "modern",
                 plugins: [
                     "advlist autolink lists link image charmap print preview anchor",
@@ -289,6 +289,8 @@
                     direction: "asc"
                 }
             });
+
+
         }
         // query task popup form js
         $(document).on('click', '[data-target="#taskModal"]', function() {

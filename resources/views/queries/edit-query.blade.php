@@ -95,18 +95,38 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Origin <span class="redmtext">*</span></label>
-                            <input type="text" name="origin" value="{{ old('origin', $query->origin ?? '') }}" class="form-control reqfield" required>
+                              <select name="origin" class="form-control reqfield">
+                                <option value="">Select Destination</option>
+
+                                @foreach($destinations as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
                             @error('origin')
                                 <div class="text-danger">{{ $message }} </div>
                             @enderror
+                            {{-- <input type="text" name="origin" value="{{ old('origin', $query->origin ?? '') }}" class="form-control reqfield" required>
+                            @error('origin')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror --}}
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Destination <span class="redmtext">*</span></label>
-                            <input type="text" name="destination" value="{{ old('destination', $query->destination ?? '') }}" class="form-control reqfield" required>
+                              <select name="destination" class="form-control reqfield">
+                                <option value="">Select Destination</option>
+
+                                @foreach($destinations as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
                             @error('destination')
                                 <div class="text-danger">{{ $message }} </div>
                             @enderror
+                            {{-- <input type="text" name="destination" value="{{ old('destination', $query->destination ?? '') }}" class="form-control reqfield" required>
+                            @error('destination')
+                                <div class="text-danger">{{ $message }} </div>
+                            @enderror --}}
                         </div>
 
                         <div class="col-md-6">
