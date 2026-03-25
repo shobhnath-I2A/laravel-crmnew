@@ -6,47 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Package;
 use App\Models\Itinerary;
+use App\Models\PackageDayItem;
+use Carbon\Carbon;
 class PackageController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function storeFromItinerary(Request $request, $itineraryId)
-    {
-        // 1. Get itinerary
-        $itinerary = Itinerary::with('destinations')->findOrFail($itineraryId);
-
-        // 2. Use transaction (VERY IMPORTANT)
-        $package = DB::transaction(function () use ($itinerary) {
-
-            // 3. Create package
-            $package = Package::create([
-                'name' => $itinerary->name,
-                'description' => $itinerary->description ?? null,
-                'start_date' => $itinerary->start_date,
-                'end_date' => $itinerary->end_date,
-                'total_days' => $itinerary->total_days,
-                'price_per_person' => $itinerary->website_cost ?? 0,
-                'itinerary_id' => $itinerary->id,
-                'created_by' => auth()->id() ?? null,
-                'show_on_website' => 1,
-            ]);
-
-            // ✅ 4. Attach destinations (pivot table)
-            if ($itinerary->destinations->isNotEmpty()) {
-                $package->destinations()->sync(
-                    $itinerary->destinations->pluck('id')->toArray()
-                );
-            }
-
-            return $package;
-        });
-
-        return response()->json([
-            'message' => 'Package created successfully',
-            'data' => $package
-        ]);
-    }
     public function index()
     {
         //
@@ -99,4 +65,5 @@ class PackageController extends Controller
     {
         //
     }
+
 }

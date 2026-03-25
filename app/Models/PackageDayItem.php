@@ -32,6 +32,7 @@ class PackageDayItem extends Model
         'check_out_date',
         'check_out_time',
         'description',
+        'day_subject'
     ];
     protected $casts = [
         'check_in_date' => 'date',

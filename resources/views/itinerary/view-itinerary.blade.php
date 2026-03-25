@@ -228,8 +228,9 @@
                                                             class="form-control"
                                                             onchange="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
                                                             @foreach($itinerary->destinations as $destination)
-                                                                <option value="{{ $destination->id }}">
-                                                                    {{ $destination->name }}
+                                                                <option value="{{ $destination->id }}"
+                                                                    {{ isset($dayItems[$i]) && $dayItems[$i]->destination_id == $destination->id ? 'selected' : '' }}>
+                                                                        {{ $destination->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>

@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Package;
 use App\Models\PackageDayItem;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Cache;
 use Exception;
+
 class PackageDaysItemController extends Controller
 {
     /**
@@ -44,9 +47,19 @@ class PackageDaysItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, string $id)
     {
-        //
+        try {
+            $packageDayItem = PackageDayItem::select('id', 'description', 'day_subject')->findOrFail($id);
+            $itineraryId = $request->itinerary_id;
+            return view('itinerary.popups.package-day-details', compact('packageDayItem', 'itineraryId'));
+        } catch (\Exception $e) {
+            Log::error('Error fetching Package day details: ' . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to load day details'
+            ], 500);
+        }
     }
 
     /**
@@ -54,7 +67,29 @@ class PackageDaysItemController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $validated = $request->validate([
+                'day_subject' => 'required|string|max:255',
+                'description' => 'required|string|max:255',
+            ]);
+
+            $packgeDayItem = PackageDayItem::findOrFail($id);
+
+            $packgeDayItem->update($validated);;
+            // Cache::forget("day_item_$id");
+            return redirect()->route('itineraries.show', $request->itinerary_id);
+        } catch (ValidationException $ve) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Failed',
+                'errors' => $ve->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -63,26 +98,5 @@ class PackageDaysItemController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-    public function updateDay(Request $request)
-    {
-       try{
-        $package = Package::where('itinerary_id', $request->itinerary_id)->firstOrFail();
-
-        PackageDayItem::updateOrCreate(
-            [
-                'package_id' => $package->id,
-                'day' => $request->day
-            ],
-            [
-                'destination_id' => $request->destination_id,
-                'description' => $request->description
-            ]
-        );
-
-        return response()->json(['status' => true]);
-       }catch(\Exception $e){
-        Log::error('Update days on package day item controller', $e->getMessage());
-       }
     }
 }

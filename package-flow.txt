@@ -1,4 +1,4 @@
-CRM Package FLOW (create packgae)
+CRM Package FLOW (create packgae) Creae auto package when we create itinerary
 
 queries
    ↓ package_id

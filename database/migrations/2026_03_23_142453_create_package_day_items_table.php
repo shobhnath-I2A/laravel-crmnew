@@ -17,7 +17,7 @@ return new class extends Migration
         $table->foreignId('hotel_id')->nullable()->constrained('hotels')->nullOnDelete();
         $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
         $table->string('type')->nullable();// like hotel, accomodation,activity...
-        // Snapshot of hotel data at time of booking
+
         $table->integer('day')->default(0);
         $table->string('show_day_order')->default(0);
         $table->string('hotel_name')->nullable();
@@ -39,6 +39,7 @@ return new class extends Migration
         $table->date('check_out_date')->nullable();
         $table->time('check_out_time')->nullable();
 
+        $table->string('day_subject')->nullable();
         $table->text('description')->nullable();
 
         $table->timestamps();

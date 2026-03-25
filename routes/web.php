@@ -10,7 +10,7 @@ use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\QueryTaskController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelRateController;
-
+use App\Http\Controllers\PackageDaysItemController;
 
 Route::get('/', function () {
     return view('dashboard');
@@ -36,7 +36,7 @@ Route::get('/itinerary/acccomodation', [ItineraryController::class, 'createAccom
     ->name('itinerary.day.accomodation');
 Route::post('/itinerary/store-acccomodation', [ItineraryController::class, 'storeAccomodation'])
     ->name('itinerary.storeaccomodation');
-Route::get('/event-library', [ItineraryController::class, 'loadEventLibrary']);
+
 
 Route::resource('hotels', HotelController::class);
 Route::resource('hotels-rates', HotelRateController::class);
@@ -45,3 +45,5 @@ Route::resource('activities', ActivityController::class);
 Route::resource('activities-rates', ActivityRateController::class);
 
 Route::resource('destinations', DestinationController::class);
+
+Route::resource('package-days-items', PackageDaysItemController::class);

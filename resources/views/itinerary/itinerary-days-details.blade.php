@@ -258,21 +258,39 @@
           }
       </style>
       <div style="padding: 8px 20px; border-bottom: 1px solid #ecf0f2; font-size: 18px;">
-
-          <strong>Day {{ $day ?? '' }} - {{ $date ?? '' }} &nbsp;<i class="fa fa-long-arrow-right" aria-hidden="true"></i>&nbsp;
-              delhi {{ $destinationId ?? '' }}</strong>
-
+            <strong>Day {{ $day ?? '' }} - {{ $date ?? '' }} &nbsp;<i class="fa fa-long-arrow-right"
+                  aria-hidden="true"></i>&nbsp;
+              {{ $PackageDayItem->destination->name ?? ''}}
+            </strong>
       </div>
       <div class="daydetailsbox">
-          <div class="daywisedetailsdefault" style="cursor:pointer;" aria-hidden="true"
-              onclick="loadpop('Day 1 Details',this,'600px')" data-toggle="modal" data-target=".bs-example-modal-center"
-              popaction="action=editDayDetails2&amp;pid=109135&amp;d=1&amp;date=2026-04-01">
-              <em>Enter Day Wise Details</em>
-          </div>
-          <i class="fa fa-pencil" aria-hidden="true" onclick="loadpop('Day 1 Details',this,'600px')" data-toggle="modal"
-              data-target=".bs-example-modal-center"
-              popaction="action=editDayDetails2&amp;pid=109135&amp;d=1&amp;date=2026-04-01"></i>
+          @if (!empty($PackageDayItem) && ($PackageDayItem->day_subject || $PackageDayItem->description))
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tbody>
+                      <tr>
+                          <td width="94%">
+                              <div class="heading">
+                                  {{ $PackageDayItem->day_subject ?? 'No Subject' }}
+                              </div>
+                              {{ $PackageDayItem->description ?? '' }}
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+          @else
+              <div class="daywisedetailsdefault" style="cursor:pointer;"
+                  onclick="openPopup('Day {{ $day ?? '' }} Details', '{{ route('package-days-items.edit', ['package_days_item' => $PackageDayItem->id ?? 0, 'itinerary_id' => $itineryId ?? 0 ]) }}')">
+                  <em>Enter Day Wise Details</em>
+              </div>
+          @endif
+
+          <!-- Edit Icon -->
+          <i class="fa fa-pencil" aria-hidden="true"
+              onclick="openPopup('Day {{ $day ?? '' }} Details', '{{ route('package-days-items.edit', ['package_days_item' => $PackageDayItem->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')">
+          </i>
+
       </div>
+
       <div class="daydetailsbox">
           <i class="fa fa-pencil" aria-hidden="true" onclick="loadpop('Activity From 01-04-2026',this,'600px')"
               data-toggle="modal" data-target=".bs-example-modal-center"
@@ -486,11 +504,11 @@
                                       </tbody>
                                   </table>
                               </div>
-                                <div style="margin-bottom:20px;"><strong>Room:
+                              <div style="margin-bottom:20px;"><strong>Room:
                                   </strong> 1 Double &nbsp;&nbsp;|
                                   &nbsp;&nbsp;<strong><i class="fa fa-cutlery" aria-hidden="true"></i> Meal:
                                   </strong>
-                                </div>
+                              </div>
                           </div>
                           <div class="eventcontent"></div>
                       </td>
