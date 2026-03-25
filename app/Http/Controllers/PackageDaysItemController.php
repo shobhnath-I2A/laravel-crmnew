@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Package;
+use App\Models\PackageDayItem;
+use Illuminate\Support\Facades\Log;
+use Exception;
 class PackageDaysItemController extends Controller
 {
     /**
@@ -60,5 +63,26 @@ class PackageDaysItemController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function updateDay(Request $request)
+    {
+       try{
+        $package = Package::where('itinerary_id', $request->itinerary_id)->firstOrFail();
+
+        PackageDayItem::updateOrCreate(
+            [
+                'package_id' => $package->id,
+                'day' => $request->day
+            ],
+            [
+                'destination_id' => $request->destination_id,
+                'description' => $request->description
+            ]
+        );
+
+        return response()->json(['status' => true]);
+       }catch(\Exception $e){
+        Log::error('Update days on package day item controller', $e->getMessage());
+       }
     }
 }

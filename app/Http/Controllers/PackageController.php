@@ -11,7 +11,7 @@ class PackageController extends Controller
     /**
      * Display a listing of the resource.
      */
-      public function storeFromItinerary(Request $request, $itineraryId)
+    public function storeFromItinerary(Request $request, $itineraryId)
     {
         // 1. Get itinerary
         $itinerary = Itinerary::with('destinations')->findOrFail($itineraryId);

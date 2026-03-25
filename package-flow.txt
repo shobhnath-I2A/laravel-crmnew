@@ -1,0 +1,11 @@
+CRM Package FLOW (create packgae)
+
+queries
+   ↓ package_id
+packages
+   ↓ itinerary_id
+itineraries
+   ↓
+package_day_items
+   ↓
+package_day_item_prices

@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Models\PackageDayItem;
+use App\Models\Package;
+use App\Services\PackageService;
 
 use Exception;
 
@@ -115,11 +117,14 @@ class ItineraryController extends Controller
     {
         try {
             $itinerary = Itinerary::findOrFail($id);
+            // create package
+            $package = app(PackageService::class)->createFromItinerary($id);
+
             $tab = $request->query('tab', 'proposals');
             $startDate = Carbon::parse($itinerary->start_date);
             $endDate   = Carbon::parse($itinerary->end_date);
 
-            return view('itinerary.view-itinerary', compact('itinerary', 'startDate', 'endDate', 'tab'));
+            return view('itinerary.view-itinerary', compact('itinerary', 'startDate', 'endDate', 'tab', 'package'));
         } catch (\Exception $e) {
             Log::error('Error fetching itinerary: ' . $e->getMessage());
 
@@ -188,6 +193,13 @@ class ItineraryController extends Controller
             // ✅ VERY IMPORTANT: update pivot table
             $itinerary->destinations()->sync($destinationIds);
             // dd($itinerary);
+
+            // Update package
+            $package = Package::where('itinerary_id', $id)->first();
+            if ($package) {
+                app(\App\Services\PackageService::class)
+                    ->syncWithItinerary($package, $itinerary);
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'Itinerary updated Successfully',
@@ -218,8 +230,9 @@ class ItineraryController extends Controller
     public function getDayDetails(Request $request)
     {
         try {
+            $package = Package::where('itinerary_id', $request->itinerary_id)->firstOrFail();
 
-            $items = PackageDayItem::where('package_id', 1)
+            $items = PackageDayItem::where('package_id', $package->id)
                 ->where('day', $request->day)
                 // ->where('destination_id', $request->destination_id)
                 // ->whereDate('check_in_date', $request->date)
@@ -239,37 +252,7 @@ class ItineraryController extends Controller
             return response()->json(['error' => true], 500);
         }
     }
-    public function loadEventLibrary(Request $request)
-    {
-        $eventsection = $request->eventsection;
-        $search = $request->searchevent;
-        $destinationId = $request->destination_id;
-        $date = $request->date;
-        $day = $request->day;
 
-        // Example: filter by type (Accommodation, Activity, etc.)
-        $query = PackageDayItem::query();
-
-        if ($eventsection == 'Accommodation') {
-            $query->where('type', 'accomodation');
-        }
-
-        if (!empty($destinationId)) {
-            $query->where('destination_id', $destinationId);
-        }
-
-        if (!empty($day)) {
-            $query->where('day', $day);
-        }
-
-        if (!empty($search)) {
-            $query->where('hotel_name', 'like', "%$search%");
-        }
-
-        $items = $query->get();
-
-        return view('itinerary.event-form', compact('items', 'eventsection'));
-    }
 
     public function createAccomodation(){
         return view('itinerary.popups.accommodation');
