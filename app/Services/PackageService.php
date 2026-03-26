@@ -88,6 +88,7 @@ class PackageService
             $item = PackageDayItem::create([
                 'package_id' => $package->id,
                 'day' => $dayNumber,
+                'type' => 'daydetail',
                 'destination_id' => $package->destinations->first()->id ?? null
             ]);
 
@@ -122,6 +123,7 @@ class PackageService
                 $item = PackageDayItem::create([
                     'package_id' => $package->id,
                     'day' => $dayNumber,
+                    'type' => 'daydetail',
                     'destination_id' => $package->destinations->first()->id ?? null
                 ]);
 

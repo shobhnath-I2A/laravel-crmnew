@@ -21,25 +21,22 @@
                             <label>Activity Name <span class="text-danger">*</span></label>
                             <input type="text" name="name"
                                 class="form-control reqfield @error('name') is-invalid @enderror"
-                                value="{{ old('name', $activity->name??'') }}" required>
+                                value="{{ old('name', $activity->name ??'') }}" required>
 
                             @error('name')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                        {{-- Destination --}}
                         <div class="col-md-12">
                             <label>Destination</label>
-
-                            <input type="text"
-                                name="destination_id"
-                                value="{{ old('destination_id', $activity->destination_id ?? '') }}"
-                                class="form-control"
-                                id="destination_search"
-                                placeholder="Search city..."
-                                autocomplete="off">
-
-                            {{-- <input type="hidden" name="destination_id" id="destination_id" value="{{ old('destination_id') }}"> --}}
+                           <select name="destination_id" class="form-control">
+                                @foreach($destinations as $id => $name)
+                                    <option value="{{ $id }}"
+                                        {{ $activity->destination_id == $id ? 'selected' : '' }}>
+                                        {{ $name }}
+                                    </option>
+                                @endforeach
+                            </select>
 
                             @error('destination_id')
                                 <div class="text-danger">{{ $message }}</div>

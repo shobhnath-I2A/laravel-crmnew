@@ -254,8 +254,9 @@
                                                 </div>
                                             </td>
                                             <td align="left" valign="top">
+                                                {{-- show left itinery day wise --}}
                                                 <div id="load_build_day_details">
-                                                    @include('itinerary.itinerary-days-details')
+                                                    {{-- @include('itinerary.itinerary-days-details') --}}
                                                 </div>
                                             </td>
                                         </tr>
@@ -270,7 +271,7 @@
                                             <td colspan="2" style="padding-right:5px;"><input name="searchevent" type="text" id="searchevent" style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #ddd;border-radius: 4px;height: 43px;" placeholder="Search" onkeyup="loadeventlibrary();"></td>
                                             <td width="50%">
                                                 <select name="eventsection" id="eventsection" style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #ddd;border-radius: 4px;height: 43px;" onchange="loadeventlibrary();">
-                                                        <option value="DayItinerary">Day Itinerary</option>
+                                                    <option value="DayItinerary">Day Itinerary</option>
                                                     <option value="Accommodation">Accommodation</option>
                                                     <option value="Activity">Activity</option>
                                                     <option value="Transportation">Transportation</option>

@@ -245,17 +245,18 @@ class ItineraryController extends Controller
             // $PackageDayItem = PackageDayItem::where('package_id', $package->id)
             //     ->where('day', $request->day)
             //     ->first();
-            $PackageDayItem = PackageDayItem::with('destination')
+           $packageDayItems = PackageDayItem::with('destination')
                 ->where('package_id', $package->id)
                 ->where('day', $request->day)
-                ->first();
+                ->get()
+                ->groupBy('type');
             // dd($items);
             $day = $request->day;
             $destinationId = $request->destination_id;
             $itineryId = $request->itinerary_id;
             $date = Carbon::parse($request->date)->format('d M - D');
 
-            return view('itinerary.itinerary-days-details', compact('PackageDayItem', 'day', 'destinationId', 'date', 'itineryId'));
+            return view('itinerary.itinerary-days-details', compact('packageDayItems', 'day', 'destinationId', 'date', 'itineryId'));
         } catch (\Exception $e) {
 
             Log::error('Unable to get day detail', [

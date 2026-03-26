@@ -168,4 +168,17 @@ class HotelController extends Controller
     {
         //
     }
+
+    public function getHotels($destinationId)
+    {
+        $hotels = Hotel::where('destination_id', $destinationId)->get();
+
+        $html = '<option value="">Select Hotel</option>';
+
+        foreach ($hotels as $hotel) {
+            $html .= '<option value="'.$hotel->id.'">'.$hotel->name.'</option>';
+        }
+
+        return $html;
+    }
 }

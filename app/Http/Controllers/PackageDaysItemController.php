@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Package;
 use App\Models\PackageDayItem;
+use App\Models\Activity;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Cache;
@@ -23,9 +24,14 @@ class PackageDaysItemController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        return view('package-day-items.forms', [
+            'type' => $request->type,
+            'dayId' => $request->day_id,
+            'item' => null
+        ]);
+
     }
 
     /**
@@ -50,9 +56,11 @@ class PackageDaysItemController extends Controller
     public function edit(Request $request, string $id)
     {
         try {
-            $packageDayItem = PackageDayItem::select('id', 'description', 'day_subject')->findOrFail($id);
+            $packageDayItem = PackageDayItem::findOrFail($id);
+            $type = $packageDayItem->type;
+            $dayId = $packageDayItem->type;
             $itineraryId = $request->itinerary_id;
-            return view('itinerary.popups.package-day-details', compact('packageDayItem', 'itineraryId'));
+            return view('package-day-items.forms', compact('packageDayItem', 'itineraryId'));
         } catch (\Exception $e) {
             Log::error('Error fetching Package day details: ' . $e->getMessage());
             return response()->json([
@@ -70,7 +78,7 @@ class PackageDaysItemController extends Controller
         try {
             $validated = $request->validate([
                 'day_subject' => 'required|string|max:255',
-                'description' => 'required|string|max:255',
+                'description' => 'required|string|max:5000',
             ]);
 
             $packgeDayItem = PackageDayItem::findOrFail($id);
@@ -98,5 +106,18 @@ class PackageDaysItemController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getMasterData(Request $request)
+    {
+        $data = Activity::where('destination_id', $request->destination_id)->get();
+
+        $html = '<option value="">Select</option>';
+
+        foreach ($data as $row) {
+            $html .= '<option value="'.$row->id.'">'.$row->name.'</option>';
+        }
+
+        return response($html);
     }
 }

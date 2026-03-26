@@ -16,7 +16,7 @@ return new class extends Migration
         $table->foreignId('package_id')->constrained('packages')->cascadeOnDelete();
         $table->foreignId('hotel_id')->nullable()->constrained('hotels')->nullOnDelete();
         $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
-        $table->string('type')->nullable();// like hotel, accomodation,activity...
+        $table->string('type')->nullable();//daydetail, like hotel, accomodation,activity...
 
         $table->integer('day')->default(0);
         $table->string('show_day_order')->default(0);

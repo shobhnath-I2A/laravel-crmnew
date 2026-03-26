@@ -4,6 +4,7 @@
     }
 </style>
 <div class="modal-body">
+    {{ $packageDayItem ?? '' }}
     <form class="custom-validation" action="{{ route('package-days-items.update', $packageDayItem->id) }}" novalidate="novalidate" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PATCH')

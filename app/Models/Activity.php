@@ -18,4 +18,8 @@ class Activity extends Model
     {
         return $this->hasMany(ActivityRate::class);
     }
+    public function destinations()
+    {
+        return $this->belongsToMany(Destination::class);
+    }
 }

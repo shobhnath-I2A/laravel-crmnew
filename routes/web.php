@@ -40,6 +40,7 @@ Route::post('/itinerary/store-acccomodation', [ItineraryController::class, 'stor
 
 Route::resource('hotels', HotelController::class);
 Route::resource('hotels-rates', HotelRateController::class);
+Route::get('/get-hotels/{destination}', [HotelController::class, 'getHotels']);
 
 Route::resource('activities', ActivityController::class);
 Route::resource('activities-rates', ActivityRateController::class);
@@ -47,3 +48,5 @@ Route::resource('activities-rates', ActivityRateController::class);
 Route::resource('destinations', DestinationController::class);
 
 Route::resource('package-days-items', PackageDaysItemController::class);
+
+Route::get('/get-master-data', [PackageDaysItemController::class, 'getMasterData']);
