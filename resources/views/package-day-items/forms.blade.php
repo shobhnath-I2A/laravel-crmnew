@@ -24,7 +24,7 @@
         @endif
 
         @if($packageDayItem->type == 'accommodation')
-            @include('package-day-items.popups.hotel-fields')
+            @include('package-day-items.popups.accommodation')
         @endif
 
         @if($packageDayItem->type == 'transfer')
@@ -32,17 +32,65 @@
         @endif
 
         </div>
-        <div class="modal-footer" style=" position:relative;">
+        <div class="modal-footer" style=" position:relative;gap: 80%;">
         <button type="button" class="btn btn-danger" onclick="deleteItem({{ $packageDayItem->id }})"> <i class="fa fa-trash"></i> Delete </button>
             <input name="Save" type="submit" value="Save" class="btn btn-success" id="savingbutton" class="btn btn-primary" style="float:right;">
         </div>
-        <div class="mt-3 text-right">
-            <button class="btn btn-success">Save</button>
-        </div>
-
     </form>
 </div>
+<script>
+    function changepricetype() {
+        let type = $('#hotel_type').val();
 
+        if (type == '0') {
+            $('.manual').show();
+            $('.master').hide();
+        } else if (type == '1') {
+            $('.manual').hide();
+            $('.master').show();
+        }
+    }
+
+    $(document).ready(function() {
+        changepricetype(); // Initialize the visibility on page load
+    });
+
+    function loadhotel() {
+        let destinationName = $('#destinationName').val();
+        let selectedHotel = "{{ old('hotel_id', $packageDayItem->hotel_id ?? '') }}"; // saved value
+        if (!destinationName) {
+            $('#hotel_id').html('<option value="">Select Hotel</option>');
+            return;
+        }
+        $('#hotel_id').html('<option>Loading...</option>');
+        $('#hotel_id').load('/load-hotels?destinationName=' + destinationName, function(response, status) {
+            if (status === "error") {
+                $('#hotel_id').html('<option>Error loading hotels</option>');
+            } else {
+                // Set the selected value after load
+                if (selectedHotel) {
+                    $('#hotel_id').val(selectedHotel);
+                }
+            }
+        });
+    }
+
+    function loadhoteldata() {
+        let hotelId = $('#hotel_id').val();
+        if (!hotelId) return;
+        $.get('/load-hotel-data', {
+            hotel_id: hotelId
+        }, function(res) {
+            $('#hotelRoommanual').val(res.room);
+            $('#price').val(res.price); // if you have price field
+        });
+    }
+    $(document).ready(function() {
+        if ($('#destinationName').val()) {
+            loadhotel();
+        }
+    });
+</script>
 <script>
 function deleteItem(id) {
 

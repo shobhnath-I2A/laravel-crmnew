@@ -268,6 +268,7 @@
     </div>
     @forelse($packageDayItems as $type => $items)
         @foreach ($items as $item)
+        {{-- {{ $item ??'' }} --}}
             {{-- ================== ACTIVITY ================== --}}
             @if ($type === 'activity')
                 <div class="daydetailsbox">
@@ -305,21 +306,11 @@
                                 </td>
                                 <td width="99%" align="left" valign="top" style="padding-left:10px;">
                                     <div class="eventheading">
-                                        <div class="eventsectioniconOrder">2 </div>
-                                        <div class="eventsectionicon"><i style="" class="fa fa-picture-o"
-                                                aria-hidden="true"></i></div> Langkawi
-                                        Island Hopping <span style="color:#FF9900; padding-left:10px;"></span>
+                                        <div class="eventsectioniconOrder">{{ $item->day_order ?? '' }} </div>
+                                        <div class="eventsectionicon"> <i style="" class="fa fa-picture-o" aria-hidden="true"></i></div>
+                                        {{ $item->hotel_type == 1 ? ($item->hotel->name ?? 'N/A') : ($item->hotel_name ?? 'N/A') }}<span style="color:#FF9900; padding-left:10px;"></span>
                                     </div>
-                                    <div class="eventcontent">&nbsp;
-                                        Langkawi island hopping is&nbsp;a popular tour that allows visitors to explore
-                                        the stunning islands
-                                        surrounding Langkawi.&nbsp;It typically involves a boat tour that visits several
-                                        islands, often including
-                                        spots like Pulau Dayang Bunting (Lake of the Pregnant Maiden) and Pulau Beras
-                                        Basah (Wet Rice
-                                        Island).&nbsp;These islands are known for their pristine beaches, crystal-clear
-                                        waters, and opportunities
-                                        for wildlife viewing, especially eagles.&nbsp;</div>
+                                    <div class="eventcontent">{!! $item->description ?? '' !!}</div>
 
                                 </td>
                             </tr>
@@ -327,15 +318,70 @@
                     </table>
                 </div>
                 {{-- ================== HOTEL ================== --}}
-            @elseif($type === 'hotel')
+            @elseif($type === 'accommodation')
                 <div class="daydetailsbox">
-                    <div class="hotel-box">
-                        <b>Hotel:</b> {{ $item->hotel_name ?? 'No Hotel' }}
+                     <i class="fa fa-pencil"
+                        onclick="openPopup('Day {{ $day ?? '' }} Accommodation - {{ $date ?? '' }}', '{{ route('package-days-items.edit', ['package_days_item' => $item->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')"
+                        ></i>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tbody><tr>
+                        <td colspan="2" align="left" valign="top">
+                        <div class="eventimgclass" onclick="loadpop('Media library',this,'600px')" data-toggle="modal" data-target=".bs-example-modal-center" popaction="action=medialibrary&amp;afunctin=changeeventimage2268711&amp;pid=108998&amp;destinations=kuala-lumpur" style="cursor:pointer;"><img id="eventimage2268711" src="https://s3.us-east-2.amazonaws.com/package.images/package_image/87bd9f5f-8def-4878-9abc-2ceb9fb34e1e17068758971766409152.jpg">
 
-                        <div>Room: {{ $item->room_type ?? '-' }}</div>
-                        <div>Meal: {{ $item->meal_plan ?? '-' }}</div>
+                        <i class="fa fa-pencil fa-pencil-blk" aria-hidden="true" onclick="loadpop('Media library',this,'600px')" data-toggle="modal" data-target=".bs-example-modal-center" popaction="action=medialibrary&amp;afunctin=changeeventimage2268711&amp;pid=108998&amp;destinations=kuala-lumpur"></i>
+                        </div>
+                        <script>
+                    function changeeventimage2268711(img){
+                    if (img.indexOf('https://') > -1)
+                    {
+                    $('#eventimage2268711').attr('src',img);
+
+                    } else {
+                    $('#eventimage2268711').attr('src','http://localhost:8081/API/package_image/'+img);
+                    }
+
+                    $( ".close" ).trigger( "click" );
+                    $('#ActionDiv').load('actionpage.php?pid=108998&id=2268711&action=seteventcoverphoto&imagename='+img);
+                    }
+                    </script>
+                        </td>
+                        <td width="99%" align="left" valign="top" style="padding-left:10px;">
+
+                        <div class="eventheading">
+                    <div class="eventsectioniconOrder">1   </div>
+                    <div class="eventsectionicon"><i style="" class="fa fa-bed" aria-hidden="true"></i></div>
+                   {{ $item->hotel_type == 1 ? ($item->hotel->name ?? 'N/A') : ($item->hotel_name ?? 'N/A') }}
+                     <span style="color:#FF9900; padding-left:10px;"><i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i></span> <span class="hoteloption1">Option 1</span>
+                        </div>
+
+                        <div style="margin-bottom:10px;">
+                    <div style="border-top:1px solid #ddd;border-bottom:1px solid #ddd; padding-top:10px; margin-bottom:10px;">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                    <tbody><tr>
+                        <td colspan="2"><div style="margin-bottom:10px;">
+                    <div style="margin-bottom:2px;">Check-in</div>
+                    <div style="margin-bottom:5px; font-weight:700;"><i class="fa fa-calendar" aria-hidden="true"></i> &nbsp;21 Aug 2025</div>
+                    </div></td>
+                        <td><div style="margin-bottom:10px;">
+                    <div style="margin-bottom:2px; padding-left:20px;">Check-out</div>
+                    <div style="margin-bottom:5px;padding-left:20px; font-weight:700;"><i class="fa fa-calendar" aria-hidden="true"></i> &nbsp;23 Aug 2025</div>
+                    </div></td>
+                        <td><div style="margin-bottom:10px;">
+                    <div style="margin-bottom:2px; padding-left:20px;">Room Type</div>
+                    <div style="margin-bottom:5px;padding-left:20px; font-weight:700;"><i class="fa fa-home" aria-hidden="true"></i> &nbsp;Deluxe Room</div>
+                    </div></td>
+                    </tr>
+                    </tbody></table>
                     </div>
-                </div>
+                    <div style="margin-bottom:20px;"><strong>Room: </strong> 1 Double &nbsp;&nbsp;| &nbsp;&nbsp;<strong><i class="fa fa-cutlery" aria-hidden="true"></i> Meal: </strong> Bed &amp; Breakfast</div>
+                    </div>
+                    <div class="eventcontent"></div>
+
+                        </td>
+                    </tr>
+                    </tbody></table>
+
+                    </div>
 
                 {{-- ================== DAY DETAIL ================== --}}
             @elseif($type === 'daydetail')
@@ -362,16 +408,18 @@
                     <i class="fa fa-pencil" aria-hidden="true"
                         onclick="openPopup('Day {{ $day ?? '' }} Details {{ $date ?? '' }}', '{{ route('package-days-items.edit', ['package_days_item' => $item->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')">
                     </i>
+                    </div>
                     {{-- ================== DEFAULT ================== --}}
                 @else
                     <i class="fa fa-pencil" aria-hidden="true"
                         onclick="openPopup('Day {{ $day ?? '' }} Details ', '{{ route('package-days-items.edit', ['package_days_item' => $item->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')">
                     </i>
-            @endif
-</div>
-@endforeach
 
-@empty
+            @endif
+
+    @endforeach
+
+    @empty
 
 <div class="daywisedetailsdefault">
     <em>No data added for this day</em>

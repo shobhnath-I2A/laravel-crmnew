@@ -1,4 +1,4 @@
-{{ $packageDayItem ?? '' }}
+{{-- {{ $packageDayItem ?? '' }} --}}
 <div class="modal-body">
     <div class="row">
         <div class="col-md-12">
@@ -136,61 +136,3 @@
         </div>
     </div>
 </div>
-
-{{-- <input name="action" type="hidden" id="action" value="addActivity">
-<input name="edit_id" type="hidden" id="editId" value="{{ $packageDayItem->id ?? '' }}">
-<input name="pid" type="hidden" id="editId" value="108998">
-<input name="package_days" type="hidden" id="packageDays" value="{{ $packageDayItem->day ?? '' }}"> --}}
-<script>
-    function changepricetype() {
-        let type = $('#hotel_type').val();
-
-        if (type == '0') {
-            $('.manual').show();
-            $('.master').hide();
-        } else if (type == '1') {
-            $('.manual').hide();
-            $('.master').show();
-        }
-    }
-
-    $(document).ready(function() {
-        changepricetype(); // Initialize the visibility on page load
-    });
-
-    function loadhotel() {
-        let destinationName = $('#destinationName').val();
-        let selectedHotel = "{{ old('hotel_id', $packageDayItem->hotel_id ?? '') }}"; // saved value
-        if (!destinationName) {
-            $('#hotel_id').html('<option value="">Select Hotel</option>');
-            return;
-        }
-        $('#hotel_id').html('<option>Loading...</option>');
-        $('#hotel_id').load('/load-hotels?destinationName=' + destinationName, function(response, status) {
-            if (status === "error") {
-                $('#hotel_id').html('<option>Error loading hotels</option>');
-            } else {
-                // Set the selected value after load
-                if (selectedHotel) {
-                    $('#hotel_id').val(selectedHotel);
-                }
-            }
-        });
-    }
-
-    function loadhoteldata() {
-        let hotelId = $('#hotel_id').val();
-        if (!hotelId) return;
-        $.get('/load-hotel-data', {
-            hotel_id: hotelId
-        }, function(res) {
-            $('#hotelRoommanual').val(res.room);
-            $('#price').val(res.price); // if you have price field
-        });
-    }
-    $(document).ready(function() {
-        if ($('#destinationName').val()) {
-            loadhotel();
-        }
-    });
-</script>

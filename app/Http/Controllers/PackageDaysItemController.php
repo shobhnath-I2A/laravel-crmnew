@@ -104,7 +104,36 @@ class PackageDaysItemController extends Controller
                     'status' => true,
                     'message' => 'Record Update Successfully'
                 ], 200);
-            } else {
+            } elseif ($type == 'accommodation') {
+                $validated = $request->validate([
+                    'day_order'      => 'required|integer',
+                    'destination_id' => 'required|integer',
+                    'single_room' => 'nullable|integer',
+                    'double_room' => 'nullable|integer',
+                    'triple_room' => 'nullable|integer',
+                    'quad_room' => 'nullable|integer',
+                    'cwb_room' => 'nullable|integer',
+                    'cnb_room' => 'nullable|integer',
+                    'hotel_type'      => 'required|in:0,1',
+                    'hotel_options'      => 'required|in:1,2,3,4,5',
+                    'hotel_name'     => 'nullable|string|max:255',
+                    'room_name'     => 'nullable|string|max:255',
+                    'meal_plan'     => 'nullable|string|max:255',
+                    'hotel_id' => 'nullable|string',
+                    'check_in_date'     => 'required|date_format:d-m-Y',
+                    'check_out_date'     => 'required|date_format:d-m-Y',
+                    'check_in_time'        => 'nullable|date_format:H:i:s',
+                    'check_out_time'       => 'nullable|date_format:H:i:s',
+                    'show_time'      => 'nullable|boolean',
+                    'description'    => 'required|string|max:5000',
+                ]);
+                $packageDayItem->update($validated);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Record Update Successfully'
+                ], 200);
+            }
+            else {
                 return response()->json([
                     'status' => false,
                     'message' => 'Invalid type provided.'
