@@ -14,7 +14,7 @@ class PackageDayItem extends Model
         'destination_id',
         'type',
         'day',
-        'show_day_order',
+        'day_order',
         'hotel_name',
         'room_type',
         'category',
@@ -32,7 +32,9 @@ class PackageDayItem extends Model
         'check_out_date',
         'check_out_time',
         'description',
-        'day_subject'
+        'day_subject',
+        'show_time',
+        'hotel_type'
     ];
     protected $casts = [
         'check_in_date' => 'date',

@@ -12,6 +12,8 @@ use App\Models\PackageDayItem;
 use App\Models\Package;
 use App\Services\PackageService;
 use Illuminate\Validation\ValidationException;
+use App\Models\Hotel;
+
 use Exception;
 
 class ItineraryController extends Controller
@@ -226,7 +228,7 @@ class ItineraryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+
     }
 
     public function getDayDetails(Request $request)
@@ -274,5 +276,32 @@ class ItineraryController extends Controller
 
     public function storeAccomodation(Request $request){
         dd($request);
+    }
+
+    public function loadHotels(Request $request)
+    {
+        $hotels = Hotel::where('destination', $request->destinationName)->get();
+        return view('package-day-items.popups.hotel-options', compact('hotels'));
+    }
+
+    public function loadHotelData(Request $request)
+    {
+        $hotel = Hotel::with('rates')->find($request->hotelnamemaster);
+
+        if (!$hotel || $hotel->rates->isEmpty()) {
+            return response()->json([
+                'room' => '',
+                'price' => 0
+            ]);
+        }
+
+        //  Get first rate (or you can filter later)
+        $rate = $hotel->rates->first();
+
+        return response()->json([
+            'room'  => $rate->room_type ?? '',
+            'meal'  => $rate->meal_plan ?? '',
+            'price' => $rate->double ?? 0 // you can choose single/double
+        ]);
     }
 }

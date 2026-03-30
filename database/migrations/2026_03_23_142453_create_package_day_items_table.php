@@ -19,13 +19,14 @@ return new class extends Migration
         $table->string('type')->nullable();//daydetail, like hotel, accomodation,activity...
 
         $table->integer('day')->default(0);
-        $table->string('show_day_order')->default(0);
+        $table->string('day_order')->default(0);
         $table->string('hotel_name')->nullable();
         $table->string('room_type')->nullable();
         $table->string('category')->nullable();
         $table->string('room_name')->nullable();
         $table->string('meal_plan')->nullable();
         $table->string('hotel_options')->nullable();
+        $table->tinyInteger('hotel_type')->default(0);
 
         $table->integer('single_room')->default(0);
         $table->integer('double_room')->default(0);
@@ -38,6 +39,7 @@ return new class extends Migration
         $table->time('check_in_time')->nullable();
         $table->date('check_out_date')->nullable();
         $table->time('check_out_time')->nullable();
+        $table->boolean('show_time')->default(0);
 
         $table->string('day_subject')->nullable();
         $table->text('description')->nullable();

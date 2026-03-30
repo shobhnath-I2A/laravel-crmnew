@@ -63,7 +63,7 @@
                                                                 </tbody>
                                                             </table>
                                                         </td>
-                                                        <td width="15%">{{ $activity->destination_id ?? '' }}</td>
+                                                        <td width="15%">{{ $activity->destination->name ?? '' }}</td>
                                                         <td width="1%" align="left">
                                                             <div align="center">
                                                                 <a class="dropdown-item"

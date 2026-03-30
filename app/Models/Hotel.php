@@ -21,7 +21,7 @@ class Hotel extends Model
 
     public function rates()
     {
-        return $this->hasMany(HotelRate::class);
+         return $this->hasMany(HotelRate::class, 'hotel_id');
     }
     public function destinationCity()
     {

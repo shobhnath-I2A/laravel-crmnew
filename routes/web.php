@@ -36,7 +36,8 @@ Route::get('/itinerary/acccomodation', [ItineraryController::class, 'createAccom
     ->name('itinerary.day.accomodation');
 Route::post('/itinerary/store-acccomodation', [ItineraryController::class, 'storeAccomodation'])
     ->name('itinerary.storeaccomodation');
-
+Route::get('/load-hotels', [ItineraryController::class, 'loadHotels']);
+Route::get('/load-hotel-data', [ItineraryController::class, 'loadHotelData']);
 
 Route::resource('hotels', HotelController::class);
 Route::resource('hotels-rates', HotelRateController::class);
