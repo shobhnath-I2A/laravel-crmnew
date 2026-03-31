@@ -43,13 +43,15 @@
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-
                         <div class="col-md-6">
                             <label>Destination</label>
-                            <select name="destination" class="form-control reqfield @error('destination') is-invalid @enderror">
+                           <select name="destination" class="form-control reqfield @error('destination') is-invalid @enderror">
                                 <option value="">Select Destination</option>
                                 @foreach($destinations as $id => $name)
-                                    <option value="{{ $id }}">{{ $name }}</option>
+                                    <option value="{{ $id }}"
+                                        {{ old('destination', $hotel->destination ?? '') == $id ? 'selected' : '' }}>
+                                        {{ $name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('destination')

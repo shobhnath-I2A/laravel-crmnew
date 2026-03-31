@@ -360,11 +360,11 @@
                     <tbody><tr>
                         <td colspan="2"><div style="margin-bottom:10px;">
                     <div style="margin-bottom:2px;">Check-in</div>
-                    <div style="margin-bottom:5px; font-weight:700;"><i class="fa fa-calendar" aria-hidden="true"></i> &nbsp;21 Aug 2025</div>
+                    <div style="margin-bottom:5px; font-weight:700;"><i class="fa fa-calendar" aria-hidden="true"></i> &nbsp;{{ \Carbon\Carbon::parse($item->check_in_date)->format('d M Y') }}</div>
                     </div></td>
                         <td><div style="margin-bottom:10px;">
                     <div style="margin-bottom:2px; padding-left:20px;">Check-out</div>
-                    <div style="margin-bottom:5px;padding-left:20px; font-weight:700;"><i class="fa fa-calendar" aria-hidden="true"></i> &nbsp;23 Aug 2025</div>
+                    <div style="margin-bottom:5px;padding-left:20px; font-weight:700;"><i class="fa fa-calendar" aria-hidden="true"></i> &nbsp;{{ \Carbon\Carbon::parse($item->check_out_date)->format('d M Y') }}</div>
                     </div></td>
                         <td><div style="margin-bottom:10px;">
                     <div style="margin-bottom:2px; padding-left:20px;">Room Type</div>

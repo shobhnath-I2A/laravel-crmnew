@@ -10,6 +10,7 @@ use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\QueryTaskController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelRateController;
+use App\Http\Controllers\HotelRoomTypeController;
 use App\Http\Controllers\PackageDaysItemController;
 
 Route::get('/', function () {
@@ -42,6 +43,8 @@ Route::get('/load-hotel-data', [ItineraryController::class, 'loadHotelData']);
 Route::resource('hotels', HotelController::class);
 Route::resource('hotels-rates', HotelRateController::class);
 Route::get('/get-hotels/{destination}', [HotelController::class, 'getHotels']);
+
+Route::resource('room-type', HotelRoomTypeController::class);
 
 Route::resource('activities', ActivityController::class);
 Route::resource('activities-rates', ActivityRateController::class);
