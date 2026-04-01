@@ -17,10 +17,13 @@ return new class extends Migration
         $table->foreignId('hotel_id')->nullable()->constrained('hotels')->nullOnDelete();
         $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
         $table->string('type')->nullable();//daydetail, like hotel, accomodation,activity...
+        $table->string('flight_duration')->nullable();
+        $table->string('flight_no')->nullable();
+        $table->string('transfer_category')->nullable();
 
         $table->integer('day')->default(0);
         $table->string('day_order')->default(0);
-        $table->string('hotel_name')->nullable();
+        $table->string('name')->nullable();
         $table->string('room_type')->nullable();
         $table->string('category')->nullable();
         $table->string('room_name')->nullable();

@@ -41,8 +41,8 @@
             <div class="form-group">
                 <label for="validationCustom02">Hotel Name
                 </label>
-                <input name="hotel_name" type="text" class="form-control ui-autocomplete-input valid"
-                    id="servicename" value="{{ old('hotel_name', $packageDayItem->hotel_name ?? '') }}"
+                <input name="name" type="text" class="form-control ui-autocomplete-input valid"
+                    id="servicename" value="{{ old('name', $packageDayItem->name ?? '') }}"
                     autocomplete="off" aria-required="true" aria-invalid="false">
 
             </div>
@@ -77,9 +77,9 @@
         <div class="col-md-6 master" style="display:none;">
             <div class="form-group">
                 <label for="validationCustom02">Room Name</label>
-                <select name="hotelRoommaster" id="hotelRoommaster" class="form-control"
-                    onchange="getroomname();getprice();">
-                </select>
+              <select name="room_type_id" id="hotelRoommaster" class="form-control">
+                <option value="">Select Room Type</option>
+            </select>
             </div>
         </div>
 
@@ -87,7 +87,7 @@
             <div class="form-group">
                 <label for="validationCustom02">Room Name
                 </label>
-                <input type="text" name="room_name" class="form-control" value="{{ old('room_name', $packageDayItem->room_name ?? '') }}">
+                <input type="text" name="name" class="form-control" value="{{ old('room_name', $packageDayItem->room_name ?? '') }}">
             </div>
         </div>
         <div class="col-md-6 master-section d-none">

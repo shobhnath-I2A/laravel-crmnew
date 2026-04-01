@@ -12,6 +12,8 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelRateController;
 use App\Http\Controllers\HotelRoomTypeController;
 use App\Http\Controllers\PackageDaysItemController;
+use App\Http\Controllers\TransferMasterController;
+use App\Http\Controllers\TransferMasterRateListController;
 
 Route::get('/', function () {
     return view('dashboard');
@@ -54,3 +56,7 @@ Route::resource('destinations', DestinationController::class);
 Route::resource('package-days-items', PackageDaysItemController::class);
 
 Route::get('/get-master-data', [PackageDaysItemController::class, 'getMasterData']);
+
+Route::resource('transfers', TransferMasterController:: class);
+
+Route::resource('transfer-rate-list', TransferMasterRateListController::class);

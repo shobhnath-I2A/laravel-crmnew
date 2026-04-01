@@ -26,6 +26,15 @@
         @if($packageDayItem->type == 'accommodation')
             @include('package-day-items.popups.accommodation')
         @endif
+        @if($packageDayItem->type == 'flight')
+            @include('package-day-items.popups.flight-field')
+        @endif
+        @if($packageDayItem->type == 'transportation')
+            @include('package-day-items.popups.transportation')
+        @endif
+        @if($packageDayItem->type == 'insurance')
+            @include('package-day-items.popups.insurance-visa')
+        @endif
 
         @if($packageDayItem->type == 'transfer')
             @include('package-day-items.popups.transfer-fields')
@@ -74,22 +83,61 @@
             }
         });
     }
+   function loadhoteldata() {
+    let hotelId = $('#hotel_id').val();
+    let selectedRoom = "{{ old('room_type_id', $packageDayItem->room_type_id ?? '') }}";
 
-    function loadhoteldata() {
-        let hotelId = $('#hotel_id').val();
-        if (!hotelId) return;
-        $.get('/load-hotel-data', {
-            hotel_id: hotelId
-        }, function(res) {
-            $('#hotelRoommanual').val(res.room);
-            $('#price').val(res.price); // if you have price field
+    if (!hotelId) return;
+
+    $.get('/load-hotel-data', {
+        hotel_id: hotelId
+    }, function(res) {
+    console.log(res);
+
+            let roomDropdown = $('#hotelRoommaster');
+            roomDropdown.empty();
+
+            roomDropdown.append('<option value="">Select Room Type</option>');
+
+            if (res.roomTypes && res.roomTypes.length > 0) {
+                console.log("resd dfa==>", res)
+                res.roomTypes.forEach(function(room) {
+
+                    roomDropdown.append(
+                        `<option value="${room.id}">${room.name}</option>`
+                    );
+                });
+            }
+
+            // Set selected (edit case)
+            if (selectedRoom) {
+                roomDropdown.val(selectedRoom);
+            }
+
+            // Optional: set price
+            $('#price').val(res.price);
         });
     }
+    // function loadhoteldata() {
+    //     let hotelId = $('#hotel_id').val();
+    //     if (!hotelId) return;
+    //     $.get('/load-hotel-data', {
+    //         hotel_id: hotelId
+    //     }, function(res) {
+    //         $('#hotelRoommanual').val(res.room);
+    //         $('#price').val(res.price); // if you have price field
+    //     });
+    // }
     $(document).ready(function() {
         if ($('#destinationName').val()) {
             loadhotel();
         }
     });
+    $(document).ready(function() {
+    if ($('#hotel_id').val()) {
+        loadhoteldata();
+    }
+});
 </script>
 <script>
 function deleteItem(id) {

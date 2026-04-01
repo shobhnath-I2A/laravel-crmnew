@@ -86,12 +86,13 @@ class PackageDaysItemController extends Controller
                 ]);
 
                 $packageDayItem->update($validated);
-            } elseif ($type == 'activity') {
+            }
+            elseif ($type == 'activity') {
                 $validated = $request->validate([
                     'day_order'      => 'required|integer',
                     'destination_id' => 'required|integer',
                     'hotel_type'      => 'required|in:0,1',
-                    'hotel_name'     => 'nullable|string|max:255',
+                    'name'     => 'nullable|string|max:255',
                     'hotel_id' => 'nullable|string',
                     'check_in_date'     => 'required|date_format:d-m-Y',
                     'check_in_time'        => 'nullable|date_format:H:i:s',
@@ -104,7 +105,62 @@ class PackageDaysItemController extends Controller
                     'status' => true,
                     'message' => 'Record Update Successfully'
                 ], 200);
-            } elseif ($type == 'accommodation') {
+            }
+            elseif ($type == 'flight') {
+                $validated = $request->validate([
+                    'day_order'      => 'required|integer',
+                    'from_destination' => 'required|string',
+                    'to_destination' => 'required|string',
+                    'flight_duration' => 'required|string',
+                    'name'     => 'nullable|string|max:255',
+                    'flight_no' => 'nullable|string|max:255',
+                    'check_in_date'     => 'required|date_format:d-m-Y',
+                    'check_in_time'        => 'nullable|date_format:H:i:s',
+                    'check_out_time'       => 'nullable|date_format:H:i:s',
+                    'description'    => 'required|string|max:5000',
+                ]);
+                $packageDayItem->update($validated);
+                // dd($packageDayItem);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Record Update Successfully'
+                ], 200);
+            }
+            elseif ($type == 'insurance') {
+                $validated = $request->validate([
+                    'day_order'      => 'required|integer',
+                    'destination_id' => 'required|integer',
+                    'name'     => 'nullable|string|max:255',
+                    'check_in_date'     => 'required|date_format:d-m-Y',
+                    'description'    => 'required|string|max:5000',
+                ]);
+                $packageDayItem->update($validated);
+                // dd($packageDayItem);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Record Update Successfully'
+                ], 200);
+            }
+            elseif ($type == 'transportation') {
+                $validated = $request->validate([
+                    'day_order'      => 'required|integer',
+                    'destination_id' => 'required|integer',
+                    'hotel_type'      => 'required|in:0,1',
+                    'transfer_category'      => 'required|string',
+                    'name'     => 'nullable|string|max:255',
+                    'check_in_date'     => 'required|date_format:d-m-Y',
+                    'check_in_time'        => 'nullable|date_format:H:i:s',
+                    'check_out_time'       => 'nullable|date_format:H:i:s',
+                    'description'    => 'required|string|max:5000',
+                ]);
+                $packageDayItem->update($validated);
+                // dd($packageDayItem);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Record Update Successfully'
+                ], 200);
+            }
+            elseif ($type == 'accommodation') {
                 $validated = $request->validate([
                     'day_order'      => 'required|integer',
                     'destination_id' => 'required|integer',

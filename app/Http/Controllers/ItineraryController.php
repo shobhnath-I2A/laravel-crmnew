@@ -283,25 +283,52 @@ class ItineraryController extends Controller
         $hotels = Hotel::where('destination', $request->destinationName)->get();
         return view('package-day-items.popups.hotel-options', compact('hotels'));
     }
-
-    public function loadHotelData(Request $request)
+   public function loadHotelData(Request $request)
     {
-        $hotel = Hotel::with('rates')->find($request->hotelnamemaster);
+        $hotel = Hotel::with(['rates', 'roomTypes'])
+            ->find($request->hotel_id);
 
-        if (!$hotel || $hotel->rates->isEmpty()) {
+        if (!$hotel) {
             return response()->json([
-                'room' => '',
+                'roomTypes' => [],
                 'price' => 0
             ]);
         }
 
-        //  Get first rate (or you can filter later)
+        $roomTypes = $hotel->roomTypes->map(function ($room) {
+            return [
+                'id' => $room->id,
+                'name' => $room->name
+            ];
+        });
+
         $rate = $hotel->rates->first();
 
         return response()->json([
-            'room'  => $rate->room_type ?? '',
+            'roomTypes' => $roomTypes,
             'meal'  => $rate->meal_plan ?? '',
-            'price' => $rate->double ?? 0 // you can choose single/double
+            'price' => $rate->double ?? 0
         ]);
     }
+    // public function loadHotelData(Request $request)
+    // {
+    //     $hotel = Hotel::with('rates')->find($request->hotelnamemaster);
+
+    //     dd($hotel);
+    //     if (!$hotel || $hotel->rates->isEmpty()) {
+    //         return response()->json([
+    //             'room' => '',
+    //             'price' => 0
+    //         ]);
+    //     }
+
+    //     //  Get first rate (or you can filter later)
+    //     $rate = $hotel->rates->first();
+
+    //     return response()->json([
+    //         'room'  => $rate->room_type ?? '',
+    //         'meal'  => $rate->meal_plan ?? '',
+    //         'price' => $rate->double ?? 0 // you can choose single/double
+    //     ]);
+    // }
 }
