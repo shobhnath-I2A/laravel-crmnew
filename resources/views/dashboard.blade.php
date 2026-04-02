@@ -9,7 +9,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card"
-                            style="overflow: hidden; background-image: url(images/grnbx.png); background-repeat: no-repeat; background-position: right top; background-size: auto 100%; position:relative;">
+                            style="overflow: hidden; background-image: url({{ asset('assets/images/grnbx.png') }}); background-repeat: no-repeat; background-position: right top; background-size: auto 100%; position:relative;">
                             <div class="card-body" style="padding: 16px;">
                                 <h2 class="morningh2">Good Evening</h2>
                                 <div style="font-size:14px; font-weight:600;">i2a Technologies</div>

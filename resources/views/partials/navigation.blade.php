@@ -110,7 +110,7 @@
                         <i class="fa fa-sign-out" aria-hidden="true"></i> &nbsp; Logout of my account</div>
                 </a>
             </div>
-            <a href="https://travbizz.com" target="_blank" style="color:#adadad;">
+            <a href="#" target="_blank" style="color:#adadad;">
                 <div class="content" style="border-top: 1px solid #adadad26; text-align:center; font-size:12px;">
                     <i class="fa fa-question-circle" aria-hidden="true"></i> &nbsp;System Support
                 </div>
@@ -130,7 +130,7 @@
         <a title="Create New" style="display:none;"
             onclick="openusermenu();$('.usermenu').hide();$('.createnewmenu').show();$('.createnotification').hide();$('.workinghoursstrip').hide();$('.headerslideright').addClass('width480');"><i
                 class="fa fa-plus-circle" aria-hidden="true"></i></a>
-        <a href="display.html?ga=team" title="" style="position:relative; padding-top: 5px; padding-right:0px;"
+        <a href="{{ route('settings.index') }}" title="" style="position:relative; padding-top: 5px; padding-right:0px;"
             data-toggle="tooltip" data-placement="bottom" data-original-title="Setting"><svg
                 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19px"
                 height="19px" viewBox="0 0 14 14" version="1.1">

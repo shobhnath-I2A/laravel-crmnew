@@ -98,8 +98,11 @@
                               <select name="origin" class="form-control reqfield">
                                 <option value="">Select Destination</option>
 
-                                @foreach($destinations as $id => $name)
-                                    <option value="{{ $id }}">{{ $name }}</option>
+                                  @foreach($destinationList as $id => $name)
+                                    <option value="{{ $id }}"
+                                        {{ old('destination', $query->origin ?? '') == $id ? 'selected' : '' }}>
+                                        {{ $name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('origin')
@@ -116,8 +119,11 @@
                               <select name="destination" class="form-control reqfield">
                                 <option value="">Select Destination</option>
 
-                                @foreach($destinations as $id => $name)
-                                    <option value="{{ $id }}">{{ $name }}</option>
+                                  @foreach($destinationList as $id => $name)
+                                    <option value="{{ $id }}"
+                                        {{ old('destination', $query->destination ?? '') == $id ? 'selected' : '' }}>
+                                        {{ $name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('destination')

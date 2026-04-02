@@ -23,9 +23,14 @@ class AppServiceProvider extends ServiceProvider
     {
        Paginator::useBootstrap();
 
-       View::composer('*', function ($view) {
-        $destinations = Destination::pluck('name', 'id');
-        $view->with('destinations', $destinations);
-    });
+        //    View::composer('*', function ($view) {
+        //     $destinations = Destination::pluck('name', 'id');
+        //     $view->with('destinations', $destinations);
+        //     });
+
+        View::composer('*', function ($view) {
+            $destinationList = Destination::pluck('name', 'id');
+            $view->with('destinationList', $destinationList);
+        });
     }
 }

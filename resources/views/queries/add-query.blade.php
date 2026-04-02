@@ -95,7 +95,7 @@
                               <select name="origin" class="form-control reqfield">
                                 <option value="">Select Destination</option>
 
-                                @foreach($destinations as $id => $name)
+                                @foreach($destinationList as $id => $name)
                                     <option value="{{ $id }}">{{ $name }}</option>
                                 @endforeach
                             </select>
@@ -109,7 +109,7 @@
                             <select name="destination" class="form-control reqfield">
                                 <option value="">Select Destination</option>
 
-                                @foreach($destinations as $id => $name)
+                                @foreach($destinationList as $id => $name)
                                     <option value="{{ $id }}">{{ $name }}</option>
                                 @endforeach
                             </select>

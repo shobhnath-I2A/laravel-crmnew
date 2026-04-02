@@ -79,11 +79,20 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label class="form-label">City <span class="redmtext">*</span></label>
-                            <input type="text" class="form-control reqfield"
+                              <select name="city" class="form-control reqfield">
+                                <option value="">Select Destination</option>
+                                @foreach($destinationList as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            @error('destination_id')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                            {{-- <input type="text" class="form-control reqfield"
                                 onkeyup="getSearchCIty('pickupCitySearch','pickupCity','searchcitylists');"
                                 id="pickupCitySearch" name="pickupCitySearch" autocomplete="off" required>
                             <input name="city" id="pickupCity" type="hidden">
-                            <div id="searchcitylists"></div>
+                            <div id="searchcitylists"></div> --}}
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Address</label>

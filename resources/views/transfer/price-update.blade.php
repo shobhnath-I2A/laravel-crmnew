@@ -83,7 +83,7 @@
                 </table>
             </div>
         </div>
-        {{ $transferMasterRateList->transfer_id ?? '' }}
+
         <input type="hidden" name="transfer_id" value="{{ $transferMaster_id ?? ($transferMasterRateList->transfer_id ?? '') }}">
     </form>
     <h5 style="margin-bottom:10px; font-weight:600;">Rate List</h5>
@@ -104,10 +104,10 @@
         <tr>
             <td>{{ \Carbon\Carbon::parse($rate->start_date)->format('d/m/Y') }}</td>
             <td>{{ \Carbon\Carbon::parse($rate->end_date)->format('d/m/Y') }}</td>
-            <td>{{ $rate->room_type }}</td>
-            <td>{{ $rate->meal_plan }}</td>
-            <td>{{ $rate->single }}</td>
-            <td>{{ $rate->double }}</td>
+            <td>{{ $rate->transfer_type == 1 ? 'SIC' : 'PVT' }}</td>
+            <td>{{ $rate->adult }}</td>
+            <td>{{ $rate->child }}</td>
+            <td>{{ $rate->vehicle_cost }}</td>
             <td>
                 <button class="btn btn-primary" onclick="openPopup('Edit Rate', '{{ route('transfer-rate-list.edit', $rate->id) }}')">
                     Edit
@@ -134,6 +134,5 @@ if(transferType==2){
 	$('.sic').hide();
 	$('.pvt').show();
 }
-
 }
 </script>

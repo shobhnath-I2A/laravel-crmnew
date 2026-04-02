@@ -47,7 +47,7 @@
                             <label>Destination</label>
                            <select name="destination" class="form-control reqfield @error('destination') is-invalid @enderror">
                                 <option value="">Select Destination</option>
-                                @foreach($destinations as $id => $name)
+                                @foreach($destinationList as $id => $name)
                                     <option value="{{ $id }}"
                                         {{ old('destination', $hotel->destination ?? '') == $id ? 'selected' : '' }}>
                                         {{ $name }}

@@ -10,7 +10,6 @@ class TransferMasterRateList extends Model
     protected $table = 'transfer_master_rate_lists';
 
     protected $fillable = [
-        'parent_id',
         'currency_id',
         'vehicle_id',
         'supplier_id',
@@ -23,6 +22,7 @@ class TransferMasterRateList extends Model
         'transfer_type',
         'status',
         'added_by',
+        'transfer_id'
     ];
 
     // 🔗 Relation with Transfer

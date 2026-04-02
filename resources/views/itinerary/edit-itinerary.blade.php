@@ -67,7 +67,7 @@
 
                             <select name="destination_id[]" id="destination" multiple class="form-control reqfield">
 
-                                @foreach ($destinations as $id => $name)
+                                @foreach ($destinationList as $id => $name)
                                     <option value="{{ $id }}"
                                         {{ in_array($id, old('destination_id', $itinerary->destinations->pluck('id')->toArray())) ? 'selected' : '' }}>
                                         {{ $name }}

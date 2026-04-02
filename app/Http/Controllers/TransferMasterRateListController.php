@@ -33,15 +33,18 @@ class TransferMasterRateListController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'transfer_id' => 'required',
+            $validated = $request->validate([
+                'transfer_id' => 'required|exists:transfer_masters,id',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date',
-                'adult'      => 'nullable|numeric|min:0|max:999999999',
-                'child'      => 'nullable|numeric|min:0|max:9999999999',
-                'vehicle_cost'      => 'nullable|numeric|min:0|max:999999999',
+                'adult' => 'nullable|numeric',
+                'child' => 'nullable|numeric',
+                'vehicle_cost' => 'nullable|numeric',
+                'transfer_type' => 'nullable'
             ]);
-
+            $validated['adult'] = $request->adult ?? 0;
+            $validated['child'] = $request->child ?? 0;
+            $validated['vehicle_cost'] = $request->vehicle_cost ?? 0;
             $validated['start_date'] = Carbon::parse($request->startDate)->format('Y-m-d');
             $validated['end_date'] = Carbon::parse($request->endDate)->format('Y-m-d');
 
@@ -76,10 +79,10 @@ class TransferMasterRateListController extends Controller
 
         try {
             $transferMasterName = TransferMaster::where('id', $transferId)->value('name');
+            $transferMaster_id = $transferId;
             $transferMasterRateLists = TransferMasterRateList::where('transfer_id', $transferId)->get();
             // dd($transferMasterRateList);
-            return view('transfer.price-update', compact('transferMasterRateLists', 'transferId', 'transferMasterName'));
-
+            return view('transfer.price-update', compact('transferMasterRateLists', 'transferMaster_id', 'transferMasterName'));
         } catch (\Exception $e) {
             Log::error('Transfer Rate show Error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Tranfer not found');
@@ -91,14 +94,13 @@ class TransferMasterRateListController extends Controller
      */
     public function edit(string $id)
     {
-       try {
+        try {
 
             $transferMasterRateList = TransferMasterRateList::findOrFail($id);
             $transferMasterRateLists = TransferMasterRateList::where('transfer_id', $transferMasterRateList->transfer_id)->get();
             $transferMasterName = TransferMaster::where('id', $transferMasterRateList->transfer_id)->value('name');
             $transferMaster_id = $transferMasterRateList->transfer_id;
             return view('transfer.price-update', compact('transferMasterRateList', 'transferMasterRateLists', 'transferMaster_id', 'transferMasterName'));
-
         } catch (\Exception $e) {
             Log::error('Transfer Rate Edit Error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Rate not found');
@@ -110,28 +112,33 @@ class TransferMasterRateListController extends Controller
      */
     public function update(Request $request, string $id)
     {
-       try {
-            $request->validate([
-                'transfer_id' => 'required',
+        try {
+            $transferMasterRateList = TransferMasterRateList::findOrFail($id);
+
+            $validated = $request->validate([
+                'transfer_id' => 'required|exists:transfer_masters,id', // ✅ FIXED
                 'start_date' => 'required|date',
                 'end_date' => 'required|date',
-                'adult'      => 'nullable|numeric|min:0|max:999999999',
-                'child'      => 'nullable|numeric|min:0|max:9999999999',
-                'vehicle_cost'      => 'nullable|numeric|min:0|max:999999999',
+                'adult' => 'nullable|numeric|min:0',
+                'child' => 'nullable|numeric|min:0',
+                'vehicle_cost' => 'nullable|numeric|min:0',
+                'transfer_type' => 'nullable'
             ]);
+            // dd($validated);
+            $validated['adult'] = $request->adult ?? 0;
+            $validated['child'] = $request->child ?? 0;
+            $validated['vehicle_cost'] = $request->vehicle_cost ?? 0;
+            $validated['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');
+            $validated['end_date'] = Carbon::parse($request->end_date)->format('Y-m-d');
+            $validated['transfer_id'] = $request->transfer_id;
 
-            $validated['start_date'] = Carbon::parse($request->startDate)->format('Y-m-d');
-            $validated['end_date'] = Carbon::parse($request->endDate)->format('Y-m-d');
-
-            // $data['addedBy'] = auth()->id() ?? 1;
-
-            $transferRate = TransferMasterRateList::create($validated);
+            $transferMasterRateList->update($validated);
 
             return response()->json([
                 'status' => true,
-                'message' => 'Transfer Rate Created Successfully !!!',
-                'data' => $transferRate
-            ], 201);
+                'message' => 'Transfer Rate Updated Successfully!',
+                'data' => $transferMasterRateList
+            ]);
         } catch (ValidationException $ve) {
             return response()->json([
                 'status' => false,

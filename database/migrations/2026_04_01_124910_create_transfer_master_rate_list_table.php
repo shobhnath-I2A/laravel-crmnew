@@ -24,9 +24,9 @@ return new class extends Migration
             $table->date('end_date')->nullable();
 
             // Pricing
-            $table->decimal('adult', 10, 2)->default(0);
-            $table->decimal('child', 10, 2)->default(0);
-            $table->decimal('infant', 10, 2)->default(0);
+            $table->integer('adult', 10)->default(0);
+            $table->integer('child', 10)->default(0);
+            $table->integer('infant', 10)->default(0);
             $table->decimal('vehicle_cost', 10, 2)->default(0);
 
             // Extra

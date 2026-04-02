@@ -31,7 +31,7 @@
                             <label>Destination</label>
                             <select name="destination_id" class="form-control reqfield">
                                 <option value="">Select Destination</option>
-                                @foreach($destinations as $id => $name)
+                                @foreach($destinationList as $id => $name)
                                     <option value="{{ $id }}">{{ $name }}</option>
                                 @endforeach
                             </select>

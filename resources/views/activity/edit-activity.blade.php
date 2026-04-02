@@ -30,7 +30,7 @@
                         <div class="col-md-12">
                             <label>Destination</label>
                            <select name="destination_id" class="form-control">
-                                @foreach($destinations as $id => $name)
+                                @foreach($destinationList as $id => $name)
                                     <option value="{{ $id }}"
                                         {{ $activity->destination_id == $id ? 'selected' : '' }}>
                                         {{ $name }}

@@ -59,7 +59,7 @@
                             <label>Destinations <span class="redmtext">*</span></label>
                             {{-- <input type="text" name="destinations" value="{{ old('destinations') }}" class="form-control reqfield" required placeholder="Enter comma separated destinations"> --}}
                             <select name="destination_id[]" id="destination" multiple class="form-control">
-                                @foreach ($destinations as $id => $name)
+                                @foreach ($destinationList as $id => $name)
                                     <option value="{{ $id }}"
                                         {{ in_array($id, old('destination_id', [])) ? 'selected' : '' }}>
                                         {{ $name }}

@@ -357,14 +357,14 @@
                                                                         </span><span
                                                                             style="max-width:180px; overflow:hidden;overflow-wrap: break-word;">
                                                                             <span class="badge badge-boxed  badge-soft-success"
-                                                                                style=" background-color: #737373 !important; color:#fff; font-size: 11px; padding: 5px 6px;">{{ $query->origin }}</span>
+                                                                                style=" background-color: #737373 !important; color:#fff; font-size: 11px; padding: 5px 6px;">{{ $query->originCity->name ?? '' }}</span>
                                                                         </span></div>
                                                                     <div style="font-size:13px; line-height: 16px;"><span
                                                                             style="color:#686868;">Destination<br />
                                                                         </span><span
                                                                             style="max-width:180px; overflow:hidden;overflow-wrap: break-word;">
                                                                             <span class="badge badge-boxed  badge-soft-success"
-                                                                                style=" background-color: #737373 !important; color:#fff; font-size: 11px; padding: 5px 6px;">{{ $query->destination }}</span>
+                                                                                style=" background-color: #737373 !important; color:#fff; font-size: 11px; padding: 5px 6px;">{{ $query->destinationCity->name ?? '' }}</span>
                                                                         </span></div>
                                                                 </td>
                                                                 <td width="15%" align="left" valign="top"
