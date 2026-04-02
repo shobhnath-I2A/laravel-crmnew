@@ -1,6 +1,6 @@
 <div id="tograypanelmenu">
     <div class="logonavitop">
-        <a href="http://localhost:8081/crmreview/" class="topmainlogomain">
+        <a href="/" class="topmainlogomain">
             <img src="{{asset('assets/images/profilepic/16942404066793789211693635606.jpg')}}">
         </a>
         <a class="topmainlogomainmobile" onclick="$('#navigation').toggle();">

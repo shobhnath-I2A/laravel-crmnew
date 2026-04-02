@@ -9,7 +9,7 @@
                 </div>
                 <div id="navigation">
                     <ul class="navigation-menu">
-                        <li class="has-submenu"><a href="http://localhost:8081/crmreview/" data-toggle="tooltip"
+                        <li class="has-submenu"><a href="/" data-toggle="tooltip"
                                 data-placement="right" title="" data-original-title="Dashboard"><svg
                                     class="unified360-icon unified360-valign" xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20">
