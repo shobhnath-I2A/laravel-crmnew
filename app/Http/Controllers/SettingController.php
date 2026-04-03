@@ -14,7 +14,7 @@ class SettingController extends Controller
     {
      try {
             // Default tab = teams
-            $tab = $request->query('tab', 'teams');
+            $tab = $request->query('tab', 'team-management');
             return view('setting.index', compact('tab'));
 
         } catch (\Exception $e) {

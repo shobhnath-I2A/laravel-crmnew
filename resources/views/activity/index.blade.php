@@ -9,7 +9,7 @@
                         <div class="col-md-12 col-xl-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title cardtitle">Hotel
+                                    <h4 class="card-title cardtitle">Activities
                                         <form action="{{ route('activities.index') }}" class="newsearchsecform" style="left:54px;" method="get"
                                             enctype="multipart/form-data">
                                             <input type="text" name="keyword" class="form-control newsearchsec"
@@ -91,7 +91,7 @@
                                                         </td>
                                                         <td width="12%" align="left">{{ $activity->created_at }}</td>
                                                         <td width="1%">
-                                                            <a class="dropdown-item neweditpan" onclick="openSidebar('Edit Hotel', '{{ route('activities.edit', $activity->id ) }}')">
+                                                            <a class="dropdown-item neweditpan" onclick="openSidebar('Edit Activity', '{{ route('activities.edit', $activity->id ) }}')">
                                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                                             </a>
                                                         </td>

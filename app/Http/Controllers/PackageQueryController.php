@@ -23,7 +23,7 @@ class PackageQueryController extends Controller
                     ->orWhere('email', 'like', '%' . $request->keyword . '%')
                     ->orWhere('phone_number', 'like', '%' . $request->keyword . '%');
             }
-            $packageQuery = PackageQuery::latest()->paginate(10);
+            $packageQuery = PackageQuery::latest()->paginate(5);
             $packageQueryCount = PackageQuery::count();
             return view('package-query.index', compact('packageQuery', 'packageQueryCount'));
         } catch (\Exception $e) {
