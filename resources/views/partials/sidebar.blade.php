@@ -48,7 +48,7 @@
                                     </svg>
                                 </a>
                             </li>
-                        <li class="has-submenu"><a href="display.html?ga=clients" data-toggle="tooltip"
+                        <li class="has-submenu"><a href="{{ route('clients.index') }}" data-toggle="tooltip"
                                 data-placement="right" title="" data-original-title="Clients"><svg
                                     class="unified360-icon unified360-valign" xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20">

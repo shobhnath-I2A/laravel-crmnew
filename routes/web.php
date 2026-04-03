@@ -31,7 +31,7 @@ Route::resource('query-tasks', QueryTaskController::class);
 Route::get('/check-reminders', [QueryTaskController::class, 'checkReminders']);
 Route::post('/task-done/{id}', [QueryTaskController::class, 'markDone']);
 
-Route::get('/clients/create',[ClientController::class,'create'])->name('clients.create');
+Route::resource('clients', ClientController::class);
 
 Route::resource('/itineraries', ItineraryController::class);
 Route::get('/itinerary/day-details', [ItineraryController::class, 'getDayDetails'])
