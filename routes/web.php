@@ -12,6 +12,7 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelRateController;
 use App\Http\Controllers\HotelRoomTypeController;
 use App\Http\Controllers\PackageDaysItemController;
+use App\Http\Controllers\PackageQueryController;
 use App\Http\Controllers\TransferMasterController;
 use App\Http\Controllers\TransferMasterRateListController;
 use App\Http\Controllers\SettingController;
@@ -32,6 +33,7 @@ Route::get('/check-reminders', [QueryTaskController::class, 'checkReminders']);
 Route::post('/task-done/{id}', [QueryTaskController::class, 'markDone']);
 
 Route::resource('clients', ClientController::class);
+Route::resource('package-query', PackageQueryController::class);
 
 Route::resource('/itineraries', ItineraryController::class);
 Route::get('/itinerary/day-details', [ItineraryController::class, 'getDayDetails'])
