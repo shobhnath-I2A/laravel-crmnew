@@ -16,6 +16,10 @@ use App\Http\Controllers\PackageQueryController;
 use App\Http\Controllers\TransferMasterController;
 use App\Http\Controllers\TransferMasterRateListController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\MealPlanMasterController;
+use App\Http\Controllers\DayItineraryMasterController;
+use App\Http\Controllers\LeadSourceController;
+use App\Http\Controllers\PackageThemeController;
 
 Route::get('/', function () {
     return view('dashboard');
@@ -66,3 +70,7 @@ Route::resource('transfer-rate-list', TransferMasterRateListController::class);
 
 Route::resource('settings', SettingController::class);
 // Route::get('settings', [SettingController::class, 'show'])->name('settings.show');
+Route::resource('meal-plan-master', MealPlanMasterController::class);
+Route::resource('day-itinerary-master', DayItineraryMasterController::class);
+Route::resource('lead-source', LeadSourceController::class);
+Route::resource('package-theme', PackageThemeController::class);

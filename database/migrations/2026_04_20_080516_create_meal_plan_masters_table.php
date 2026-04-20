@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('package_themes', function (Blueprint $table) {
+        Schema::create('meal_plan_masters', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('image')->nullable();
-            $table->boolean('status')->default(1);
+            $table->string('name');//APAI,MAPAI,CPAI
+            $table->foreignId('added_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->boolean('status')->default(1); // 1=Active, 0=Inactive
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('package_themes');
+        Schema::dropIfExists('meal_plan_masters');
     }
 };
