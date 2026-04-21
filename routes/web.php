@@ -20,6 +20,8 @@ use App\Http\Controllers\MealPlanMasterController;
 use App\Http\Controllers\DayItineraryMasterController;
 use App\Http\Controllers\LeadSourceController;
 use App\Http\Controllers\PackageThemeController;
+use App\Http\Controllers\WeatherSettingController;
+use App\Http\Controllers\CurrencyExchangeMasterController;
 
 Route::get('/', function () {
     return view('dashboard');
@@ -74,3 +76,5 @@ Route::resource('meal-plan-master', MealPlanMasterController::class);
 Route::resource('day-itinerary-master', DayItineraryMasterController::class);
 Route::resource('lead-source', LeadSourceController::class);
 Route::resource('package-theme', PackageThemeController::class);
+Route::resource('weather-setting', WeatherSettingController::class);
+Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
