@@ -329,25 +329,25 @@
             .catch(console.error);
         </script>
         <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        // document.addEventListener("DOMContentLoaded", function () {
 
-            window.Pusher = Pusher;
+        //     window.Pusher = Pusher;
 
-            window.Echo = new Echo({
-                broadcaster: 'pusher',
-                key: '{{ env("PUSHER_APP_KEY") }}',
-                cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
-                forceTLS: true
-            });
+        //     window.Echo = new Echo({
+        //         broadcaster: 'pusher',
+        //         key: '{{ env("PUSHER_APP_KEY") }}',
+        //         cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
+        //         forceTLS: true
+        //     });
 
-            // IMPORTANT: use your Laravel channel + event
-            window.Echo.channel('lead-notifications')
-                .listen('.lead.notification.created', function (e) {
-                    console.log('Received:', e);
-                    alert(e.message); // test popup
-                });
+        //     // IMPORTANT: use your Laravel channel + event
+        //     window.Echo.channel('lead-notifications')
+        //         .listen('.lead.notification.created', function (e) {
+        //             console.log('Received:', e);
+        //             alert(e.message); // test popup
+        //         });
 
-        });
+        // });
     </script>
 
     <script>
@@ -367,6 +367,10 @@
                 console.log(e);
                 alert(e.message);
             });
+</script>
+<script>
+window.PUSHER_APP_KEY = "{{ env('PUSHER_APP_KEY') }}";
+window.PUSHER_APP_CLUSTER = "{{ env('PUSHER_APP_CLUSTER') }}";
 </script>
 </body>
 

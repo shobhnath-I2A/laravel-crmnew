@@ -107,6 +107,5 @@ document.addEventListener('DOMContentLoaded', function () {
     window.Echo.private('lead-notifications.' + 1)
         .listen('.lead.notification.created', function (e) {
             showLeadNotification(e);
-            console.log('Received lead notification:', e);
         });
 });

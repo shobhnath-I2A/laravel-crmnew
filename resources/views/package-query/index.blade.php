@@ -57,7 +57,7 @@
                                                                             aria-hidden="true"></i> Search</button>
                                                                 </td>
                                                                 <td style="padding-left: 5px;">
-                                                                    <a href="display.html?ga=package_query"><button
+                                                                    <a href="{{ route('package-query.index') }}"><button
                                                                             type="button"
                                                                             class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
                                                                             style="padding: 6px 10px;">Reset
@@ -70,9 +70,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <form action="frmaction.html" method="post" enctype="multipart/form-data"
-                                        name="addeditfrm" target="actoinfrm" id="addeditfrm">
                                         <table class="table table-hover mb-0">
                                             <thead>
                                                 <tr>
@@ -130,7 +127,6 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
-                                    </form>
                                     <div class="mt-3 pageingouter">
                                         <div style="float: left; font-size: 13px; padding: 7px 11px; border: 1px solid #ededed; background-color: #fff; color: #000;">
                                             Total Records: <strong>{{ $leadQueryCount }}</strong></div>

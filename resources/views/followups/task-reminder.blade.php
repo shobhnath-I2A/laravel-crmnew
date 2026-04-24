@@ -1,5 +1,5 @@
  {{-- Reminder popup --}}
- <div id="reminderouterrightbottom" style="display: block;">
+ {{-- <div id="reminderouterrightbottom" style="display: block;">
      <div style="padding:20px;">
          <table width="100%" border="0" cellpadding="0" cellspacing="0">
              <tbody>
@@ -22,7 +22,7 @@
              </tbody>
          </table>
      </div>
-</div>
+</div> --}}
 
  {{-- End reminder popup --}}
 {{-- <script>

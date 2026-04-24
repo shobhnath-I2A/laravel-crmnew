@@ -83,23 +83,6 @@ class LeadController extends Controller
                 );
             }
 
-            broadcast(new \App\Events\LeadNotificationCreated(
-    (object)[
-        'id' => $lead->id,
-        'lead_id' => $lead->id,
-        'type' => 'new_lead',
-        'title' => 'New Lead',
-        'message' => $lead->full_name . ' (' . $lead->phone . ')',
-        'data' => [
-            'lead_name' => $lead->full_name,
-            'phone' => $lead->phone,
-            'from_city' => $lead->from_city,
-            'to_city' => $lead->to_city,
-        ],
-        'created_at' => now(),
-    ],
-    1
-));
             if (!empty($lead->assigned_to)) {
                 LeadAssignment::create([
                     'lead_id' => $lead->id,
