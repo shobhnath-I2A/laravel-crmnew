@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
@@ -23,10 +24,8 @@ class AppServiceProvider extends ServiceProvider
     {
        Paginator::useBootstrap();
 
-        //    View::composer('*', function ($view) {
-        //     $destinations = Destination::pluck('name', 'id');
-        //     $view->with('destinations', $destinations);
-        //     });
+        Broadcast::routes(['middleware' => ['web', 'auth']]);
+        require base_path('routes/channels.php');
 
         View::composer('*', function ($view) {
             $destinationList = Destination::pluck('name', 'id');

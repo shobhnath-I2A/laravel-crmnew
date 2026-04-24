@@ -98,7 +98,7 @@ class ItineraryController extends Controller
                 'message' => 'Itinerary Created Successfully',
                 'data' => $itinerary
             ]);
-        } catch (\Illuminate\Validation\ValidationException $ve) {
+        } catch (ValidationException $ve) {
             return response()->json([
                 'status' => false,
                 'message' => 'Validation Failed',

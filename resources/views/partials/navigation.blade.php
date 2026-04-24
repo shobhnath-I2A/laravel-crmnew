@@ -153,7 +153,63 @@
                 class="fa fa-bell-o" aria-hidden="true"></i>
             <div class="topnotifications" style="display: block;">3</div>
         </a>
+<a style="position:relative; display:inline-block;">
+    <i class="fa fa-bell-o" aria-hidden="true"></i>
+    <span id="notificationBadge"
+          style="position:absolute;right:2px;background:red;color:#fff;border-radius:50%;padding:2px 6px;font-size:11px;min-width:18px;text-align:center;">
+        0
+    </span>
+</a>
+<audio id="leadNotificationSound" preload="auto">
+    <source src="{{ asset('assets/sounds/notification.mp3') }}" type="audio/mpeg">
+</audio>
 
+<div id="notificationContainer" class="notification-container"></div>
+
+<style>
+.notification-container{
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 320px;
+    z-index: 999999;
+}
+.notification-toast{
+    background: #ffeaea;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 12px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-left: 4px solid #f1b81a;
+}
+.notification-toast .icon{
+    font-size: 28px;
+    line-height: 1;
+}
+.notification-toast .content{
+    flex: 1;
+}
+.notification-toast .title{
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 5px;
+}
+.notification-toast .message{
+    font-size: 14px;
+    font-weight: 700;
+    color: #d94b4b;
+    line-height: 1.4;
+}
+.notification-toast .close{
+    cursor: pointer;
+    font-size: 16px;
+    color: #666;
+    margin-left: 8px;
+}
+</style>
         <a href="display.html?ga=company-expense" title=""
             style="position:relative; padding-top: 5px; padding-right:0px;" data-toggle="tooltip"
             data-placement="bottom" data-original-title="Company Expense"><svg xmlns="http://www.w3.org/2000/svg"

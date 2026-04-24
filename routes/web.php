@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivityRateController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\ClientController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\LeadSourceController;
 use App\Http\Controllers\PackageThemeController;
 use App\Http\Controllers\WeatherSettingController;
 use App\Http\Controllers\CurrencyExchangeMasterController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('dashboard');
@@ -39,7 +41,8 @@ Route::get('/check-reminders', [QueryTaskController::class, 'checkReminders']);
 Route::post('/task-done/{id}', [QueryTaskController::class, 'markDone']);
 
 Route::resource('clients', ClientController::class);
-Route::resource('package-query', PackageQueryController::class);
+// Route::resource('package-query', PackageQueryController::class);
+Route::resource('package-query', LeadController::class);
 
 Route::resource('/itineraries', ItineraryController::class);
 Route::get('/itinerary/day-details', [ItineraryController::class, 'getDayDetails'])
@@ -78,3 +81,31 @@ Route::resource('lead-source', LeadSourceController::class);
 Route::resource('package-theme', PackageThemeController::class);
 Route::resource('weather-setting', WeatherSettingController::class);
 Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
+
+
+
+// Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::get('/notifications/latest', [NotificationController::class, 'latest']);
+    Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead']);
+// });
+use App\Events\LeadNotificationCreated;
+
+
+Route::get('/trigger-test-notification', function () {
+    $notification = (object) [
+        'id' => 1,
+        'lead_id' => 123,
+        'type' => 'new_lead',
+        'title' => 'New Lead',
+        'message' => 'Test notification from route',
+        'data' => [
+            'lead_name' => 'Test User',
+            'phone' => '9999999999',
+        ],
+    ];
+
+    broadcast(new LeadNotificationCreated($notification, 1));
+
+    return 'sent';
+});

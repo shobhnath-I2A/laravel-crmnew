@@ -51,4 +51,19 @@ class User extends Authenticatable
         return $this->belongsTo(Package::class);
     }
 
+    public function rosters()
+    {
+        return $this->hasMany(\App\Models\AgentRoster::class);
+    }
+
+    public function destinations()
+    {
+        return $this->hasMany(\App\Models\AgentDestination::class);
+    }
+
+    public function leadNotifications()
+    {
+        return $this->hasMany(\App\Models\LeadNotification::class);
+    }
+
 }
