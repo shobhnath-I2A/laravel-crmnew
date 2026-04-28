@@ -64,10 +64,15 @@
                                     </div>
                                 </td>
                                 <td width="80%" align="left" valign="middle">
-                                    <div style="font-size:16px; font-weight:600;">i2a Technologies-trekhops.in </div>
+                                    <div style="font-size:16px; font-weight:600;">{{ Auth::user()->name ?? 'User' }} </div>
                                     <div style="margin-bottom:0px; font-size:12px; font-weight:400; color:#adadad;">
-                                        Email: <strong>holidays@trekhops.in</strong></div>
-                                    <div style="margin-bottom:0px; font-size:12px; font-weight:400; color:#adadad;">Last Login: <strong>06/03/2026 - 01:22 PM</strong></div>
+                                        Email: <strong> {{ Auth::user()->email??'' }}</strong></div>
+                                    <div style="margin-bottom:0px; font-size:12px; font-weight:400; color:#adadad;">
+                                        <strong> {{ Auth::user()->last_login_at
+                                        ? \Carbon\Carbon::parse(Auth::user()->last_login_at)->format('d/m/Y - h:i A')
+                                        : 'First Login' }}
+                                        </strong>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -104,11 +109,13 @@
                         Expiry Date: <strong>08-09-2024</strong></div>
                 </div>
             </div>
-            <div class="content">
-                <a href="logout.html">
-                    <div class="buttonprofile" style="border: 0px; margin: 0px;">
-                        <i class="fa fa-sign-out" aria-hidden="true"></i> &nbsp; Logout of my account</div>
-                </a>
+           <div class="content">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="buttonprofile" style="border: 0; margin: 0; background: none;">
+                        <i class="fa fa-sign-out"></i> &nbsp; Logout of my account
+                    </button>
+                </form>
             </div>
             <a href="#" target="_blank" style="color:#adadad;">
                 <div class="content" style="border-top: 1px solid #adadad26; text-align:center; font-size:12px;">

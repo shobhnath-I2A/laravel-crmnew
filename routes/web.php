@@ -29,12 +29,15 @@ use App\Http\Controllers\NotificationController;
 use App\Events\LeadNotificationCreated;
 
 Route::get('/', function () {
-    return view('login');
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/queries', [QueryController::class, 'index'])->name('queries.index');
