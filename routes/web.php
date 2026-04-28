@@ -93,24 +93,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::get('/notifications/latest', [NotificationController::class, 'latest']);
     Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead']);
+    Route::get('/notifications/unread', function () { return auth()->user() ->notifications() ->whereNull('read_at') ->latest() ->limit(10) ->get(); })->middleware('auth');
+    Route::get('/test-broadcast', function () {
+    $notification = (object) [
+        'id' => 999,
+        'lead_id' => 123,
+        'type' => 'lead',
+        'title' => 'Test Lead',
+        'message' => 'This is test notification',
+        'data' => [],
+    ];
 
-    Route::get('/trigger-test-notification', function () {
-        $notification = (object) [
-            'id' => 1,
-            'lead_id' => 123,
-            'type' => 'new_lead',
-            'title' => 'New Lead',
-            'message' => 'Test notification from route',
-            'data' => [
-                'lead_name' => 'Test User',
-                'phone' => '9999999999',
-            ],
-        ];
+    event(new \App\Events\LeadNotificationCreated($notification, auth()->id()));
 
-        broadcast(new LeadNotificationCreated($notification, 1));
-
-        return 'sent';
-    });
+    return 'sent';
+})->middleware('auth');
 
 });
 Route::middleware('auth')->group(function () {

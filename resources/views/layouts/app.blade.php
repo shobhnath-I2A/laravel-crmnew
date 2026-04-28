@@ -8,6 +8,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, minimal-ui">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="auth-user-id" content="{{ auth()->id() }}">
 
     <link href="{{ asset('assets/images/favicon.png') }}" rel="icon" />
 
@@ -29,8 +31,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="auth-user-id" content="{{ auth()->id() }}">
+
 
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
@@ -109,7 +110,11 @@
     <script src="{{ asset('assets/plugins/jquery.peity.min.js') }}"></script>
 
     <script src="{{ asset('assets/js/app.js') }}"></script>
-    <script src="{{ asset('assets/js/popup-notification.js') }}"></script>
+    <script>
+        window.PUSHER_APP_KEY = "{{ env('PUSHER_APP_KEY') }}";
+        window.PUSHER_APP_CLUSTER = "{{ env('PUSHER_APP_CLUSTER') }}";
+    </script>
+    <script src="{{ asset('assets/js/popup-notification.js?' . time()) }}"></script>
     {{-- <script src="{{ asset('assets/js/dashboard.js') }}"></script> --}}
 
     <script src="{{ asset('assets/tinymce/tinymce.min.js') }}"></script>
@@ -318,7 +323,7 @@
 
 
     </script>
-    <script>
+    {{-- <script>
         const beamsClient = new PusherPushNotifications.Client({
             instanceId: '880941f1-b368-4845-9e8a-32a3df4fe52d',
         });
@@ -327,51 +332,7 @@
             .then(() => beamsClient.addDeviceInterest('hello'))
             .then(() => console.log('Successfully registered and subscribed!'))
             .catch(console.error);
-        </script>
-        <script>
-        // document.addEventListener("DOMContentLoaded", function () {
-
-        //     window.Pusher = Pusher;
-
-        //     window.Echo = new Echo({
-        //         broadcaster: 'pusher',
-        //         key: '{{ env("PUSHER_APP_KEY") }}',
-        //         cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
-        //         forceTLS: true
-        //     });
-
-        //     // IMPORTANT: use your Laravel channel + event
-        //     window.Echo.channel('lead-notifications')
-        //         .listen('.lead.notification.created', function (e) {
-        //             console.log('Received:', e);
-        //             alert(e.message); // test popup
-        //         });
-
-        // });
-    </script>
-
-    <script>
-        Pusher.logToConsole = true;
-
-        window.Pusher = Pusher;
-
-        window.Echo = new Echo({
-            broadcaster: 'pusher',
-            key: '{{ env("PUSHER_APP_KEY") }}',
-            cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
-            forceTLS: true
-        });
-
-        window.Echo.channel('lead-notifications')
-            .listen('.lead.notification.created', function (e) {
-                console.log(e);
-                alert(e.message);
-            });
-</script>
-<script>
-window.PUSHER_APP_KEY = "{{ env('PUSHER_APP_KEY') }}";
-window.PUSHER_APP_CLUSTER = "{{ env('PUSHER_APP_CLUSTER') }}";
-</script>
+        </script> --}}
 </body>
 
 </html>

@@ -21,7 +21,7 @@ function decreaseBadgeCount() {
 function showLeadNotification(data) {
     const container = document.getElementById('notificationContainer');
     const audio = document.getElementById('leadNotificationSound');
-
+console.log('data>>>', data);
     if (!container) return;
 
     const box = document.createElement('div');
@@ -44,12 +44,6 @@ function showLeadNotification(data) {
     }
 
     increaseBadgeCount();
-
-    setTimeout(() => {
-        if (box.parentNode) {
-            box.remove();
-        }
-    }, 12000);
 }
 
 function markNotificationRead(id, element = null) {
@@ -60,7 +54,7 @@ function markNotificationRead(id, element = null) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({is_read: 1})
     })
     .then(res => res.json())
     .then(() => {
@@ -85,7 +79,7 @@ function loadUnreadCount() {
 
 document.addEventListener('DOMContentLoaded', function () {
     loadUnreadCount();
-
+  loadUnreadNotifications();
     const userId = document.querySelector('meta[name="auth-user-id"]')?.getAttribute('content');
     if (!userId) return;
 
@@ -93,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.Echo = new Echo({
         broadcaster: 'pusher',
-        key: '{{ env("PUSHER_APP_KEY") }}',
-        cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
+        key: window.PUSHER_APP_KEY,
+        cluster: window.PUSHER_APP_CLUSTER,
         forceTLS: true,
         authEndpoint: '/broadcasting/auth',
         auth: {
@@ -104,8 +98,31 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    window.Echo.private('lead-notifications.' + 1)
-        .listen('.lead.notification.created', function (e) {
-            showLeadNotification(e);
+    window.Echo.private('lead-notifications.' + userId)
+    .listen('.lead.notification.created', function (e) {
+        console.log('Received:', e);
+        showLeadNotification(e);
+    });
+
+
+function loadUnreadNotifications() {
+    fetch('/notifications/latest', {
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(res => {
+        const items = res.data || []; // ✅ FIX
+
+        items.forEach(item => {
+            showLeadNotification({
+                id: item.id,
+                title: item.title,
+                message: item.message,
+                created_at: item.created_at
+            });
         });
+    })
+    .catch(err => console.error(err));
+}
+
 });

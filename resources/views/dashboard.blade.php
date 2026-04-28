@@ -12,11 +12,11 @@
                             style="overflow: hidden; background-image: url({{ asset('assets/images/grnbx.png') }}); background-repeat: no-repeat; background-position: right top; background-size: auto 100%; position:relative;">
                             <div class="card-body" style="padding: 16px;">
                                 <h2 class="morningh2">Good Evening</h2>
-                                <div style="font-size:14px; font-weight:600;">i2a Technologies</div>
+                                <div style="font-size:14px; font-weight:600;">{{ Auth::user()->name ?? '' }}</div>
                                 <div
                                     style="position: absolute; right: 10px; top: 20px; text-align: center; line-height: 18px; font-size: 12px; color: #fff; font-weight: 700; text-transform: uppercase; width: 32%;">
-                                    <span style="font-size:22px; font-weight:600;">06</span>
-                                    <div style="text-align:center;">Fri, March 2026</div>
+                                    <span style="font-size:22px; font-weight:600;">{{ now()->format('d') }}</span>
+                                    <div style="text-align:center;">{{ now()->format('D, F Y') }}</div>
                                 </div>
                             </div>
                         </div>

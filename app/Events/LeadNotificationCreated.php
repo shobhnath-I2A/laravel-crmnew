@@ -6,6 +6,7 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
 
 class LeadNotificationCreated implements ShouldBroadcastNow
 {
@@ -23,7 +24,7 @@ class LeadNotificationCreated implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('lead-notifications'),
+            new PrivateChannel('lead-notifications.' . $this->userId),
         ];
     }
 

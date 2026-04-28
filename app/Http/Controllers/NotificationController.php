@@ -7,17 +7,12 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    protected $userId;
-
-    public function __construct(Request $request)
-    {
-        $this->userId = $request->user()->id ?? 1;
-    }
-
     public function unreadCount(Request $request)
     {
+        $userId = $request->user()->id;
+
         return response()->json([
-            'count' => LeadNotification::where('user_id', $this->userId)
+            'count' => LeadNotification::where('user_id', $userId)
                 ->where('is_read', false)
                 ->count()
         ]);
@@ -25,18 +20,23 @@ class NotificationController extends Controller
 
     public function latest(Request $request)
     {
+        $userId = $request->user()->id;
+
         return response()->json([
-            'data' => LeadNotification::where('user_id', $this->userId)
+            'data' => LeadNotification::where('user_id', $userId)
                 ->latest()
-                ->take(20)
+                ->take(5)
                 ->get()
         ]);
     }
 
     public function markRead(Request $request, $id)
     {
-        $notification = LeadNotification::where('user_id', $this->userId)
-            ->findOrFail($id);
+        $userId = $request->user()->id;
+
+        $notification = LeadNotification::where('user_id', $userId)
+            ->where('id', $id)
+            ->firstOrFail();
 
         $notification->update([
             'is_read' => true,
