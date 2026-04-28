@@ -1,0 +1,173 @@
+[33mcommit a2623cf77509c951cf6cac81742220965025343b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Tue Apr 28 18:54:21 2026 +0530
+
+    login ui
+
+[33mcommit 0593819a55e6a5fbceb183cd54a4c48451170185[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Apr 24 20:07:46 2026 +0530
+
+    add login system
+
+[33mcommit 4ef8e4330efb791e823bdb905a016fe5f437c002[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Apr 24 16:52:13 2026 +0530
+
+     add php pusher
+
+[33mcommit d589c09f02cdc9e28499f4fd3c71a23e49e6e775[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Apr 24 13:54:33 2026 +0530
+
+    add php pusher to get real notification , count and show created lead using apis
+
+[33mcommit 815a4981038e096b15a2b54a04f7ab2dd017c273[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Tue Apr 21 19:51:04 2026 +0530
+
+    add currenty and wether functions
+
+[33mcommit 10c1292850c49c10aaa3dffd872dd87d77752c6a[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Mon Apr 20 18:53:15 2026 +0530
+
+    add admin setting  like lead souce, day itinerary, package themes
+
+[33mcommit 4c549a9dd570aaa875db8fb345aa1fc8253254f2[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Apr 3 18:09:41 2026 +0530
+
+    updated code
+
+[33mcommit b39ccac2cf3a6c9045a3f7743928b8eb9761acfe[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Apr 3 17:07:38 2026 +0530
+
+    add lead package query
+
+[33mcommit 7b9a7fcb27cc7258b62bd224beedbda0d56edfa4[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Apr 3 15:48:51 2026 +0530
+
+    client crud
+
+[33mcommit 43b1cc8b4fd38fd1e37aab58f3e81eac1bf2ab7c[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Thu Apr 2 20:00:05 2026 +0530
+
+    dashboard route set
+
+[33mcommit 260114caf12dd9fcb9fb44fa529f8789d4cdc195[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Thu Apr 2 19:53:59 2026 +0530
+
+    add dashboard setting ui and change destination appServiceProvider keys
+
+[33mcommit 5cc3bf208d456c843bacd224d4c53d863ff26f35[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Wed Apr 1 19:58:03 2026 +0530
+
+    create transfer price desing and functions
+
+[33mcommit bfc9ae47fe0accbc1a35b690c57352a676d896e9[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Tue Mar 31 19:11:46 2026 +0530
+
+    add hotel rooms
+
+[33mcommit d27fc2c840a574e75fab4934f2d7e1adaf3e0993[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Mon Mar 30 20:03:52 2026 +0530
+
+    update accomodation
+
+[33mcommit 7528c65f14e8dac72789e9a0170fed1ee1549493[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Mon Mar 30 18:00:22 2026 +0530
+
+    itinery days activity update function
+
+[33mcommit 7f187c90795938bb132cf4d88ce6b0f97fb41b3d[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Thu Mar 26 20:33:45 2026 +0530
+
+    activity show
+
+[33mcommit 5a127f4810222460b5bb534f8c8fb64dea895fcf[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Wed Mar 25 19:56:41 2026 +0530
+
+    update itinery day details
+
+[33mcommit 528cd265c34880e0828f6fb42854d638081f8b3a[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Wed Mar 25 14:11:19 2026 +0530
+
+    add function create auto package
+
+[33mcommit 561d7d5b50c063fe4f86f96e12c4d969629b3166[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Tue Mar 24 20:04:50 2026 +0530
+
+    add itinery day accomodation popup
+
+[33mcommit ba1920a033cbb8aa934aecd84c7e9b255cee3ae5[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Mon Mar 23 17:05:19 2026 +0530
+
+    add itinery destination drodown dynamic
+
+[33mcommit 54aac7e3ae63a031be3fb60de4919bf5270e775f[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Mar 20 20:08:55 2026 +0530
+
+    updated code
+
+[33mcommit 04909f5128dc5d152134bb95a2c1a0a04a43ce46[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Mar 20 20:05:27 2026 +0530
+
+    create activity and activity price crud operation
+
+[33mcommit 102bf29e3437ee5315f8224b31b6859dc741e5ed[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Mar 20 17:16:41 2026 +0530
+
+    hotel crud and hotel price crud done
+
+[33mcommit 01849a638c221ad9d1bf57f15f560de57ca2f51d[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Thu Mar 19 20:08:05 2026 +0530
+
+    add hote rate desing
+
+[33mcommit e789add45623cc7796b16feea071fdfce33ff748[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Wed Mar 18 20:25:33 2026 +0530
+
+    create itinerary
+
+[33mcommit 854c8e018c7fc21710b90c37f30a8fea35ae2906[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Tue Mar 17 20:17:13 2026 +0530
+
+    create itinerary
+
+[33mcommit e1bc15a3fc8970b50fd49ac2cc085cfb32cf6849[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Mon Mar 16 20:17:42 2026 +0530
+
+     query form updated
+
+[33mcommit ed10e0dd4a5f44cd5d823b0b0e97b1fe090b78a7[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Mon Mar 16 18:49:50 2026 +0530
+
+    add query subforms
+
+[33mcommit fcfcb4b13ee70f79c1b4e71b61100a16c4565e1b[m
+Author: Shobhnath-I2A <shobhnath.s@i2a.co>
+Date:   Fri Mar 13 20:17:02 2026 +0530
+
+    code
