@@ -93,7 +93,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::get('/notifications/latest', [NotificationController::class, 'latest']);
     Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead']);
-    Route::get('/notifications/unread', function () { return auth()->user() ->notifications() ->whereNull('read_at') ->latest() ->limit(10) ->get(); })->middleware('auth');
     Route::get('/test-broadcast', function () {
     $notification = (object) [
         'id' => 999,

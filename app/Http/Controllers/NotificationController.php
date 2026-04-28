@@ -23,7 +23,7 @@ class NotificationController extends Controller
         $userId = $request->user()->id;
 
         return response()->json([
-            'data' => LeadNotification::where('user_id', $userId)
+            'data' => LeadNotification::where('user_id', $userId)->where('is_read', false)
                 ->latest()
                 ->take(5)
                 ->get()
