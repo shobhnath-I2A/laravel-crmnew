@@ -44,7 +44,17 @@
     @include('partials.navigation')
     @include('partials.header')
     @include('partials.sidebar')
+@if(session('warning'))
+    <div id="ipWarning" style="background:#fff3cd; color:#856404; padding:10px; margin:10px;">
+        {{ session('warning') }}
+    </div>
 
+    <script>
+        setTimeout(() => {
+            document.getElementById('ipWarning')?.remove();
+        }, 5000);
+    </script>
+@endif
     <div class="container">
         {{-- Toast message --}}
         <div id="ajaxLoader">

@@ -38,7 +38,7 @@ Route::get('/', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::get('/dashboard', function () {
         return view('dashboard');

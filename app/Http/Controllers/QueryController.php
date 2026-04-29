@@ -24,7 +24,7 @@ class QueryController extends Controller
                 $queryBuilder->where('statusId', $request->statusid);
             }
 
-            $queries = $queryBuilder->latest()->paginate(3);
+            $queries = $queryBuilder->latest()->paginate(10);
 
             $totalQueries = Query::count();
 
