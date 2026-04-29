@@ -37,13 +37,17 @@ function showLeadNotification(data, increaseCount = true) {
 
     container.prepend(box);
 
+  if (increaseCount) {
     try {
-        audio.play();
+        if (audio) audio.play();
     } catch (e) {
         console.log('Audio blocked until user interacts once.');
     }
 
     increaseBadgeCount();
+}
+
+
 }
 function formatDateTime(dateString) {
     const date = new Date(dateString);
