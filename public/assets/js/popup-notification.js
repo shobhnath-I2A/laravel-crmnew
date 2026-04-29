@@ -18,10 +18,10 @@ function decreaseBadgeCount() {
     badge.innerText = Math.max(0, current - 1);
 }
 
-function showLeadNotification(data) {
+function showLeadNotification(data, increaseCount = true) {
     const container = document.getElementById('notificationContainer');
     const audio = document.getElementById('leadNotificationSound');
-console.log('data>>>', data);
+
     if (!container) return;
 
     const box = document.createElement('div');
@@ -29,7 +29,7 @@ console.log('data>>>', data);
     box.innerHTML = `
         <div class="icon">🔔</div>
         <div class="content">
-            <div class="title">${data.title} - ${data.created_at}</div>
+            <div class="title">${data.title} - ${formatDateTime(data.created_at)}</div>
             <div class="message">${data.message}</div>
         </div>
         <div class="close" onclick="markNotificationRead(${data.id}, this.parentNode)">×</div>
@@ -44,6 +44,18 @@ console.log('data>>>', data);
     }
 
     increaseBadgeCount();
+}
+function formatDateTime(dateString) {
+    const date = new Date(dateString);
+
+    return date.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
 }
 
 function markNotificationRead(id, element = null) {
@@ -100,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.Echo.private('lead-notifications.' + userId)
     .listen('.lead.notification.created', function (e) {
-        console.log('Received:', e);
+        // console.log('Received:', e);
         showLeadNotification(e);
     });
 
@@ -119,7 +131,7 @@ function loadUnreadNotifications() {
                 title: item.title,
                 message: item.message,
                 created_at: item.created_at
-            });
+            }, false);
         });
     })
     .catch(err => console.error(err));

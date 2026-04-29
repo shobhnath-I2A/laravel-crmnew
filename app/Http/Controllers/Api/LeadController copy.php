@@ -3,13 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Lead;
+use App\Models\LeadAssignment;
+use App\Models\User;
+use App\Services\LeadAssignmentService;
+use App\Services\LeadNotificationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class LeadController extends Controller
 {
-    public function store(Request $request) {
+    public function store(
+        Request $request,
+        LeadAssignmentService $assignmentService,
+        LeadNotificationService $notificationService
+    ) {
         try {
             $validator = Validator::make($request->all(), [
                 'full_name'      => 'required|string|max:255',
@@ -31,7 +39,7 @@ class LeadController extends Controller
                 'utm_medium'     => 'nullable|string|max:255',
                 'utm_campaign'   => 'nullable|string|max:255',
                 'reference_url'  => 'nullable|string|max:500',
-                'assigned_to'    => 'nullable|integer',
+                'assigned_to'    => 'nullable|integer|exists:users,id',
                 'created_by'     => 'nullable|integer',
                 'status'         => 'nullable|in:new,contacted,qualified,proposal_sent,converted,lost',
                 'priority'       => 'nullable|in:low,medium,high',
@@ -43,7 +51,7 @@ class LeadController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'Validation failed',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
@@ -57,18 +65,133 @@ class LeadController extends Controller
 
             $lead = Lead::create($data);
 
+            $admins = User::whereIn('role', ['admin', 'manager'])->get();
+
+            foreach ($admins as $admin) {
+                $notificationService->send(
+                    $admin->id,
+                    $lead->id,
+                    'new_lead',
+                    'New Lead',
+                    $lead->full_name . ' (' . $lead->phone . ')',
+                    [
+                        'lead_name' => $lead->full_name,
+                        'phone' => $lead->phone,
+                        'from_city' => $lead->from_city,
+                        'to_city' => $lead->to_city,
+                    ]
+                );
+            }
+
+            if (!empty($lead->assigned_to)) {
+                LeadAssignment::create([
+                    'lead_id' => $lead->id,
+                    'user_id' => $lead->assigned_to,
+                    'priority_used' => null,
+                    'assignment_type' => 'manual',
+                    'assigned_at' => now(),
+                ]);
+
+                $notificationService->send(
+                    $lead->assigned_to,
+                    $lead->id,
+                    'lead_assigned',
+                    'Lead Assigned',
+                    $lead->full_name . ' assigned to you',
+                    [
+                        'lead_name' => $lead->full_name,
+                        'phone' => $lead->phone,
+                    ]
+                );
+            } else {
+                $assignedUser = $assignmentService->autoAssign($lead);
+
+                if ($assignedUser) {
+                    $notificationService->send(
+                        $assignedUser->id,
+                        $lead->id,
+                        'lead_assigned',
+                        'Lead Assigned',
+                        $lead->full_name . ' assigned to you',
+                        [
+                            'lead_name' => $lead->full_name,
+                            'phone' => $lead->phone,
+                        ]
+                    );
+                } else {
+                    foreach ($admins as $admin) {
+                        $notificationService->send(
+                            $admin->id,
+                            $lead->id,
+                            'unassigned_lead',
+                            'Unassigned Lead',
+                            $lead->full_name . ' could not be auto assigned',
+                            [
+                                'lead_name' => $lead->full_name,
+                                'phone' => $lead->phone,
+                            ]
+                        );
+                    }
+                }
+            }
+
             return response()->json([
                 'status' => true,
                 'message' => 'Lead created successfully',
-                'data' => $lead
+                'data' => $lead->fresh(),
             ], 201);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to create lead',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function assignLead(
+        Request $request,
+        Lead $lead,
+        LeadNotificationService $notificationService
+    ) {
+        $validator = Validator::make($request->all(), [
+            'assigned_to' => 'required|integer|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $lead->assigned_to = $request->assigned_to;
+        $lead->save();
+
+        LeadAssignment::create([
+            'lead_id' => $lead->id,
+            'user_id' => $request->assigned_to,
+            'priority_used' => null,
+            'assignment_type' => 'manual',
+            'assigned_at' => now(),
+        ]);
+
+        $notificationService->send(
+            $request->assigned_to,
+            $lead->id,
+            'lead_assigned',
+            'Lead Assigned',
+            $lead->full_name . ' assigned to you',
+            [
+                'lead_name' => $lead->full_name,
+                'phone' => $lead->phone,
+            ]
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lead assigned successfully',
+        ]);
     }
 }

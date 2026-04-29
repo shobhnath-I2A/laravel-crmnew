@@ -83,58 +83,6 @@ class LeadController extends Controller
                 );
             }
 
-            if (!empty($lead->assigned_to)) {
-                LeadAssignment::create([
-                    'lead_id' => $lead->id,
-                    'user_id' => $lead->assigned_to,
-                    'priority_used' => null,
-                    'assignment_type' => 'manual',
-                    'assigned_at' => now(),
-                ]);
-
-                $notificationService->send(
-                    $lead->assigned_to,
-                    $lead->id,
-                    'lead_assigned',
-                    'Lead Assigned',
-                    $lead->full_name . ' assigned to you',
-                    [
-                        'lead_name' => $lead->full_name,
-                        'phone' => $lead->phone,
-                    ]
-                );
-            } else {
-                $assignedUser = $assignmentService->autoAssign($lead);
-
-                if ($assignedUser) {
-                    $notificationService->send(
-                        $assignedUser->id,
-                        $lead->id,
-                        'lead_assigned',
-                        'Lead Assigned',
-                        $lead->full_name . ' assigned to you',
-                        [
-                            'lead_name' => $lead->full_name,
-                            'phone' => $lead->phone,
-                        ]
-                    );
-                } else {
-                    foreach ($admins as $admin) {
-                        $notificationService->send(
-                            $admin->id,
-                            $lead->id,
-                            'unassigned_lead',
-                            'Unassigned Lead',
-                            $lead->full_name . ' could not be auto assigned',
-                            [
-                                'lead_name' => $lead->full_name,
-                                'phone' => $lead->phone,
-                            ]
-                        );
-                    }
-                }
-            }
-
             return response()->json([
                 'status' => true,
                 'message' => 'Lead created successfully',
