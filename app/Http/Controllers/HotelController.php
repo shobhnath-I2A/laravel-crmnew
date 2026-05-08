@@ -49,7 +49,7 @@ class HotelController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'category' => 'required',
-                'destination' => 'required|string|max:255',
+                'destination_id' => 'required|string|max:255',
                 'details' => 'nullable|string',
                 'contact_person' => 'nullable|string|max:255',
                 'contact_person_email' => 'nullable|string|max:255',
@@ -123,7 +123,7 @@ class HotelController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'category' => 'required',
-                'destination' => 'required|string|max:255',
+                'destination_id' => 'required|string|max:255',
                 'details' => 'nullable|string',
                 'contact_person' => 'nullable|string|max:255',
                 'contact_person_email' => 'nullable|string|max:255',

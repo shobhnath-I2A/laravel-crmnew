@@ -16,7 +16,7 @@ return new class extends Migration
             // Basic Info
             $table->string('name');
             $table->enum('category', [1,2,3,4,5])->nullable();
-            $table->string('destination');
+            $table->string('destination_id');
             // Details
             $table->text('details')->nullable();
             // Contact Info

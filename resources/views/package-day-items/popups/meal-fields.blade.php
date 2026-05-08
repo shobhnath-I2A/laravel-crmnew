@@ -25,7 +25,7 @@
                 </label>
                 <select name="destination_id" id="destinationName" class="form-control" onchange="loadhotel();" style="display: block;" readonly>
                     {{-- <option value="">Select</option> --}}
-                    @foreach ($destinations as $id => $name)
+                    @foreach ($destinationList as $id => $name)
                         @if ($packageDayItem->destination_id == $id)
                             <option value="{{ $id }}" selected>{{ $name }}</option>
                         @endif

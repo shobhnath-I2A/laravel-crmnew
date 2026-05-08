@@ -21,6 +21,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
+        'role',
+        'user_type',
+        'status',
     ];
 
     /**
@@ -66,4 +70,8 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\LeadNotification::class);
     }
 
+    public function role()
+    {
+        return $this->belongsTo(Rolemaster::class, 'role_id');
+    }
 }

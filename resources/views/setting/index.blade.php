@@ -66,9 +66,13 @@ html{background-image:none !important;background-color:#FFFFFF !important;}
                         @elseif ($tab == 'automation')
                             @include('setting.automation')
                         @elseif ($tab == 'branches-setting')
-                            @include('setting.branches-setting')
+                             @include('setting.branches-setting', [
+                                    'branches' => $data['branches'] ?? collect()
+                                ])
                         @elseif ($tab == 'roles')
-                            @include('setting.roles')
+                            @include('setting.roles', [
+                                'roles' => $data['roles'] ?? collect()
+                            ])
                         @elseif ($tab == 'apidocs')
                             @include('setting.apidoc')
                           @endif

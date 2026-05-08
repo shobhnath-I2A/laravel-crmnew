@@ -45,4 +45,8 @@ class Query extends Model
     {
         return $this->belongsTo(Destination::class, 'destination');
     }
+   public function itineraries()
+    {
+        return $this->hasMany(Itinerary::class, 'queryId', 'id');
+    }
 }

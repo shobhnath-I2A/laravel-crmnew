@@ -37,15 +37,15 @@ function showLeadNotification(data, increaseCount = true) {
 
     container.prepend(box);
 
-  if (increaseCount) {
-    try {
-        if (audio) audio.play();
-    } catch (e) {
-        console.log('Audio blocked until user interacts once.');
-    }
+    if (increaseCount) {
+        try {
+            if (audio) audio.play();
+        } catch (e) {
+            console.log('Audio blocked until user interacts once.');
+        }
 
-    increaseBadgeCount();
-}
+        increaseBadgeCount();
+    }
 
 
 }
@@ -70,16 +70,16 @@ function markNotificationRead(id, element = null) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({is_read: 1})
+        body: JSON.stringify({ is_read: 1 })
     })
-    .then(res => res.json())
-    .then(() => {
-        if (element) {
-            element.remove();
-        }
-        decreaseBadgeCount();
-    })
-    .catch(err => console.error(err));
+        .then(res => res.json())
+        .then(() => {
+            if (element) {
+                element.remove();
+            }
+            decreaseBadgeCount();
+        })
+        .catch(err => console.error(err));
 }
 
 function loadUnreadCount() {
@@ -88,14 +88,14 @@ function loadUnreadCount() {
             'Accept': 'application/json'
         }
     })
-    .then(res => res.json())
-    .then(data => setBadgeCount(data.count || 0))
-    .catch(err => console.error(err));
+        .then(res => res.json())
+        .then(data => setBadgeCount(data.count || 0))
+        .catch(err => console.error(err));
 }
 
 document.addEventListener('DOMContentLoaded', function () {
     loadUnreadCount();
-  loadUnreadNotifications();
+    loadUnreadNotifications();
     const userId = document.querySelector('meta[name="auth-user-id"]')?.getAttribute('content');
     if (!userId) return;
 
@@ -115,30 +115,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     window.Echo.private('lead-notifications.' + userId)
-    .listen('.lead.notification.created', function (e) {
-        // console.log('Received:', e);
-        showLeadNotification(e);
-    });
-
-
-function loadUnreadNotifications() {
-    fetch('/notifications/latest', {
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(res => res.json())
-    .then(res => {
-        const items = res.data || []; // ✅ FIX
-
-        items.forEach(item => {
-            showLeadNotification({
-                id: item.id,
-                title: item.title,
-                message: item.message,
-                created_at: item.created_at
-            }, false);
+        .listen('.lead.notification.created', function (e) {
+            // console.log('Received:', e);
+            showLeadNotification(e);
         });
-    })
-    .catch(err => console.error(err));
-}
+
+
+    function loadUnreadNotifications() {
+        fetch('/notifications/latest', {
+            headers: { 'Accept': 'application/json' }
+        })
+            .then(res => res.json())
+            .then(res => {
+                const items = res.data || [];
+                items.forEach(item => {
+                    showLeadNotification({
+                        id: item.id,
+                        title: item.title,
+                        message: item.message,
+                        created_at: item.created_at
+                    }, false);
+                });
+            })
+            .catch(err => console.error(err));
+    }
 
 });

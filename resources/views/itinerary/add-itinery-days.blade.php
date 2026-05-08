@@ -26,7 +26,7 @@
             </tbody>
         </table>
     </div>
-Destination: {{ $destinationId }}
+
     <div style="overflow:auto; height:100%;position: absolute; width:100%;">
         <div style="margin-top:70px; padding-left:15px;" id="loadeventlibrary">
             <style>

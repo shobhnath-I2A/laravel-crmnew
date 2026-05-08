@@ -114,7 +114,8 @@ class QueryController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $query = Query::findOrFail($id);
+            // $query = Query::findOrFail($id);
+            $query = Query::with('itineraries')->findOrFail($id);
             $tab = $request->query('tab', 'details');
             // $tab = $request->get('tab', 'details'); // default tab
             return view('queries.view-query', compact('query', 'tab'));

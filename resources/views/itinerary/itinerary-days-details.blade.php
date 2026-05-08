@@ -5,7 +5,7 @@
     <div style="padding: 8px 20px; border-bottom: 1px solid #ecf0f2; font-size: 18px;">
         <strong>Day {{ $day ?? '' }} - {{ $date ?? '' }} &nbsp;<i class="fa fa-long-arrow-right"
                 aria-hidden="true"></i>&nbsp;
-            {{ $mainItem->destination->name ?? '' }}
+            {{ $mainItem->destination->name ?? '' }} ddd ee
         </strong>
     </div>
     @forelse($packageDayItems as $type => $items)

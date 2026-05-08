@@ -9,7 +9,7 @@ class Hotel extends Model
     protected $fillable = [
         'name',
         'category',
-        'destination',
+        'destination_id',
         'details',
         'contact_person',
         'contact_person_email',
@@ -25,7 +25,7 @@ class Hotel extends Model
     }
     public function destinationCity()
     {
-        return $this->belongsTo(Destination::class, 'destination');
+        return $this->belongsTo(Destination::class, 'destination_id');
     }
     public function roomTypes()
     {

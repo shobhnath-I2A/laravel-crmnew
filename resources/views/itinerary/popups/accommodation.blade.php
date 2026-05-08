@@ -21,9 +21,9 @@
                 </label>
 
                 <select name="destination_id" id="destination" class="form-control">
-                    @foreach($destinationList as $dest)
-                        <option value="{{ $dest->id }}">
-                            {{ $dest->name }}
+                   @foreach($destinationList as $id => $name)
+                        <option value="{{ $id }}">
+                            {{ $name }}
                         </option>
                     @endforeach
                 </select>

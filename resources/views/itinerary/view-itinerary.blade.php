@@ -1,146 +1,6 @@
 @extends('layouts.app')
 @section('content')
     </div>
-
-    <style>
-        .topnavigation .nav-pills .nav-link.active,
-        .nav-tabs .nav-link.active {
-            font-size: 16px;
-            font-weight: 700;
-            background: #ffffff26;
-            color: #fff;
-            border-bottom: 2px solid #ffffffb5;
-            color: #ffffff;
-        }
-
-        .topnavigation .nav-pills .nav-link,
-        .nav-tabs .nav-link {
-            font-size: 16px;
-            text-transform: uppercase;
-            font-weight: 400;
-            border: 0px;
-            color: #ffffffcc;
-            border-radius: 0px;
-            padding: 10px 35px;
-            border-bottom: 2px solid transparent;
-            color: #ffffff;
-            border-radius: 4px;
-            margin: 5px;
-            border-radius: 4px;
-        }
-
-        .topnavigation .nav-tabs .nav-link:focus,
-        .nav-tabs .nav-link:hover {
-            border-color: transparent;
-        }
-    </style>
-    <style>
-        .itidaytab {
-            border: 1px solid #ecf0f2;
-            padding: 10px 15px;
-            text-align: left;
-            font-weight: 700;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .itidaytab:hover {
-            border: 1px solid #ecf0f2;
-            background-color: #eff9ff;
-        }
-
-        .activedaytab {
-            border: 1px solid #ecf0f2;
-            background-color: #009fff73 !important;
-            border-left: 2px solid #000 !important;
-        }
-
-        .itidaytab .fa-chevron-right {
-            color: #2b4f67ba;
-            position: absolute;
-            right: 10px;
-            font-size: 12px;
-            top: 15px;
-        }
-
-        .itidaytab:hover .fa-chevron-right {
-            color: #45bbff;
-        }
-
-        .activedaytab .fa-chevron-right {
-            color: #000;
-        }
-
-        .itidaytab span {
-            background-color: #000;
-            color: #fff;
-            padding: 3px 8px;
-            border-radius: 40px;
-            line-height: 17px;
-            display: inline-block;
-            border: 2px solid #ddd;
-        }
-
-        .itidaytab select {
-            padding: 7px 5px;
-            box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            height: auto;
-            border: 0px;
-            margin: 10px 0px;
-        }
-
-        .addeventbtnn {
-            background-color: #333333;
-            color: #FFFFFF;
-            width: 40px;
-            height: 40px;
-            text-align: center;
-            border-radius: 40px;
-            font-size: 16px;
-            line-height: 38px;
-            cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0px 0px 3px #b7b7b7;
-        }
-
-        .addeventbtnn:hover {
-            background-color: #23ae73;
-        }
-
-        #loadeventlibrary .daydetailsbox {
-            background-color: #fff;
-            margin: 10px 10px 10px 0px;
-        }
-
-        .reorder-controls {
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-        }
-
-        .reorder-controls button {
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #2b4f67;
-            margin-right: 10px;
-        }
-
-        .reorder-controls button i {
-            color: #fff;
-            font-size: 12px;
-        }
-
-        .reorder-controls button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-    </style>
     <div class="wrapper">
         <div class="row"
             style="background-color: #06304c; margin-bottom: 38px; z-index: 99; position: fixed; left: 30px; width: 100%; margin: 0px; top: 46px; border-top: 1px solid #ffffff61;">
@@ -218,8 +78,7 @@
                                                 @endphp
                                                 @for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay())
                                                     <div class="itidaytab"
-                                                        onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');"
-                                                        >
+                                                        onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
                                                         {{-- <div class="itidaytab {{ $i == 1 ? 'activedaytab' : '' }}" id="dayid{{ $i }}"  onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');"> --}}
                                                         <strong><span>{{ $i }}</span>
                                                             {{ $date->format('d M - D') }}</strong>
@@ -227,10 +86,10 @@
                                                         <select id="destinationName{{ $i }}"
                                                             class="form-control"
                                                             onchange="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
-                                                            @foreach($itinerary->destinations as $destination)
+                                                            @foreach ($itinerary->destinations as $destination)
                                                                 <option value="{{ $destination->id }}"
                                                                     {{ isset($dayItems[$i]) && $dayItems[$i]->destination_id == $destination->id ? 'selected' : '' }}>
-                                                                        {{ $destination->name }}
+                                                                    {{ $destination->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -265,65 +124,96 @@
                             </td>
                             <td width="35%" align="left" valign="top" t="" style="position:relative; background-color:#f5f7f9;">
                                 <div style="padding: 15px; position: absolute; z-index: 1; width: 100%; box-sizing: border-box; padding-top: 0px; padding-right: 0px; background-color:#fff; border-bottom:1px solid #ddd;">
-                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                    <tbody>
-                                        <tr>
-                                            <td colspan="2" style="padding-right:5px;"><input name="searchevent" type="text" id="searchevent" style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #ddd;border-radius: 4px;height: 43px;" placeholder="Search" onkeyup="loadeventlibrary();"></td>
-                                            <td width="50%">
-                                                <select name="eventsection" id="eventsection" style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #ddd;border-radius: 4px;height: 43px;" onchange="loadeventlibrary();">
-                                                    <option value="DayItinerary">Day Itinerary</option>
-                                                    <option value="Accommodation">Accommodation</option>
-                                                    <option value="Activity">Activity</option>
-                                                    <option value="Transportation">Transportation</option>
-                                                    <option value="Insurance">Insurance / Visa</option>
-                                                    <option value="Meal">Meal</option>
-                                                    <option value="Flight">Flight</option>
-                                                    <option value="Leisure">Leisure</option>
-                                                    <option value="Cruise">Cruise</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" style="padding-right:5px;"><input name="searchevent"
+                                                        type="text" id="searchevent"
+                                                        style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #ddd;border-radius: 4px;height: 43px;"
+                                                        placeholder="Search" onkeyup="loadeventlibrary();"></td>
+                                                <td width="50%">
+
+                                                    <select name="eventsection" id="eventsection"
+                                                        style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #ddd;border-radius: 4px;height: 43px;"
+                                                        onchange="loadeventlibrary();">
+                                                        <option value="DayItinerary">Day Itinerary dddd eeee</option>
+                                                        <option value="Accommodation">Accommodation</option>
+                                                        <option value="Activity">Activity</option>
+                                                        <option value="Transportation">Transportation</option>
+                                                        <option value="Insurance">Insurance / Visa</option>
+                                                        <option value="Meal">Meal</option>
+                                                        <option value="Flight">Flight</option>
+                                                        <option value="Leisure">Leisure</option>
+                                                        <option value="Cruise">Cruise</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                                 <div style="overflow:auto; height:100%;position: absolute; width:100%;">
-                                <div style="margin-top:70px; padding-left:15px;" id="loadeventlibrary">
-                            <style>
+                                    <div style="margin-top:70px; padding-left:15px;" id="loadeventlibrary">
+                                        <style>
+                                            .custom_flex_wrapper {
+                                                display: flex;
+                                                flex-wrap: wrap;
+                                                align-items: center;
+                                                justify-content: space-between;
+                                            }
 
-                            .custom_flex_wrapper{
-                                display: flex;
-                                flex-wrap:wrap;
-                                align-items:center;
-                                justify-content: space-between;
-                            }
-                            .custom_flex_wrapper input{
-                                width:48%;
-                            }
-                            </style>
+                                            .custom_flex_wrapper input {
+                                                width: 48%;
+                                            }
+                                        </style>
 
-                            <input type="button" style="padding: 10px; color: #fff; background-color: #23ae73; outline: 0px; height: 46px; width: 100%; box-sizing: border-box; margin: 15px 0px; margin-top: 0px; border-radius: 4px; border: 0px; font-size: 16px; cursor:pointer;" value="+ Add Accommodation Manually" onclick="openPopup('Add Accomodation', '{{ route('itinerary.day.accomodation') }}')">
+                                        <div id="manualAddButtonContainer">
 
-                            <div style="margin-bottom: 15px; color: #000000; font-size: 12px; font-weight: 600;">Suggested Accommodation in <span style="font-weight:600; color:#0066CC;">delhi</span></div>
+    <input type="button"
+        id="manualAddButton"
+        style="padding: 10px; color: #fff; background-color: #23ae73; outline: 0px; height: 46px; width: 100%; box-sizing: border-box; margin: 15px 0px; margin-top: 0px; border-radius: 4px; border: 0px; font-size: 16px; cursor:pointer;"
+        value="+ Add Accommodation Manually"
+        onclick="openPopup('Add Accommodation', '{{ route('itinerary.day.accomodation') }}')">
 
-                            <div class="daydetailsbox">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                <tbody>
-                                    <tr>
-                                        <td colspan="2"><div class="eventimgclass" style="width: 50px; height: 50px;"><img style="height:100%;" src="http://localhost:8081/API/package_image/Medhufushi_Island_Resort1718449880.jpg">
-                                        </div></td>
-                                        <td width="90%" style="padding-left:10px;"><div class="eventheading">Medhufushi Island Resort</div><div><span style="color:#FF9900; "><i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i></span></div></td>
-                                        <td width="10%">
-                                        <div class="addeventbtnn" onclick="loadpop('Accommodation in day 1',this,'600px')" data-toggle="modal" data-target=".bs-example-modal-center" popaction="action=addAccommodation&amp;pid=109130&amp;d=2026-01-07&amp;packageDays=1&amp;loaddestinationidload=delhi&amp;auto=1&amp;eventobjectid=92&amp;photo=Medhufushi_Island_Resort1718449880.jpg"><i class="fa fa-plus" aria-hidden="true"></i></div>
+</div>
 
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </div>
-                            </div>
+                                        <div
+                                            style="margin-bottom: 15px; color: #000000; font-size: 12px; font-weight: 600;">
+                                            Suggested Accommodation in dddd<span
+                                                style="font-weight:600; color:#0066CC;">delhi</span></div>
+                                        <div class="daydetailsbox">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <div class="eventimgclass" style="width: 50px; height: 50px;">
+                                                                <img style="height:100%;"
+                                                                    src="http://localhost:8081/API/package_image/Medhufushi_Island_Resort1718449880.jpg">
+                                                            </div>
+                                                        </td>
+                                                        <td width="90%" style="padding-left:10px;">
+                                                            <div class="eventheading">Medhufushi Island Resort</div>
+                                                            <div><span style="color:#FF9900; "><i class="fa fa-star"
+                                                                        aria-hidden="true"></i><i class="fa fa-star"
+                                                                        aria-hidden="true"></i><i class="fa fa-star"
+                                                                        aria-hidden="true"></i><i class="fa fa-star"
+                                                                        aria-hidden="true"></i></span></div>
+                                                        </td>
+                                                        <td width="10%">
+                                                            <div class="addeventbtnn"
+                                                                onclick="loadpop('Accommodation in day 1',this,'600px')"
+                                                                data-toggle="modal" data-target=".bs-example-modal-center"
+                                                                popaction="action=addAccommodation&amp;pid=109130&amp;d=2026-01-07&amp;packageDays=1&amp;loaddestinationidload=delhi&amp;auto=1&amp;eventobjectid=92&amp;photo=Medhufushi_Island_Resort1718449880.jpg">
+                                                                <i class="fa fa-plus" aria-hidden="true"></i></div>
+
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
 
                                 </div>
-                                </td>
+                            </td>
                             {{-- @include('itinerary.add-itinery-days') --}}
                         </tr>
                     </tbody>
@@ -336,7 +226,7 @@
             function load_build_day_details(day, date) {
                 let destination_id = $('#destinationName' + day).val();
                 $('#load_build_day_details').load(
-                    `/itinerary/day-details?day=${day}&date=${date}&destination_id=${destination_id}&itinerary_id={{$itinerary->id}}`
+                    `/itinerary/day-details?day=${day}&date=${date}&destination_id=${destination_id}&itinerary_id={{ $itinerary->id }}`
                 );
             }
             document.addEventListener("DOMContentLoaded", function() {
@@ -363,5 +253,79 @@
                 document.querySelector('.itidaytab')?.click();
             });
         </script>
+        <script>
+
+function updateManualAddButton() {
+
+    let type = document.getElementById('eventsection').value;
+
+    let button = document.getElementById('manualAddButton');
+
+    let popupTitle = '';
+    let popupRoute = '';
+    let buttonText = '';
+
+    switch(type) {
+
+        case 'Accommodation':
+            popupTitle = 'Add Accommodation';
+            popupRoute = "{{ route('package-days-items.create') }}";
+            buttonText = '+ Add Accommodation Manually';
+        break;
+
+        case 'Activity':
+            popupTitle = 'Add Activity';
+            popupRoute = "{{ route('itinerary.day.accomodation') }}";
+            buttonText = '+ Add Activity Manually';
+        break;
+
+        case 'Transportation':
+            popupTitle = 'Add Transportation';
+            popupRoute = "{{ route('itinerary.day.accomodation') }}";
+            buttonText = '+ Add Transportation Manually';
+        break;
+
+        case 'Insurance':
+            popupTitle = 'Add Insurance';
+            popupRoute = "{{ route('itinerary.day.accomodation') }}";
+            buttonText = '+ Add Insurance Manually';
+        break;
+
+        case 'Meal':
+            popupTitle = 'Add Meal';
+            popupRoute = "{{ route('itinerary.day.accomodation') }}";
+            buttonText = '+ Add Meal Manually';
+        break;
+
+        case 'Flight':
+            popupTitle = 'Add Flight';
+            popupRoute = "{{ route('itinerary.day.accomodation') }}";
+            buttonText = '+ Add Flight Manually';
+        break;
+
+        default:
+            popupTitle = 'Add Item';
+            popupRoute = '#';
+            buttonText = '+ Add Item';
+    }
+
+    button.value = buttonText;
+
+    button.setAttribute(
+        'onclick',
+        `openPopup('${popupTitle}', '${popupRoute}')`
+    );
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    updateManualAddButton();
+
+    document.getElementById('eventsection')
+        .addEventListener('change', updateManualAddButton);
+
+});
+
+</script>
     </div>
 @endsection

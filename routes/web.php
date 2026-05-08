@@ -27,6 +27,9 @@ use App\Http\Controllers\WeatherSettingController;
 use App\Http\Controllers\CurrencyExchangeMasterController;
 use App\Http\Controllers\NotificationController;
 use App\Events\LeadNotificationCreated;
+use App\Http\Controllers\BranchMasterController;
+
+use App\Http\Controllers\RoleController;
 
 Route::get('/', function () {
     return auth()->check()
@@ -55,7 +58,8 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/check-reminders', [QueryTaskController::class, 'checkReminders']);
     Route::post('/task-done/{id}', [QueryTaskController::class, 'markDone']);
 
-    Route::resource('clients', ClientController::class);
+    permissionResource('clients', ClientController::class, 'Client');
+    // Route::resource('clients', ClientController::class);
     Route::resource('package-query', LeadController::class);
 
     Route::resource('itineraries', ItineraryController::class);
@@ -94,25 +98,63 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/notifications/latest', [NotificationController::class, 'latest']);
     Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead']);
     Route::get('/test-broadcast', function () {
-    $notification = (object) [
-        'id' => 999,
-        'lead_id' => 123,
-        'type' => 'lead',
-        'title' => 'Test Lead',
-        'message' => 'This is test notification',
-        'data' => [],
-    ];
+        $notification = (object) [
+            'id' => 999,
+            'lead_id' => 123,
+            'type' => 'lead',
+            'title' => 'Test Lead',
+            'message' => 'This is test notification',
+            'data' => [],
+        ];
 
-    event(new \App\Events\LeadNotificationCreated($notification, auth()->id()));
+        event(new \App\Events\LeadNotificationCreated($notification, auth()->id()));
 
-    return 'sent';
-})->middleware('auth');
+        return 'sent';
+    })->middleware('auth');
 
+    // role router
+    Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+    Route::post('/roles/store', [RoleController::class, 'store'])->name('roles.store');
+    Route::get('/roles/{id}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+    Route::put('/roles/{id}', [RoleController::class, 'update'])->name('roles.update');
+
+    route::resource('branch-master', BranchMasterController::class);
 });
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+    Route::middleware('auth')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 
+    // auth route setup
+    function permissionResource($uri, $controller, $module)
+    {
+    Route::get($uri, [$controller, 'index'])
+        ->middleware("permission:$module,view")
+        ->name("$uri.index");
+
+    Route::get("$uri/create", [$controller, 'create'])
+        ->middleware("permission:$module,add_edit")
+        ->name("$uri.create");
+
+    Route::post($uri, [$controller, 'store'])
+        ->middleware("permission:$module,add_edit")
+        ->name("$uri.store");
+
+    Route::get("$uri/{id}", [$controller, 'show'])
+        ->middleware("permission:$module,view")
+        ->name("$uri.show");
+
+    Route::get("$uri/{id}/edit", [$controller, 'edit'])
+        ->middleware("permission:$module,add_edit")
+        ->name("$uri.edit");
+
+    Route::put("$uri/{id}", [$controller, 'update'])
+        ->middleware("permission:$module,add_edit")
+        ->name("$uri.update");
+
+    Route::delete("$uri/{id}", [$controller, 'destroy'])
+        ->middleware("permission:$module,add_edit")
+        ->name("$uri.destroy");
+    }
 require __DIR__.'/auth.php';

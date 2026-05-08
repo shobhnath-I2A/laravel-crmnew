@@ -2,11 +2,10 @@
     <div class="page-content">
         <div class="newboxheading">
             <div class="newhead">Team - People within your organisation<div class="newoptionmenu">
-                    <div> <button id="addteammember" type="button"
-                            class="btn btn-secondary btn-lg waves-effect waves-light"
-                            onclick="loadpop('Invite team member',this,'600px')" data-toggle="modal"
-                            data-target=".bs-example-modal-center" popaction="action=addstaff">Invite team
-                            member</button>
+                    <div>
+                          <button id="addteammember" type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
+                            onclick="openPopup('Invite Team Member','{{ route('roles.create') }}')"
+                            data-backdrop="static">Invite Team Member</button>
                     </div>
 
                 </div>

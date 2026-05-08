@@ -30,7 +30,7 @@ class ItineraryController extends Controller
                 $itineraryBuilder->where('name', 'like', '%' . $request->keyword . '%');
             }
 
-            $itinerary = $itineraryBuilder->latest()->paginate(3);
+            $itinerary = $itineraryBuilder->latest()->paginate(20);
 
             $itinerary->appends($request->all());
 
@@ -122,8 +122,8 @@ class ItineraryController extends Controller
             // create package
             $package = app(PackageService::class)->createFromItinerary($id);
             $dayItems = PackageDayItem::where('package_id', $package->id)
-                        ->get()
-                        ->keyBy('day');
+            ->get()
+            ->keyBy('day');
             $tab = $request->query('tab', 'proposals');
             $startDate = Carbon::parse($itinerary->start_date);
             $endDate   = Carbon::parse($itinerary->end_date);
@@ -280,7 +280,7 @@ class ItineraryController extends Controller
 
     public function loadHotels(Request $request)
     {
-        $hotels = Hotel::where('destination', $request->destinationName)->get();
+        $hotels = Hotel::where('destination_id', $request->destinationName)->get();
         return view('package-day-items.popups.hotel-options', compact('hotels'));
     }
    public function loadHotelData(Request $request)
