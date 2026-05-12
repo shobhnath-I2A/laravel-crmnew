@@ -4,7 +4,7 @@
     }
 </style>
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
-    <form action="{{ route('roles.store') }}" method="POST">
+    <form action="#" method="POST">
         @csrf
         @method('POST')
         <div class="modal-body">
@@ -45,11 +45,11 @@
                         <label>Role</label>
                         <select name="parent_id" class="form-control">
                             <option value="0">No Parent Role</option>
-                            @foreach ($rolesTree as $role)
+                            {{-- @foreach ($rolesTree as $role)
                                 <option value="{{ $role->id }}">
                                     {{ str_repeat('--', $role->level + 1) }}{{ $role->name }} (Inhouse)
                                 </option>
-                            @endforeach
+                            @endforeach --}}
                         </select>
                     </div>
                 </div>

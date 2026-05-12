@@ -20,9 +20,9 @@ class RoleMaster extends Model
     }
    public function children()
 {
-    return $this->hasMany(Rolemaster::class, 'parent_id', 'id')
+    return $this->hasMany(RoleMaster::class, 'parent_id', 'id')
         ->where('status', 1)
-        ->orderBy('name', 'asc');
+        ->orderBy('id', 'asc');
 }
 
 public function childrenRecursive()

@@ -62,7 +62,9 @@ html{background-image:none !important;background-color:#FFFFFF !important;}
                         @elseif ($tab == 'admin-settings')
                             @include('setting.admin-setting')
                         @elseif ($tab == 'package-inclusions')
-                            @include('setting.package-inclusion')
+                            @include('setting.package-inclusion', [
+                                'inclusions' => $data['inclusions'] ?? null
+                            ])
                         @elseif ($tab == 'automation')
                             @include('setting.automation')
                         @elseif ($tab == 'branches-setting')

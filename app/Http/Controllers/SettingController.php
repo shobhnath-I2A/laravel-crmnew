@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Models\BranchMaster;
 use App\Models\Rolemaster;
+use App\Models\RolePermission;
+use App\Models\PackageInclusion;
 class SettingController extends Controller
 {
     /**
@@ -15,7 +17,7 @@ class SettingController extends Controller
     public function index(Request $request)
     {
 
-     $tabs = [
+        $tabs = [
             'team-management' => [
                 'view' => 'setting.tabs.team-management',
                 'title' => 'Team Management',
@@ -62,6 +64,11 @@ class SettingController extends Controller
 
         $data = [];
 
+        if ($tab === 'package-inclusions') {
+            $inclusions = PackageInclusion::where('user_id', auth()->id())->first();
+            $data['inclusions'] = $inclusions;
+            // dd($data['branches']);
+        }
         if ($tab === 'branches-setting') {
             $data['branches'] = BranchMaster::latest()->get();
             // dd($data['branches']);
@@ -69,10 +76,15 @@ class SettingController extends Controller
 
         if ($tab === 'roles') {
 
-        $roles = Rolemaster::with('children.children.children')
-            ->where('parent_id', 0)
-            ->where('status', 1)
-            ->get();
+            $roles = RoleMaster::with([
+                'branch',
+                'childrenRecursive'
+            ])
+                ->where('parent_id', 0)
+                ->where('status', 1)
+                ->orderBy('id', 'asc')
+                ->get();
+
             $data['roles'] = $roles;
         }
 
@@ -83,20 +95,20 @@ class SettingController extends Controller
             'tabTitle' => $tabs[$tab]['title'],
             'data' => $data,
         ]);
-    //  try {
-    //         // Default tab = teams
-    //         $tab = $request->query('tab', 'team-management');
-    //         return view('setting.index', compact('tab'));
+        //  try {
+        //         // Default tab = teams
+        //         $tab = $request->query('tab', 'team-management');
+        //         return view('setting.index', compact('tab'));
 
-    //     } catch (\Exception $e) {
-    //         Log::error('Error fetching Setting Tabs', [
-    //             'exception' => $e
-    //         ]);
+        //     } catch (\Exception $e) {
+        //         Log::error('Error fetching Setting Tabs', [
+        //             'exception' => $e
+        //         ]);
 
-    //         return redirect()->route('settings.show', ['tab' => 'teams'])
-    //             ->with('error', 'Something went wrong!');
-    //     }
-    // return view('setting.index');
+        //         return redirect()->route('settings.show', ['tab' => 'teams'])
+        //             ->with('error', 'Something went wrong!');
+        //     }
+        // return view('setting.index');
     }
 
     /**
@@ -118,14 +130,13 @@ class SettingController extends Controller
     /**
      * Display the specified resource.
      */
-     public function show(Request $request)
+    public function show(Request $request)
     {
 
         try {
             // Default tab = teams
             $tab = $request->query('tab', 'teams');
             return view('setting.index', compact('tab'));
-
         } catch (\Exception $e) {
             Log::error('Error fetching Setting Tabs', [
                 'exception' => $e

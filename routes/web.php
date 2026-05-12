@@ -113,10 +113,9 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     })->middleware('auth');
 
     // role router
-    Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
-    Route::post('/roles/store', [RoleController::class, 'store'])->name('roles.store');
-    Route::get('/roles/{id}/edit', [RoleController::class, 'edit'])->name('roles.edit');
-    Route::put('/roles/{id}', [RoleController::class, 'update'])->name('roles.update');
+    Route::resource('/roles', RoleController::class);
+    // Route::get('/roles/{id}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+    // Route::put('/roles/{id}', [RoleController::class, 'update'])->name('roles.update');
 
     route::resource('branch-master', BranchMasterController::class);
 });

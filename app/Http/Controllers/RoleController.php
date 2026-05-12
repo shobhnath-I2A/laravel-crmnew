@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Rolemaster;
+use App\Models\BranchMaster;
 use App\Models\RolePermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,12 +22,24 @@ class RoleController extends Controller
     // }
     public function index()
     {
-        $roles = Rolemaster::with('permissions')->get();
+        $roles = RoleMaster::with('childrenRecursive')
+            ->where('parent_id', 0)
+            ->where('status', 1)
+            ->orderBy('id', 'asc')
+            ->get();
+
         return view('setting.roles', compact('roles'));
     }
     public function create()
     {
-        return view('setting.add-role');
+        $branches = BranchMaster::where('status', 1)->orderBy('name')->get();
+
+        $roles = Rolemaster::where('status', 1)
+            ->orderBy('name')
+            ->get();
+
+        return view('setting.add-role', compact('branches', 'roles'));
+        // return view('setting.add-role');
     }
     // public function create()
     // {
@@ -59,114 +72,113 @@ class RoleController extends Controller
         return $result;
     }
 
-public function store(Request $request)
-{
-    try {
-        $request->validate([
-            'firstName' => 'required|string|max:100',
-            'lastName'  => 'required|string|max:100',
-            'email'     => 'required|email|unique:users,email',
-            // remove name required if form does not send name
-            'parent_id' => 'nullable|integer',
-        ]);
-
-        $role = DB::transaction(function () use ($request) {
-
-            $roleName = trim($request->firstName . ' ' . $request->lastName . ' Role');
+    public function store(Request $request)
+    {
+        try {
+            $request->validate([
+                'branch_id' => 'required|exists:branch_masters,id',
+                'parent_id' => 'nullable|integer',
+                'name' => 'required|string|max:100',
+                'status' => 'required|in:0,1',
+            ]);
 
             $role = Rolemaster::create([
-                'name'      => $request->name ?? $roleName,
-                'branch_id' => 1,
+                'branch_id' => $request->branch_id,
                 'parent_id' => $request->parent_id ?? 0,
-                'status'    => $request->has('status') ? 1 : 0,
-                'added_by'  => auth()->id(),
+                'name' => $request->name,
+                'status' => $request->status,
+                'added_by' => auth()->id(),
             ]);
 
-            foreach (config('crm_permissions') as $item) {
-                $module = $item['module'];
-                $permission = $request->permissions[$module] ?? [];
 
-                RolePermission::create([
-                    'role_id'       => $role->id,
-                    'module'        => $module,
-                    'can_view'      => isset($permission['view']),
-                    'can_add_edit'  => isset($permission['add_edit']),
-                    'can_download'  => isset($permission['download']),
-                ]);
-            }
-
-            User::create([
-                'name'     => trim($request->firstName . ' ' . $request->lastName),
-                'email'    => $request->email,
-                'password' => Hash::make('12345678'),
-                'role'     => 'team',
-                'role_id'  => $role->id,
-            ]);
-
-            return $role;
-        });
-
-        return response()->json([
-            'status'  => true,
-            'message' => 'Role and user created successfully',
-            'data'    => $role
-        ]);
-
-    } catch (ValidationException $ve) {
-        return response()->json([
-            'status'  => false,
-            'message' => 'Validation Failed',
-            'errors'  => $ve->errors()
-        ], 422);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status'  => false,
-            'message' => $e->getMessage()
-        ], 500);
+            return response()->json([
+                'status' => true,
+                'message' => 'Role created successfully',
+                'data' => $role
+            ], 201);
+        } catch (ValidationException $ve) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Validation Failed',
+                'errors'  => $ve->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
-}
 
     public function edit($id)
     {
-        $role = Rolemaster::with('permissions')->findOrFail($id);
-        $modules = config('crm_permissions');
 
-        $permissions = $role->permissions->keyBy('module');
+        try {
+            $role = Rolemaster::findOrFail($id);
 
-        return view('roles.create', compact('role', 'modules', 'permissions'));
+            $branches = BranchMaster::where('status', 1)
+                ->orderBy('name')
+                ->get();
+
+            $roles = Rolemaster::where('status', 1)
+                ->where('id', '!=', $id)
+                ->orderBy('name')
+                ->get();
+            return view('setting.add-role',  compact('role', 'branches', 'roles'));
+        } catch (\Exception $e) {
+            Log::error('Error fetching Role for Edit', [
+                'exception' => $e,
+                'role_id' => $id
+            ]);
+        }
+
+        // return view('roles.create', compact('role', 'branches', 'roles'));
+
+        // $role = Rolemaster::with('permissions')->findOrFail($id);
+        // $modules = config('crm_permissions');
+
+        // $permissions = $role->permissions->keyBy('module');
+
+        // return view('roles.create', compact('role', 'modules', 'permissions'));
     }
 
     public function update(Request $request, $id)
     {
-        $role = Rolemaster::findOrFail($id);
-
-        DB::transaction(function () use ($request, $role) {
-            $role->update([
-                'name' => $request->name,
-                'branch_id' => $request->branch_id,
-                'parent_id' => $request->parent_id ?? 0,
-                'status' => $request->has('status') ? 1 : 0,
+        try {
+            $role = Rolemaster::findOrFail($id);
+            $request->validate([
+                'branch_id' => 'required|exists:branch_masters,id',
+                'parent_id' => 'nullable|integer',
+                'name' => 'required|string|max:100',
+                'status' => 'required|in:0,1',
             ]);
 
-            foreach (config('crm_permissions') as $item) {
-                $module = $item['module'];
-                $permission = $request->permissions[$module] ?? [];
+            $role->update([
+                'branch_id' => $request->branch_id,
+                'parent_id' => $request->parent_id ?? 0,
+                'name' => $request->name,
+                'status' => $request->status,
+                'added_by' => auth()->id(),
+            ]);
 
-                RolePermission::updateOrCreate(
-                    [
-                        'role_id' => $role->id,
-                        'module' => $module,
-                    ],
-                    [
-                        'can_view' => isset($permission['view']),
-                        'can_add_edit' => isset($permission['add_edit']),
-                        'can_download' => isset($permission['download']),
-                    ]
-                );
-            }
-        });
 
-        return redirect()->back()->with('success', 'Role updated successfully');
+            return response()->json([
+                'status' => true,
+                'message' => 'Role Update successfully!!!',
+                'data' => $role
+            ], 200);
+        } catch (ValidationException $ve) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Validation Failed',
+                'errors'  => $ve->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+        // return redirect()->back()->with('success', 'Role updated successfully');
     }
 }

@@ -35,6 +35,7 @@
                             </thead>
 
                             <tbody>
+
                                 @forelse($branches as $branch)
                                     <tr>
                                         <td>{{ $branch->name }}</td>

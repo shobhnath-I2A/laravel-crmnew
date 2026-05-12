@@ -345,6 +345,18 @@
             .then(() => console.log('Successfully registered and subscribed!'))
             .catch(console.error);
         </script> --}}
+
+        <script>
+            tinymce.init({
+                selector: "#description",
+                themes: "modern",
+                plugins: [
+                    "advlist autolink lists link image charmap print preview anchor",
+                    "searchreplace visualblocks code fullscreen"
+                ],
+                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+            });
+        </script>
 </body>
 
 </html>
