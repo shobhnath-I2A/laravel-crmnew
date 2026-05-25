@@ -36,7 +36,7 @@
                                         <div class="col-lg-12">
                                         <div class="form-group">
                                                  <label for="validationCustom02">Important Tips</label>
-                                                <textarea name="importantTips" rows="5" class="editorclass" id="description" aria-hidden="true"></textarea>
+                                                 <textarea name="packageInclusions" rows="5" class="editorclass" id="description" aria-hidden="true"></textarea>
                                             </div>
                                         </div>
 
@@ -50,7 +50,7 @@
                                         <div class="col-lg-12">
                                             <div class="form-group">
                                                  <label for="validationCustom02">Exclusions</label>
-                                                <textarea name="packageExclusions" id="description" style="height: 120px; visibility: hidden; display: none;">
+                                                <textarea name="packageInclusions" rows="5" class="editorclass" id="description" aria-hidden="true"></textarea>
                                             </div>
                                         </div>
 
@@ -65,7 +65,7 @@
                                         <div class="col-lg-12">
                                             <div class="form-group">
                                                 <label for="validationCustom02">List of documents for traveling</label>
-                                                <textarea name="travelInformation" rows="5" class="editorclass" id="description" aria-hidden="true"></textarea>
+                                               <textarea name="packageInclusions" rows="5" class="editorclass" id="description" aria-hidden="true"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-lg-12">

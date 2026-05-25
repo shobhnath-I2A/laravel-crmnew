@@ -28,7 +28,7 @@ use App\Http\Controllers\CurrencyExchangeMasterController;
 use App\Http\Controllers\NotificationController;
 use App\Events\LeadNotificationCreated;
 use App\Http\Controllers\BranchMasterController;
-
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\RoleController;
 
 Route::get('/', function () {
@@ -93,6 +93,7 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::resource('package-theme', PackageThemeController::class);
     Route::resource('weather-setting', WeatherSettingController::class);
     Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
+    Route::resource('staff', StaffController::class);
 
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::get('/notifications/latest', [NotificationController::class, 'latest']);

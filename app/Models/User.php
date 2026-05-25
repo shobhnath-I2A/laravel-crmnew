@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\UserPermission;
 
 class User extends Authenticatable
 {
@@ -19,12 +20,16 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'last_name',
         'email',
         'password',
-        'role_id',
-        'role',
-        'user_type',
         'status',
+        'role',
+        'role_id',
+        'branch_id',
+        'user_type',
+        'user_country',
+        'show_query_status'
     ];
 
     /**
@@ -74,4 +79,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Rolemaster::class, 'role_id');
     }
+
+    public function permissions()
+{
+    return $this->hasMany(UserPermission::class, 'user_id', 'id');
+}
 }

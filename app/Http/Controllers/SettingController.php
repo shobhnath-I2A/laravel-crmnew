@@ -9,6 +9,7 @@ use App\Models\BranchMaster;
 use App\Models\Rolemaster;
 use App\Models\RolePermission;
 use App\Models\PackageInclusion;
+use App\Models\User;
 class SettingController extends Controller
 {
     /**
@@ -64,6 +65,11 @@ class SettingController extends Controller
 
         $data = [];
 
+        if ($tab === 'team-management') {
+            $teams = User::all();
+            $data['teams'] = $teams;
+            // dd($data['branches']);
+        }
         if ($tab === 'package-inclusions') {
             $inclusions = PackageInclusion::where('user_id', auth()->id())->first();
             $data['inclusions'] = $inclusions;

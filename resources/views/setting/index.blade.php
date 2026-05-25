@@ -54,7 +54,7 @@ html{background-image:none !important;background-color:#FFFFFF !important;}
                         </td>
                         <td align="left" valign="top">
                         @if ($tab == 'team-management')
-                            @include('setting.team-management')
+                            @include('setting.team-management',['teams' => $data['teams'] ?? null])
                         @elseif ($tab == 'organisation-settings')
                             @include('setting.organisation-setting')
                         @elseif ($tab == 'default-setting')

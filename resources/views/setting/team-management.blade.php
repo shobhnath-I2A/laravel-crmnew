@@ -4,7 +4,7 @@
             <div class="newhead">Team - People within your organisation<div class="newoptionmenu">
                     <div>
                           <button id="addteammember" type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
-                            onclick="openPopup('Invite Team Member','{{ route('roles.create') }}')"
+                            onclick="openPopup('Invite Team Member','{{ route('staff.create') }}')"
                             data-backdrop="static">Invite Team Member</button>
                     </div>
 
@@ -36,17 +36,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-
+                                @forelse($teams as $team)
                                     <tr>
                                         <td width="0%">
-                                            <div class="bulbblue" style="margin-right:0px; margin:auto;">i</div>
+                                            <div class="bulbblue" style="margin-right:0px; margin:auto;"> {{ strtoupper(substr(optional($team)->name ?? 'A', 0, 1)) }}</div>
                                         </td>
-                                        <td width="30%">i2a Technologies</td>
-                                        <td width="35%">holidays@trekhops.in</td>
-                                        <td width="25%">
-                                            Administrator</td>
+                                        <td width="30%">{{ $team->name ??'' }}</td>
+                                        <td width="35%">{{ $team->email ?? '' }}</td>
+                                        <td width="25%">{{ $team->role??'' }}
+                                            </td>
                                         <td width="1%">
-                                            <span class="badge badge-success">Active</span>
+                                            <span
+                                                class="badge {{ $team->status == 1 ? 'badge-success' : 'badge-danger' }}">
+                                                {{ $team->status == 1 ? 'Active' : 'Inactive' }}
+                                            </span>
                                         </td>
                                         <td class="d-none">
                                             <div align="center">
@@ -58,202 +61,20 @@
                                             <div align="center">
                                             </div>
                                         </td>
-                                        <td width="1%"></td>
-                                        <td width="1%"></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td width="0%">
-                                            <div class="bulbblue" style="margin-right:0px; margin:auto;">S</div>
-                                        </td>
-                                        <td width="30%">Sujeet Kumar</td>
-                                        <td width="35%">Sujeet.sk@trekhops.in</td>
-                                        <td width="25%">
-                                            <strong>Manager</strong> - Inhouse
-                                        </td>
-                                        <td width="1%">
-                                            <span class="badge badge-danger">Inactive</span>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="stipverification[]" class="stip1"
-                                                    value="104012" style="width: 19px; height: 22px;" checked="checked">
-                                            </div>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="qrcodeon[]" class="stip2" value="104012"
-                                                    style="width: 19px; height: 22px;" checked="checked">
-                                            </div>
-                                        </td>
                                         <td width="1%"><a href="display.html?ga=team&amp;add=1&amp;id=104012"
                                                 class="badge badge-info" style="color:#fff !important;">Set Target</a>
                                         </td>
                                         <td width="1%">
                                             <a class="dropdown-item neweditpan"
-                                                onclick="loadpop('Edit user details',this,'600px')" data-toggle="modal"
-                                                data-target=".bs-example-modal-center"
-                                                popaction="action=addstaff&amp;id=104012"><i class="fa fa-pencil"
-                                                    aria-hidden="true"></i></a>
-
+                                                onclick="openPopup('Invite Team Member','{{ route('staff.edit', $team->id) }}')"><i
+                                                    class="fa fa-pencil" aria-hidden="true"></i></a>
                                         </td>
                                     </tr>
-
+                                @empty
                                     <tr>
-                                        <td width="0%">
-                                            <div class="bulbblue" style="margin-right:0px; margin:auto;">S</div>
-                                        </td>
-                                        <td width="30%">Sachin Kumar</td>
-                                        <td width="35%">sachin.sk@trekhops.in</td>
-                                        <td width="25%">
-                                            <strong>Manager</strong> - Inhouse
-                                        </td>
-                                        <td width="1%">
-                                            <span class="badge badge-success">Active</span>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="stipverification[]" class="stip1"
-                                                    value="104013" style="width: 19px; height: 22px;"
-                                                    checked="checked">
-                                            </div>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="qrcodeon[]" class="stip2"
-                                                    value="104013" style="width: 19px; height: 22px;"
-                                                    checked="checked">
-                                            </div>
-                                        </td>
-                                        <td width="1%"><a href="display.html?ga=team&amp;add=1&amp;id=104013"
-                                                class="badge badge-info" style="color:#fff !important;">Set Target</a>
-                                        </td>
-                                        <td width="1%">
-                                            <a class="dropdown-item neweditpan"
-                                                onclick="loadpop('Edit user details',this,'600px')"
-                                                data-toggle="modal" data-target=".bs-example-modal-center"
-                                                popaction="action=addstaff&amp;id=104013"><i class="fa fa-pencil"
-                                                    aria-hidden="true"></i></a>
-
-                                        </td>
+                                        <td colspan="5" class="text-center">No Data</td>
                                     </tr>
-
-                                    <tr>
-                                        <td width="0%">
-                                            <div class="bulbblue" style="margin-right:0px; margin:auto;">N</div>
-                                        </td>
-                                        <td width="30%">Nishant Kumar</td>
-                                        <td width="35%">nishant.nkp@trekhops.in</td>
-                                        <td width="25%">
-                                            <strong>Sales Executive</strong> - Inhouse
-                                        </td>
-                                        <td width="1%">
-                                            <span class="badge badge-danger">Inactive</span>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="stipverification[]" class="stip1"
-                                                    value="104014" style="width: 19px; height: 22px;"
-                                                    checked="checked">
-                                            </div>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="qrcodeon[]" class="stip2"
-                                                    value="104014" style="width: 19px; height: 22px;"
-                                                    checked="checked">
-                                            </div>
-                                        </td>
-                                        <td width="1%"><a href="display.html?ga=team&amp;add=1&amp;id=104014"
-                                                class="badge badge-info" style="color:#fff !important;">Set Target</a>
-                                        </td>
-                                        <td width="1%">
-                                            <a class="dropdown-item neweditpan"
-                                                onclick="loadpop('Edit user details',this,'600px')"
-                                                data-toggle="modal" data-target=".bs-example-modal-center"
-                                                popaction="action=addstaff&amp;id=104014"><i class="fa fa-pencil"
-                                                    aria-hidden="true"></i></a>
-
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td width="0%">
-                                            <div class="bulbblue" style="margin-right:0px; margin:auto;">S</div>
-                                        </td>
-                                        <td width="30%">Swapnil Sinha</td>
-                                        <td width="35%">Swapnil.ss@trekhops.in</td>
-                                        <td width="25%">
-                                            <strong>Sales Executive</strong> - Inhouse
-                                        </td>
-                                        <td width="1%">
-                                            <span class="badge badge-danger">Inactive</span>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="stipverification[]" class="stip1"
-                                                    value="104015" style="width: 19px; height: 22px;"
-                                                    checked="checked">
-                                            </div>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="qrcodeon[]" class="stip2"
-                                                    value="104015" style="width: 19px; height: 22px;"
-                                                    checked="checked">
-                                            </div>
-                                        </td>
-                                        <td width="1%"><a href="display.html?ga=team&amp;add=1&amp;id=104015"
-                                                class="badge badge-info" style="color:#fff !important;">Set Target</a>
-                                        </td>
-                                        <td width="1%">
-                                            <a class="dropdown-item neweditpan"
-                                                onclick="loadpop('Edit user details',this,'600px')"
-                                                data-toggle="modal" data-target=".bs-example-modal-center"
-                                                popaction="action=addstaff&amp;id=104015"><i class="fa fa-pencil"
-                                                    aria-hidden="true"></i></a>
-
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td width="0%">
-                                            <div class="bulbblue" style="margin-right:0px; margin:auto;">R</div>
-                                        </td>
-                                        <td width="30%">Rajat Kumar</td>
-                                        <td width="35%">Rajat.rk@trekhops.in</td>
-                                        <td width="25%">
-                                            <strong>Manager</strong> - Inhouse
-                                        </td>
-                                        <td width="1%">
-                                            <span class="badge badge-success">Active</span>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="stipverification[]" class="stip1"
-                                                    value="104078" style="width: 19px; height: 22px;"
-                                                    checked="checked">
-                                            </div>
-                                        </td>
-                                        <td class="d-none">
-                                            <div align="center">
-                                                <input type="checkbox" name="qrcodeon[]" class="stip2"
-                                                    value="104078" style="width: 19px; height: 22px;"
-                                                    checked="checked">
-                                            </div>
-                                        </td>
-                                        <td width="1%"><a href="display.html?ga=team&amp;add=1&amp;id=104078"
-                                                class="badge badge-info" style="color:#fff !important;">Set
-                                                Target</a></td>
-                                        <td width="1%">
-                                            <a class="dropdown-item neweditpan"
-                                                onclick="loadpop('Edit user details',this,'600px')"
-                                                data-toggle="modal" data-target=".bs-example-modal-center"
-                                                popaction="action=addstaff&amp;id=104078"><i class="fa fa-pencil"
-                                                    aria-hidden="true"></i></a>
-
-                                        </td>
-                                    </tr>
+                                @endforelse
                                 </tbody>
                             </table>
                             <input name="action" type="hidden" id="action" value="stepverificationaction">
