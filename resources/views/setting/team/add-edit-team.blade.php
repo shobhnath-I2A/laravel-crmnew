@@ -25,7 +25,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label>Last Name</label>
-                            <input type="text" name="last_name" class="form-control" value="{{ old('last_name', $user_last_name ??'') }}"
+                            <input type="text" name="last_name" class="form-control" value="{{ old('last_name', $user->last_name ??'') }}"
                                 required>
                         </div>
 
@@ -38,26 +38,25 @@
                         <div class="col-md-6 mb-3">
                             <label>Portal</label>
                             <input type="text" class="form-control" value="trekhops.in" disabled>
-                            <input type="hidden" name="userCountry" value="1550">
+                            <input type="hidden" name="user_country" value="1550">
                         </div>
 
                         <div class="col-md-12 mb-3">
                             <label>Role</label>
-                            <select name="branchId" class="form-control" required>
+                            <select name="branch_Id" class="form-control" required>
                                 <option value="">Select Role</option>
-
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->id }}"
-                                        {{ old('branchId') == $role->id ? 'selected' : '' }}>
-                                        {{ $role->name ?? ($role->role_name ?? 'Role ' . $role->id) }}
-                                        @if (isset($role->branch))
-                                            — {{ $role->branch->name ?? ($role->branch->branch_name ?? '') }}
+                                        {{ old('branch_Id', $user->role_id ?? '') == $role->id ? 'selected' : '' }}>
+                                        {{ $role->name }}
+                                        @if(isset($role->branch))
+                                            — {{ $role->branch->name }}
                                         @endif
                                     </option>
                                 @endforeach
                             </select>
 
-                            <input type="hidden" name="userType" value="1">
+                            <input type="hidden" name="user_type" value="1">
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -166,10 +165,10 @@
                                             <td>{{ $module['label'] }}</td>
 
                                             <td>
-                                              <input type="checkbox"
+                                             <input type="checkbox"
                                                 name="permissionView[]"
                                                 value="{{ $moduleValue }}"
-                                                {{ isset($userPermissions[$moduleValue]) && $userPermissions[$moduleValue]->can_view ? 'checked' : '' }}>
+                                                {{ isset($userPermissions[$moduleValue]) && $userPermissions[$moduleValue]->can_view == 1 ? 'checked' : '' }}>
                                             </td>
 
                                             <td>
@@ -177,7 +176,7 @@
                                                     <input type="checkbox"
                                                         name="permissionAddEdit[]"
                                                         value="{{ $moduleValue }}"
-                                                        {{ isset($userPermissions[$moduleValue]) && $userPermissions[$moduleValue]->can_add_edit ? 'checked' : '' }}>
+                                                        {{ isset($userPermissions[$moduleValue]) && $userPermissions[$moduleValue]->can_add_edit == 1 ? 'checked' : '' }}>
                                                 @endif
                                             </td>
                                         </tr>
@@ -185,7 +184,7 @@
                                         @if ($moduleValue === 'Query')
                                             <tr>
                                                 <td colspan="3">
-                                                    <select name="showQueryStatus" class="form-control">
+                                                    <select name="show_query_status" class="form-control">
                                                         <option value="0">Show Assigned Query Only</option>
                                                         <option value="1">Show Confirmed Query / Proposal Only
                                                         </option>
