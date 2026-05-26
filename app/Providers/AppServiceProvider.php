@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use App\Models\Destination;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -22,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-       Paginator::useBootstrap();
+        Paginator::useBootstrap();
 
         Broadcast::routes(['middleware' => ['web', 'auth']]);
         require base_path('routes/channels.php');
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             $destinationList = Destination::pluck('name', 'id');
             $view->with('destinationList', $destinationList);
+
+            if (auth()->check()) {
+                auth()->user()->loadMissing('permissions', 'role.branch');
+            }
         });
     }
 }

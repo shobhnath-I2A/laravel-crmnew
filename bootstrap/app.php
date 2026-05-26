@@ -5,7 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\RestrictIp;
 use App\Http\Middleware\CheckPermission;
-
+use App\Http\Middleware\ModulePermission;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'restrict.ip' => RestrictIp::class,
             'permission' => CheckPermission::class,
+            'module.permission' => ModulePermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

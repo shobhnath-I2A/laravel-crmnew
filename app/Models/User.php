@@ -84,4 +84,31 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserPermission::class, 'user_id', 'id');
     }
+    public function isAdmin()
+{
+    return strtolower($this->roleData->name ?? '') === 'director';
+}
+public function canViewModule($module)
+{
+    if ($this->isAdmin()) {
+        return true;
+    }
+
+    return $this->permissions
+        ->where('module', $module)
+        ->where('can_view', 1)
+        ->isNotEmpty();
+}
+
+public function canEditModule($module)
+{
+    if ($this->isAdmin()) {
+        return true;
+    }
+
+    return $this->permissions
+        ->where('module', $module)
+        ->where('can_add_edit', 1)
+        ->isNotEmpty();
+}
 }
