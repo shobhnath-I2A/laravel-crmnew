@@ -8,7 +8,7 @@ use App\Models\RoleMaster;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Models\RolePermission;
+
 class StaffController extends Controller
 {
     public function create()
@@ -35,8 +35,8 @@ class StaffController extends Controller
             $plainPassword = rand(100000, 999999);
 
             $user = User::create([
+                'name'       => $request->name,
                 'last_name'        => $request->last_name,
-                'name'            => $request->name,
                 'email'           => $request->email,
                 'password'        => Hash::make($plainPassword),
 
@@ -44,9 +44,9 @@ class StaffController extends Controller
                 'role_id'         => $request->branch_Id,
 
                 'branch_Id'        => $request->branch_Id,
-                'userType'        => $request->userType ?? 1,
-                'userCountry'     => $request->userCountry ?? 1550,
-                'showQueryStatus' => $request->showQueryStatus ?? 0,
+                'user_type'        => $request->user_type ?? 1,
+                'user_country'     => $request->user_country ?? 1550,
+                'show_query_status' => $request->show_query_status ?? 0,
                 'status'          => $request->has('status') ? 1 : 0,
             ]);
 
@@ -56,42 +56,26 @@ class StaffController extends Controller
         return redirect()->back()->with('success', 'Staff user created successfully.');
     }
 
-
-public function edit($id)
-{
-    $roles = RoleMaster::with('branch')
-        ->where('status', 1)
-        ->orderBy('id', 'asc')
-        ->get();
-
-    $user = User::findOrFail($id);
-
-    $userPermissions = UserPermission::where('user_id', $user->id)
-        ->get()
-        ->keyBy('module');
-
-    return view('setting.team.add-edit-team', compact(
-        'roles',
-        'user',
-        'userPermissions'
-    ));
-}
-    // public function edit($id)
-    // {
-    //     $roles = RoleMaster::with('branch')
-    //         ->where('status', 1)
-    //         ->orderBy('id', 'asc')
-    //         ->get();
-
-    //     $user = User::with('permissions')->findOrFail($id);
-    // dd($user);
-    //     return view('setting.team.add-edit-team', compact('roles', 'user'));
-    // }
+    public function edit($id)
+    {
+        $user = User::with('permissions')->findOrFail($id);
+        $roles = RoleMaster::with('branch')
+            ->where('status', 1)
+            ->orderBy('id', 'asc')
+            ->get();
+        // $roles = RoleMaster::with('branch')
+        //     ->where('status', 1)
+        //     ->orderBy('id', 'asc')
+        //     ->get();
+        $userPermissions = UserPermission::where('user_id', $id)
+            ->get()
+            ->keyBy('module');
+        // dd($userPermissions);
+        return view('setting.team.add-edit-team', compact('user', 'roles','userPermissions'));
+    }
 
     public function update(Request $request, $id)
     {
-
-    // dd($request);
         $user = User::findOrFail($id);
 
         $request->validate([
@@ -104,17 +88,16 @@ public function edit($id)
         DB::transaction(function () use ($request, $user) {
 
             $user->update([
+                'name'       => $request->name,
                 'last_name'        => $request->last_name,
-                'name'            => $request->name,
                 'email'           => $request->email,
-
                 'role'            => 'team',
                 'role_id'         => $request->branch_Id,
 
                 'branch_Id'        => $request->branch_Id,
-                'user_type'        => $request->userType ?? 1,
-                'user_country'     => $request->userCountry ?? 1550,
-                'show_query_status' => $request->showQueryStatus ?? 0,
+                'user_type'        => $request->user_type ?? 1,
+                'user_country'     => $request->user_country ?? 1550,
+                'show_query_status' => $request->show_query_status ?? 0,
                 'status'          => $request->has('status') ? 1 : 0,
             ]);
 
@@ -131,17 +114,14 @@ public function edit($id)
 
     private function savePermissions(Request $request, $userId)
     {
-        $viewPermissions = $request->permissionView ?? [];
-        $addEditPermissions = $request->permissionAddEdit ?? [];
+        $permissions = $request->permissions ?? [];
 
-        $allModules = array_unique(array_merge($viewPermissions, $addEditPermissions));
-
-        foreach ($allModules as $module) {
+        foreach ($permissions as $module => $permission) {
             UserPermission::create([
                 'user_id'      => $userId,
                 'module'       => $module,
-                'can_view'     => in_array($module, $viewPermissions) ? 1 : 0,
-                'can_add_edit' => in_array($module, $addEditPermissions) ? 1 : 0,
+                'can_view'     => isset($permission['view']) ? 1 : 0,
+                'can_add_edit' => isset($permission['add_edit']) ? 1 : 0,
             ]);
         }
     }

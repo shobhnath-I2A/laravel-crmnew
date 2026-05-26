@@ -5,11 +5,11 @@
 </style>
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
     <form class="custom-validation ajax-form"
-       action="{{ isset($user) ? route('staff.update', $user->id) : route('staff.store') }}"
-        method="POST" enctype="multipart/form-data">
+        action="{{ isset($user) ? route('staff.update', $user->id) : route('staff.store') }}" method="POST"
+        enctype="multipart/form-data">
 
         @csrf
-       @if (isset($user))
+        @if (isset($user))
             @method('PUT')
         @endif
         <form action="{{ route('staff.store') }}" method="POST" enctype="multipart/form-data">
@@ -19,20 +19,20 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label>First Name</label>
-                            <input type="text" name="name" class="form-control" value="{{ old('name', $user->name ?? '') }}"
-                                required>
+                            <input type="text" name="name" class="form-control"
+                                value="{{ old('name', $user->name ?? '') }}" required>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label>Last Name</label>
-                            <input type="text" name="last_name" class="form-control" value="{{ old('last_name', $user->last_name ??'') }}"
-                                required>
+                            <input type="text" name="last_name" class="form-control"
+                                value="{{ old('last_name', $user->last_name ?? '') }}" required>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label>Email / Username</label>
-                            <input type="email" name="email" class="form-control" value="{{ old('email', $user->email ?? '') }}"
-                                required>
+                            <input type="email" name="email" class="form-control"
+                                value="{{ old('email', $user->email ?? '') }}" required>
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -49,7 +49,7 @@
                                     <option value="{{ $role->id }}"
                                         {{ old('branch_Id', $user->role_id ?? '') == $role->id ? 'selected' : '' }}>
                                         {{ $role->name }}
-                                        @if(isset($role->branch))
+                                        @if (isset($role->branch))
                                             — {{ $role->branch->name }}
                                         @endif
                                     </option>
@@ -154,8 +154,8 @@
                                 <thead>
                                     <tr>
                                         <th>Module Permission</th>
-                                        <th width="15%">View</th>
-                                        <th width="20%">Add/Edit</th>
+                                        <th width="15%">View <input type="checkbox" id="selectAllView"></th>
+                                        <th width="20%">Add/Edit <input type="checkbox" id="selectAllEdit"></th>
                                     </tr>
                                 </thead>
 
@@ -165,17 +165,16 @@
                                             <td>{{ $module['label'] }}</td>
 
                                             <td>
-                                             <input type="checkbox"
-                                                name="permissionView[]"
-                                                value="{{ $moduleValue }}"
-                                                {{ isset($userPermissions[$moduleValue]) && $userPermissions[$moduleValue]->can_view == 1 ? 'checked' : '' }}>
+                                                <input type="checkbox" class="view-checkbox"
+                                                    name="permissions[{{ $moduleValue }}][view]" value="1"
+                                                    {{ isset($userPermissions[$moduleValue]) && $userPermissions[$moduleValue]->can_view == 1 ? 'checked' : '' }}>
                                             </td>
 
                                             <td>
                                                 @if ($module['add_edit'])
-                                                    <input type="checkbox"
-                                                        name="permissionAddEdit[]"
-                                                        value="{{ $moduleValue }}"
+                                                    <input type="checkbox" class="edit-checkbox"
+                                                        name="permissions[{{ $moduleValue }}][add_edit]"
+                                                        value="1"
                                                         {{ isset($userPermissions[$moduleValue]) && $userPermissions[$moduleValue]->can_add_edit == 1 ? 'checked' : '' }}>
                                                 @endif
                                             </td>
@@ -200,9 +199,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label>
-                                <input type="checkbox"
-                                    name="status"
-                                    value="1"
+                                <input type="checkbox" name="status" value="1"
                                     {{ old('status', $user->status ?? 1) ? 'checked' : '' }}>
                                 Active
                             </label>
@@ -219,3 +216,22 @@
             </div>
         </form>
 </div>
+<script>
+    function handleSelectAll(masterId, childClass) {
+        const master = document.getElementById(masterId);
+        const children = document.querySelectorAll('.' + childClass);
+
+        master.addEventListener('change', function() {
+            children.forEach(cb => cb.checked = master.checked);
+        });
+
+        children.forEach(cb => {
+            cb.addEventListener('change', function() {
+                master.checked = [...children].every(item => item.checked);
+            });
+        });
+    }
+
+    handleSelectAll('selectAllView', 'view-checkbox');
+    handleSelectAll('selectAllEdit', 'edit-checkbox');
+</script>
