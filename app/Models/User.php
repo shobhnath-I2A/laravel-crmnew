@@ -85,30 +85,42 @@ class User extends Authenticatable
         return $this->hasMany(UserPermission::class, 'user_id', 'id');
     }
     public function isAdmin()
-{
-    return strtolower($this->roleData->name ?? '') === 'director';
-}
-public function canViewModule($module)
-{
-    if ($this->isAdmin()) {
-        return true;
+    {
+        return strtolower($this->roleData->name ?? '') === 'director';
+    }
+    public function hasPermission($module, $permission)
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        return $this->permissions()
+            ->where('module', $module)
+            ->where($permission, 1)
+            ->exists();
+    }
+    public function canView($module)
+    {
+        return $this->hasPermission($module, 'can_view');
     }
 
-    return $this->permissions
-        ->where('module', $module)
-        ->where('can_view', 1)
-        ->isNotEmpty();
-}
-
-public function canEditModule($module)
-{
-    if ($this->isAdmin()) {
-        return true;
+    public function canAdd($module)
+    {
+        return $this->hasPermission($module, 'can_add');
     }
 
-    return $this->permissions
-        ->where('module', $module)
-        ->where('can_add_edit', 1)
-        ->isNotEmpty();
-}
+    public function canEdit($module)
+    {
+        return $this->hasPermission($module, 'can_edit');
+    }
+
+    public function canDelete($module)
+    {
+        return $this->hasPermission($module, 'can_delete');
+    }
+
+    public function canDownload($module)
+    {
+        return $this->hasPermission($module, 'can_download');
+    }
 }

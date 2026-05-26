@@ -154,8 +154,11 @@
                                 <thead>
                                     <tr>
                                         <th>Module Permission</th>
-                                        <th width="15%">View All<input type="checkbox" id="selectAllView"></th>
-                                        <th width="20%">Add/Edit All <input type="checkbox" id="selectAllEdit"></th>
+                                        <th><input type="checkbox" id="selectAllView">  View</th>
+                                        <th><input type="checkbox" id="selectAllAdd">  Add</th>
+                                        <th><input type="checkbox" id="selectAllEdit">  Edit</th>
+                                        <th><input type="checkbox" id="selectAllDelete">  Delete</th>
+                                        <th><input type="checkbox" id="selectAllDownload">  Download</th>
                                     </tr>
                                 </thead>
 
@@ -167,27 +170,50 @@
                                             <td>
                                                 <input type="checkbox" class="view-checkbox"
                                                     name="permissions[{{ $moduleValue }}][view]" value="1"
-                                                    {{ isset($userPermissions[$moduleValue]) && $userPermissions[$moduleValue]->can_view == 1 ? 'checked' : '' }}>
+                                                    {{ optional($userPermissions->get($moduleValue))->can_view == 1 ? 'checked' : '' }}>
                                             </td>
 
                                             <td>
-                                                @if ($module['add_edit'])
-                                                    <input type="checkbox" class="edit-checkbox"
-                                                        name="permissions[{{ $moduleValue }}][add_edit]"
-                                                        value="1"
-                                                        {{ isset($userPermissions[$moduleValue]) && $userPermissions[$moduleValue]->can_add_edit == 1 ? 'checked' : '' }}>
-                                                @endif
+                                                <input type="checkbox" class="add-checkbox"
+                                                    name="permissions[{{ $moduleValue }}][add]" value="1"
+                                                    {{ optional($userPermissions->get($moduleValue))->can_add == 1 ? 'checked' : '' }}>
+                                            </td>
+
+                                            <td>
+                                                <input type="checkbox" class="edit-checkbox"
+                                                    name="permissions[{{ $moduleValue }}][edit]" value="1"
+                                                    {{ optional($userPermissions->get($moduleValue))->can_edit == 1 ? 'checked' : '' }}>
+                                            </td>
+
+                                            <td>
+                                                <input type="checkbox" class="delete-checkbox"
+                                                    name="permissions[{{ $moduleValue }}][delete]" value="1"
+                                                    {{ optional($userPermissions->get($moduleValue))->can_delete == 1 ? 'checked' : '' }}>
+                                            </td>
+
+                                            <td>
+                                                <input type="checkbox" class="download-checkbox"
+                                                    name="permissions[{{ $moduleValue }}][download]" value="1"
+                                                    {{ optional($userPermissions->get($moduleValue))->can_download == 1 ? 'checked' : '' }}>
                                             </td>
                                         </tr>
 
                                         @if ($moduleValue === 'Query')
                                             <tr>
-                                                <td colspan="3">
+                                                <td colspan="6">
                                                     <select name="show_query_status" class="form-control">
-                                                        <option value="0">Show Assigned Query Only</option>
-                                                        <option value="1">Show Confirmed Query / Proposal Only
+                                                        <option value="0"
+                                                            {{ old('show_query_status', $user->show_query_status ?? 0) == 0 ? 'selected' : '' }}>
+                                                            Show Assigned Query Only
                                                         </option>
-                                                        <option value="2">Show All Query</option>
+                                                        <option value="1"
+                                                            {{ old('show_query_status', $user->show_query_status ?? 0) == 1 ? 'selected' : '' }}>
+                                                            Show Confirmed Query / Proposal Only
+                                                        </option>
+                                                        <option value="2"
+                                                            {{ old('show_query_status', $user->show_query_status ?? 0) == 2 ? 'selected' : '' }}>
+                                                            Show All Query
+                                                        </option>
                                                     </select>
                                                 </td>
                                             </tr>
@@ -221,6 +247,8 @@
         const master = document.getElementById(masterId);
         const children = document.querySelectorAll('.' + childClass);
 
+        if (!master) return;
+
         master.addEventListener('change', function() {
             children.forEach(cb => cb.checked = master.checked);
         });
@@ -233,5 +261,8 @@
     }
 
     handleSelectAll('selectAllView', 'view-checkbox');
+    handleSelectAll('selectAllAdd', 'add-checkbox');
     handleSelectAll('selectAllEdit', 'edit-checkbox');
+    handleSelectAll('selectAllDelete', 'delete-checkbox');
+    handleSelectAll('selectAllDownload', 'download-checkbox');
 </script>

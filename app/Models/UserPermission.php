@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserPermission extends Model
 {
-   protected $fillable = [
+    protected $fillable = [
         'user_id',
         'module',
         'can_view',
-        'can_add_edit',
+        'can_add',
+        'can_edit',
+        'can_delete',
+        'can_download',
     ];
 }

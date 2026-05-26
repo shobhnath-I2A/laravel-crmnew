@@ -18,8 +18,11 @@ return new class extends Migration
 
             $table->string('module', 100);
             $table->tinyInteger('can_view')->default(0);
-            $table->tinyInteger('can_add_edit')->default(0);
-
+            $table->boolean('can_add')->default(0);
+            $table->boolean('can_edit')->default(0);
+            $table->boolean('can_delete')->default(0);
+            $table->boolean('can_download')->default(0);
+            // $table->tinyInteger('can_add_edit')->default(0);
             $table->timestamps();
 
             $table->index('user_id');

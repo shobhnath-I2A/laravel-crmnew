@@ -13,14 +13,19 @@ class ModulePermission
         $user = auth()->user();
 
         if (!$user) {
-            abort(403);
-        }
-
-        if ($type == 'view' && !$user->canViewModule($module)) {
             abort(403, 'Unauthorized access.');
         }
 
-        if ($type == 'edit' && !$user->canEditModule($module)) {
+        $allowed = match ($type) {
+            'view'     => $user->canView($module),
+            'add'      => $user->canAdd($module),
+            'edit'     => $user->canEdit($module),
+            'delete'   => $user->canDelete($module),
+            'download' => $user->canDownload($module),
+            default    => false,
+        };
+
+        if (!$allowed) {
             abort(403, 'Unauthorized access.');
         }
 

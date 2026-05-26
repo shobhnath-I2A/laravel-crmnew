@@ -111,14 +111,15 @@ class StaffController extends Controller
 
     private function savePermissions(Request $request, $userId)
     {
-        $permissions = $request->permissions ?? [];
-
-        foreach ($permissions as $module => $permission) {
+        foreach ($request->permissions ?? [] as $module => $permission) {
             UserPermission::create([
                 'user_id'      => $userId,
                 'module'       => $module,
                 'can_view'     => isset($permission['view']) ? 1 : 0,
-                'can_add_edit' => isset($permission['add_edit']) ? 1 : 0,
+                'can_add'      => isset($permission['add']) ? 1 : 0,
+                'can_edit'     => isset($permission['edit']) ? 1 : 0,
+                'can_delete'   => isset($permission['delete']) ? 1 : 0,
+                'can_download' => isset($permission['download']) ? 1 : 0,
             ]);
         }
     }

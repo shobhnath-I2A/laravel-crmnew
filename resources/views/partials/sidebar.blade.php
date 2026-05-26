@@ -16,7 +16,7 @@
                                 </svg>
                             </a>
                         </li>
-                        @if (auth()->user()->canViewModule('Query'))
+                        @if (auth()->user()->canView('Query'))
                             <li class="has-submenu">
                                 <a href="{{ url('queries') }}" data-toggle="tooltip" data-placement="right" title="" data-original-title="Queries"><svg class="unified360-icon"  width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M17.3 20H2.7C1.98392 20 1.29716 19.7155 0.790812 19.2092C0.284464 18.7028 0 18.0161 0 17.3L0 2.7C0 1.98392 0.284464 1.29716 0.790812 0.790812C1.29716 0.284464 1.98392 0 2.7 0L17.3 0C18.0161 0 18.7028 0.284464 19.2092 0.790812C19.7155 1.29716 20 1.98392 20 2.7V17.3C20 18.0161 19.7155 18.7028 19.2092 19.2092C18.7028 19.7155 18.0161 20 17.3 20ZM2.7 1.4C2.52928 1.4 2.36023 1.43363 2.20251 1.49896C2.04479 1.56429 1.90148 1.66005 1.78076 1.78076C1.66005 1.90148 1.56429 2.04479 1.49896 2.20251C1.43363 2.36023 1.4 2.52928 1.4 2.7V17.3C1.4 17.6448 1.53696 17.9754 1.78076 18.2192C1.90148 18.34 2.04479 18.4357 2.20251 18.501C2.36023 18.5664 2.52928 18.6 2.7 18.6H17.3C17.6448 18.6 17.9754 18.463 18.2192 18.2192C18.463 17.9754 18.6 17.6448 18.6 17.3V2.7C18.6 2.35522 18.463 2.02456 18.2192 1.78076C17.9754 1.53696 17.6448 1.4 17.3 1.4H2.7Z">
@@ -34,7 +34,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if (auth()->user()->canViewModule('Itinerary'))
+                        @if (auth()->user()->canView('Itinerary'))
                             <li class="has-submenu">
                                 <a href="{{ route('itineraries.index') }}" data-toggle="tooltip" data-placement="right" title="" data-original-title="Itineraries">
                                     <svg class="unified360-icon unified360-valign" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -52,7 +52,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if (auth()->user()->canViewModule('Itinerary'))
+                        @if (auth()->user()->canView('Itinerary'))
                             <li class="has-submenu">
                                 <a href="{{ route('clients.index') }}" data-toggle="tooltip" data-placement="right" title="" data-original-title="Clients">
                                     <svg class="unified360-icon unified360-valign" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -70,7 +70,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if (auth()->user()->canViewModule('Itinerary'))
+                        @if (auth()->user()->canView('Itinerary'))
                             <li class="has-submenu">
                                 <a href="{{ route('package-query.index') }}" data-toggle="tooltip" data-placement="right" title="" data-original-title="Package Queries">
                                     <svg class="unified360-icon" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -90,7 +90,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if (auth()->user()->canViewModule('Itinerary'))
+                        @if (auth()->user()->canView('Itinerary'))
                             <li style="display:none;" class="has-submenu">
                                 <a href="display.html?ga=inboxmails" data-toggle="tooltip" data-placement="right" title="" data-original-title="Mails"><svg class="unified360-icon unified360-valign" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                         <path
@@ -101,7 +101,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if (auth()->user()->canViewModule('Itinerary'))
+                        @if (auth()->user()->canView('Itinerary'))
                             <li class="has-submenu">
                                 <a href="#">
                                     <svg class="unified360-icon unified360-valign" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

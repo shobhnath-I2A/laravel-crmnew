@@ -63,8 +63,11 @@
                                     </a>
                                 </div>
                                 <div>
-                                    <a onclick="openSidebar('Create Query','{{ route('queries.create') }}')">
-                                        <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="margin-bottom:10px;">Add Query</button></a>
+                                    @if(auth()->user()->canEdit('Query'))
+                                        <a onclick="openSidebar('Create Query','{{ route('queries.create') }}')">
+                                            <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="margin-bottom:10px;">Add Query</button>
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -156,8 +159,7 @@
                                                     </a>
                                                 </td>
                                                 <td width="10%" align="left" valign="top">
-                                                    <a
-                                                        href="{{ route('queries.index',['statusid'=>1]) }}">
+                                                    <a href="{{ route('queries.index',['statusid'=>1]) }}">
                                                         <div class="statusbox" style="background-color:#655be6;">
                                                             <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
                                                                 {{ $statusCounts[1] ?? 0 }}
@@ -369,45 +371,44 @@
                                                                 </td>
                                                                 <td width="15%" align="left" valign="top"
                                                                     style="padding-right:20px;">
-                                                                    <div
-                                                                        style="font-size:12px; line-height: 16px; margin-bottom:3px;">
-                                                                        <span style="color:#686868;"><i class="fa fa-calendar"
-                                                                                aria-hidden="true"></i></span> {{ $query->startDate }}</div>
-                                                                    <div style="font-size:12px; line-height: 16px;"><span
-                                                                            style="color:#686868;">Till</span> {{ $query->endDate }}</div>
+                                                                    <div style="font-size:12px; line-height: 16px; margin-bottom:3px;">
+                                                                        <span style="color:#686868;"><i class="fa fa-calendar" aria-hidden="true"></i></span> {{ $query->startDate }}</div>
+                                                                    <div style="font-size:12px; line-height: 16px;">
+                                                                        <span  style="color:#686868;">Till</span> {{ $query->endDate }}</div>
                                                                 </td>
-                                                                <td align="left" valign="top"
-                                                                    style="font-size:13px; line-height: 16px;">No Task</span>
+                                                                <td align="left" valign="top" style="font-size:13px; line-height: 16px;">No Task</span>
 
-                                                                    <div
-                                                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size:12px;color:#686868;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:200px;">
-                                                                        <i class="fa fa-sticky-note" aria-hidden="true"
-                                                                            style=" color:#ffa500;"></i> &nbsp;package send
+                                                                    <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size:12px;color:#686868;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:200px;">
+                                                                        <i class="fa fa-sticky-note" aria-hidden="true" style=" color:#ffa500;"></i> &nbsp;package send
                                                                     </div>
                                                                 </td>
                                                                 <td width="13%" align="right" valign="middle">
-                                                                    <div class="btn-group" role="group"
-                                                                        aria-label="Option">
-                                                                        <a href="display.html?ga=query&view=1&id=127368"><button
-                                                                                type="button" class="btn btn-secondary"><i
-                                                                                    class="fa fa-eye"
-                                                                                    aria-hidden="true"></i></button></a>
-                                                                        <a target="_blank"
-                                                                            href="https://api.whatsapp.com/send?text=Hi&phone=+918892078092"><button
-                                                                                type="button" class="btn btn-secondary"><i
-                                                                                    class="fa fa-whatsapp"
-                                                                                    aria-hidden="true"></i></button></a>
-                                                                        <a popaction="action=composemail&queryId=127368"
-                                                                            onclick="loadpop('Compose Mail',this,'900px')"
-                                                                            data-toggle="modal"
-                                                                            data-target=".bs-example-modal-center"><button
-                                                                                type="button" class="btn btn-secondary"><i
-                                                                                    class="fa fa-envelope-o"
-                                                                                    aria-hidden="true"></i></button></a>
-                                                                        <a onclick="openSidebar('Edit Query','{{ route('queries.edit',$query->id) }}')"><button
-                                                                                type="button" class="btn btn-secondary"><i
-                                                                                    class="fa fa-pencil"
-                                                                                    aria-hidden="true"></i></button></a>
+                                                                    <div class="btn-group" role="group" aria-label="Option">
+                                                                        @if(auth()->user()->canView('Query'))
+                                                                            <a href="{{ route('queries.show',$query->id) }}">
+                                                                                <button type="button" class="btn btn-secondary">
+                                                                                    <i class="fa fa-eye" aria-hidden="true"></i>
+                                                                                </button>
+                                                                            </a>
+                                                                        @endif
+                                                                        <a target="_blank" href="https://api.whatsapp.com/send?text=Hi&phone=+918892078092">
+                                                                            <button type="button" class="btn btn-secondary">
+                                                                                <i class="fa fa-whatsapp" aria-hidden="true"></i>
+                                                                            </button>
+                                                                        </a>
+                                                                        <a popaction="action=composemail&queryId=127368" onclick="loadpop('Compose Mail',this,'900px')"
+                                                                            data-toggle="modal" data-target=".bs-example-modal-center">
+                                                                            <button type="button" class="btn btn-secondary">
+                                                                                <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                                                                            </button>
+                                                                        </a>
+                                                                        @if(auth()->user()->canEdit('Query'))
+                                                                            <a onclick="openSidebar('Edit Query','{{ route('queries.edit',$query->id) }}')">
+                                                                                <button type="button" class="btn btn-secondary">
+                                                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                                                </button>
+                                                                            </a>
+                                                                        @endif
                                                                     </div>
                                                                 </td>
                                                             </tr>
