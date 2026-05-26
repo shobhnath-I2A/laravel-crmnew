@@ -43,8 +43,18 @@
                                         </td>
                                         <td width="30%">{{ $team->name ??'' }}</td>
                                         <td width="35%">{{ $team->email ?? '' }}</td>
-                                        <td width="25%">{{ $team->role??'' }}
-                                            </td>
+                                       <td width="25%">
+                                            @php
+                                                $roleName = $team->role->name ?? '';
+                                                $isAdmin = strtolower($roleName) == 'director';
+                                            @endphp
+                                            <strong>
+                                                {{ $isAdmin ? 'Administrator' : $roleName }}
+                                            </strong>
+                                            @if(!$isAdmin && !empty($team->role?->branch?->name))
+                                                - {{ $team->role->branch->name }}
+                                            @endif
+                                        </td>
                                         <td width="1%">
                                             <span
                                                 class="badge {{ $team->status == 1 ? 'badge-success' : 'badge-danger' }}">
@@ -61,13 +71,23 @@
                                             <div align="center">
                                             </div>
                                         </td>
-                                        <td width="1%"><a href="display.html?ga=team&amp;add=1&amp;id=104012"
-                                                class="badge badge-info" style="color:#fff !important;">Set Target</a>
-                                        </td>
                                         <td width="1%">
-                                            <a class="dropdown-item neweditpan"
-                                                onclick="openPopup('Invite Team Member','{{ route('staff.edit', $team->id) }}')"><i
-                                                    class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            @if($team->role->name != 'Director')
+                                                <a href="display.html?ga=team&add=1&id={{ $team->id }}"
+                                                class="badge badge-info"
+                                                style="color:#fff !important;">
+                                                    Set Target
+                                                </a>
+                                            @endif
+                                        </td>
+
+                                        <td width="1%">
+                                            @if($team->role->name != 'Director')
+                                                <a class="dropdown-item neweditpan"
+                                                onclick="openPopup('Invite Team Member','{{ route('staff.edit', $team->id) }}')">
+                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                </a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

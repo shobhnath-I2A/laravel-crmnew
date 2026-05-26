@@ -39,8 +39,6 @@ class StaffController extends Controller
                 'last_name'        => $request->last_name,
                 'email'           => $request->email,
                 'password'        => Hash::make($plainPassword),
-
-                'role'            => 'team',
                 'role_id'         => $request->branch_Id,
 
                 'branch_Id'        => $request->branch_Id,
@@ -91,7 +89,6 @@ class StaffController extends Controller
                 'name'       => $request->name,
                 'last_name'        => $request->last_name,
                 'email'           => $request->email,
-                'role'            => 'team',
                 'role_id'         => $request->branch_Id,
 
                 'branch_Id'        => $request->branch_Id,

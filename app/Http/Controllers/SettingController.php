@@ -66,7 +66,8 @@ class SettingController extends Controller
         $data = [];
 
         if ($tab === 'team-management') {
-            $teams = User::all();
+            // $teams = User::all();
+            $teams = User::with('role.branch')->get();
             $data['teams'] = $teams;
             // dd($data['branches']);
         }
