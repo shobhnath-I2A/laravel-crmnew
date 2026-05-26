@@ -63,7 +63,7 @@
                                     </a>
                                 </div>
                                 <div>
-                                    @if(auth()->user()->canEdit('Query'))
+                                    @if(auth()->user()->canAdd('Query'))
                                         <a onclick="openSidebar('Create Query','{{ route('queries.create') }}')">
                                             <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="margin-bottom:10px;">Add Query</button>
                                         </a>

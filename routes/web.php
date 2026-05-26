@@ -36,11 +36,11 @@ function permissionResource($uri, $controller, $module)
         ->name("$uri.index");
 
     Route::get("$uri/create", [$controller, 'create'])
-        ->middleware("module.permission:$module,edit")
+        ->middleware("module.permission:$module,add")
         ->name("$uri.create");
 
     Route::post($uri, [$controller, 'store'])
-        ->middleware("module.permission:$module,edit")
+        ->middleware("module.permission:$module,add")
         ->name("$uri.store");
 
     Route::get("$uri/{id}", [$controller, 'show'])
@@ -56,7 +56,7 @@ function permissionResource($uri, $controller, $module)
         ->name("$uri.update");
 
     Route::delete("$uri/{id}", [$controller, 'destroy'])
-        ->middleware("module.permission:$module,edit")
+        ->middleware("module.permission:$module,delete")
         ->name("$uri.destroy");
 }
 
