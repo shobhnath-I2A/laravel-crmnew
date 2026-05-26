@@ -86,8 +86,12 @@ class User extends Authenticatable
     }
     public function isAdmin()
     {
-        return strtolower($this->roleData->name ?? '') === 'director';
+       return $this->role_id == 1;
     }
+    // public function isAdmin()
+    // {
+    //     return strtolower($this->roleData->name ?? '') === 'director';
+    // }
     public function hasPermission($module, $permission)
     {
         if ($this->isAdmin()) {

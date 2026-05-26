@@ -56,11 +56,11 @@ html{background-image:none !important;background-color:#FFFFFF !important;}
                         @if ($tab == 'team-management')
                             @include('setting.team-management',['teams' => $data['teams'] ?? null])
                         @elseif ($tab == 'organisation-settings')
-                            @include('setting.organisation-setting')
+                            @include('setting.organisation-setting',['organisation'=> $data['organisation'] ?? null])
                         @elseif ($tab == 'default-setting')
-                            @include('setting.default-setting')
+                            @include('setting.default-setting',['default' => $data['default'] ?? null])
                         @elseif ($tab == 'admin-settings')
-                            @include('setting.admin-setting')
+                            @include('setting.admin-setting',['payment_gateway'=> $data['payment_gateway'] ?? null])
                         @elseif ($tab == 'package-inclusions')
                             @include('setting.package-inclusion', [
                                 'inclusions' => $data['inclusions'] ?? null

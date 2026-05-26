@@ -129,7 +129,7 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::resource('transfer-rate-list', TransferMasterRateListController::class)
         ->middleware('module.permission:Transfer,edit');
 
-    Route::resource('settings', SettingController::class);
+
     Route::resource('meal-plan-master', MealPlanMasterController::class)
         ->middleware('module.permission:MealPlan,view');
 
@@ -144,10 +144,23 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::resource('weather-setting', WeatherSettingController::class);
     Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
+    Route::middleware(['auth', 'admin.only'])->group(function () {
+        Route::resource('settings', SettingController::class);
+        Route::resource('staff', StaffController::class);
+        Route::resource('roles', RoleController::class);
+        Route::resource('branch-master', BranchMasterController::class);
+    });
 
-    Route::resource('staff', StaffController::class);
-    Route::resource('roles', RoleController::class);
-    Route::resource('branch-master', BranchMasterController::class);
+    Route::post('/settings/organisation', [SettingController::class, 'saveOrganisation'])
+    ->name('settings.organisation.save');
+
+    Route::post('/settings/default', [SettingController::class, 'saveDefault'])
+        ->name('settings.default.save');
+
+    Route::post('/settings/payment-gateway', [SettingController::class, 'savePaymentGateway'])
+        ->name('settings.payment.save');
+    Route::post('/settings/package-inclusions', [SettingController::class, 'savePackageInclusions'])
+        ->name('settings.package-inclusions.save');
 
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::get('/notifications/latest', [NotificationController::class, 'latest']);

@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'restrict.ip' => RestrictIp::class,
             'permission' => CheckPermission::class,
+            'admin.only' => \App\Http\Middleware\AdminOnly::class,
             'module.permission' => ModulePermission::class,
         ]);
     })

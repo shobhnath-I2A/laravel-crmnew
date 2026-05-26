@@ -3,9 +3,11 @@
         <div class="newboxheading">
             <div class="newhead">Team - People within your organisation<div class="newoptionmenu">
                     <div>
+                        @if(auth()->user()->isAdmin())
                           <button id="addteammember" type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
                             onclick="openPopup('Invite Team Member','{{ route('staff.create') }}')"
                             data-backdrop="static">Invite Team Member</button>
+                        @endif
                     </div>
 
                 </div>

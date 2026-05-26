@@ -17,8 +17,8 @@ class StaffController extends Controller
             ->where('status', 1)
             ->orderBy('id', 'asc')
             ->get();
-
-        return view('setting.team.add-edit-team', compact('roles'));
+        $userPermissions = collect();
+        return view('setting.team.add-edit-team', compact('roles', 'userPermissions'));
     }
 
     public function store(Request $request)

@@ -10,6 +10,9 @@ use App\Models\Rolemaster;
 use App\Models\RolePermission;
 use App\Models\PackageInclusion;
 use App\Models\User;
+use App\Models\AppSetting;
+use Illuminate\Support\Facades\Cache;
+
 class SettingController extends Controller
 {
     /**
@@ -80,6 +83,21 @@ class SettingController extends Controller
             $data['branches'] = BranchMaster::latest()->get();
             // dd($data['branches']);
         }
+        if ($tab === 'organisation-settings') {
+            $data['organisation'] = $this->getSettingsGroup('organisation');
+        }
+
+        if ($tab === 'default-setting') {
+            $data['default'] = $this->getSettingsGroup('default');
+        }
+
+        if ($tab === 'admin-settings') {
+            $data['payment_gateway'] = $this->getSettingsGroup('payment_gateway');
+        }
+
+        if ($tab === 'package-inclusions') {
+            $data['package_inclusions'] = $this->getSettingsGroup('package_inclusions');
+        }
 
         if ($tab === 'roles') {
 
@@ -118,6 +136,116 @@ class SettingController extends Controller
         // return view('setting.index');
     }
 
+    private function countryCode()
+    {
+        return auth()->user()->user_country ?? '1550';
+    }
+
+    private function saveSettingsGroup($groupName, array $settings)
+    {
+        $countryCode = $this->countryCode();
+
+        foreach ($settings as $key => $value) {
+            AppSetting::updateOrCreate(
+                [
+                    'country_code' => $countryCode,
+                    'group_name'   => $groupName,
+                    'key_name'     => $key,
+                ],
+                [
+                    'value' => $value,
+                ]
+            );
+        }
+
+        Cache::forget("settings_{$countryCode}_{$groupName}");
+    }
+
+    private function getSettingsGroup($groupName)
+    {
+        $countryCode = $this->countryCode();
+
+        return Cache::remember("settings_{$countryCode}_{$groupName}", 3600, function () use ($countryCode, $groupName) {
+            return AppSetting::where('country_code', $countryCode)
+                ->where('group_name', $groupName)
+                ->pluck('value', 'key_name');
+        });
+    }
+
+    public function saveOrganisation(Request $request)
+    {
+        $this->saveSettingsGroup('organisation', $request->only([
+            'organisation_name',
+            'invoice_email',
+            'invoice_phone',
+            'address',
+            'gstn',
+            'state',
+            'state_code',
+        ]));
+
+        return back()->with('success', 'Organisation settings saved successfully.');
+    }
+
+    public function saveDefault(Request $request)
+    {
+        $data = $request->only([
+            'invoice_terms',
+            'package_terms',
+            'bank_information',
+            'google_sheet_url',
+        ]);
+
+        if ($request->hasFile('invoice_logo')) {
+            $data['invoice_logo'] = $request->file('invoice_logo')->store('settings', 'public');
+        }
+
+        $this->saveSettingsGroup('default', $data);
+
+        return back()->with('success', 'Default settings saved successfully.');
+    }
+
+    public function savePaymentGateway(Request $request)
+    {
+        $this->saveSettingsGroup('payment_gateway', $request->only([
+            'api_key',
+            'api_secret',
+        ]));
+
+        return back()->with('success', 'Payment gateway settings saved successfully.');
+    }
+
+    public function savePackageInclusions(Request $request)
+{
+    $data = $request->only([
+        'inclusions_title',
+        'package_inclusions',
+
+        'important_tips_title',
+        'package_important_tips',
+
+        'exclusions_title',
+        'package_exclusions',
+
+        'travel_information_title',
+        'package_travel_info',
+    ]);
+
+    foreach ([
+        'inclusions_img',
+        'important_tips_img',
+        'exclusions_img',
+        'travel_info_img',
+    ] as $fileKey) {
+        if ($request->hasFile($fileKey)) {
+            $data[$fileKey] = $request->file($fileKey)->store('settings/package', 'public');
+        }
+    }
+
+    $this->saveSettingsGroup('package_inclusions', $data);
+
+    return back()->with('success', 'Package inclusions settings saved successfully.');
+}
     /**
      * Show the form for creating a new resource.
      */

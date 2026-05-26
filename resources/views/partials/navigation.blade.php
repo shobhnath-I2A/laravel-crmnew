@@ -87,7 +87,6 @@
                     function openalerttaskremincer() {
                         $('#loadremindertask').load('loadremindertask.php');
                     }
-
                     function showcurrentworkinghours() {
                         openalerttaskremincer();
                         $('#showcurrentworkinghours').load('todaysworkinghours.php');
@@ -96,17 +95,20 @@
                 <div class="content" style="border-bottom:2px solid #2d2f31; text-align:center;">
                     <a href="display.html?ga=myprofile">
                         <div class="buttonprofile" style="margin-top:5px;"><i class="fa fa-user" aria-hidden="true"></i>
-                            &nbsp; &nbsp; Manage Your Profile</div>
+                            &nbsp; &nbsp; Manage Your
+                        </div>
                     </a>
                     <a href="display.html?ga=mailsetting">
-                        <div class="buttonprofile" style="margin-bottom:5px;"><i class="fa fa-envelope"
-                                aria-hidden="true"></i> &nbsp; &nbsp;Mail Setting</div>
+                        <div class="buttonprofile" style="margin-bottom:5px;">
+                            <i class="fa fa-envelope" aria-hidden="true"></i> &nbsp; &nbsp;Mail Setting
+                        </div>
                     </a>
                 </div>
                 <div class="content" style="border-bottom:2px solid #2d2f31; text-align:center;">
                     <div style="text-align: left; padding: 0px 5px; line-height: 22px; font-size: 12px; color: #adadad;">
                         Total Remaining <strong>-545 Days</strong><br>
-                        Expiry Date: <strong>08-09-2024</strong></div>
+                        Expiry Date: <strong>08-09-2024</strong>
+                    </div>
                 </div>
             </div>
            <div class="content">
@@ -134,9 +136,10 @@
         });
     </script>
     <div class="rightmenu">
-        <a title="Create New" style="display:none;"
-            onclick="openusermenu();$('.usermenu').hide();$('.createnewmenu').show();$('.createnotification').hide();$('.workinghoursstrip').hide();$('.headerslideright').addClass('width480');"><i
-                class="fa fa-plus-circle" aria-hidden="true"></i></a>
+        <a title="Create New" style="display:none" onclick="openusermenu();$('.usermenu').hide();$('.createnewmenu').show();$('.createnotification').hide();$('.workinghoursstrip').hide();$('.headerslideright').addClass('width480');">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+        </a>
+        @if(auth()->user()->isAdmin())
         <a href="{{ route('settings.index') }}" title="" style="position:relative; padding-top: 5px; padding-right:0px;"
             data-toggle="tooltip" data-placement="bottom" data-original-title="Setting"><svg
                 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19px"
@@ -154,6 +157,7 @@
                 </svg>
             </svg>
         </a>
+        @endif
         <a href="#" title="" style="position:relative; padding-top: 6px;" data-toggle="tooltip"
             data-placement="bottom" data-original-title="Notification"
             onclick="openusermenu();$('.usermenu').hide();$('.createnewmenu').hide();$('.createnotification').show();$('#loadnotificationscreate').load('loadnotificationscreate.php');"><i
