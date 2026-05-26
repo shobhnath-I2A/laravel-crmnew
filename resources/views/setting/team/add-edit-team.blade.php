@@ -154,8 +154,8 @@
                                 <thead>
                                     <tr>
                                         <th>Module Permission</th>
-                                        <th width="15%">View <input type="checkbox" id="selectAllView"></th>
-                                        <th width="20%">Add/Edit <input type="checkbox" id="selectAllEdit"></th>
+                                        <th width="15%">View All<input type="checkbox" id="selectAllView"></th>
+                                        <th width="20%">Add/Edit All <input type="checkbox" id="selectAllEdit"></th>
                                     </tr>
                                 </thead>
 
