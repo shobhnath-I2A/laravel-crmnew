@@ -1,0 +1,2566 @@
+For your system, design it in this order:
+Step 1: Add Product / Item
+- Height
+- Width
+- Length
+- Weight
+- Can rotate? yes/no
+- Can stack? yes/no
+
+
+Step 2: Add Packaging Box
+- Box name
+- Inner height
+- Inner width
+- Inner length
+- Max weight
+- Box weight
+- Status
+
+
+Step 3: Order Created
+- Get all cart/order items
+- Calculate total quantity
+- Calculate total weight
+- Calculate total volume
+- Check biggest item dimension
+
+Step 4: Select Box
+First check:
+- Weight fits
+- Biggest item fits
+- Total volume fits
+
+Then select:
+- Smallest possible box
+
+
+Step 5: If One Box Not Fit
+- Split items into multiple boxes
+- Again select best box for each group
+
+
+complete backend flow that works with a New Zealand shipping provider API, using a provider-agnostic structure so you can connect NZ Post, GoSweetSpot, DHL, Aramex, or any courier later.
+
+Below is full production flow:
+
+Product / Item
+        ↓
+Cart / Order
+        ↓
+Packing Engine
+        ↓
+Select Box / Multiple Boxes
+        ↓
+Calculate Shipment Weight + Dimension
+        ↓
+NZ Shipping API Rate Request
+        ↓
+Show Shipping Options
+        ↓
+Customer Select Courier
+        ↓
+Create Shipment / Label
+        ↓
+Save Tracking Number
+
+
+
+1. Tables Structure
+products
+
+
+id
+name
+sku
+height_cm
+width_cm
+length_cm
+weight_kg
+can_rotate
+can_stack
+status
+created_at
+updated_at
+
+
+packaging_boxes
+
+id
+box_name
+inner_height_cm
+inner_width_cm
+inner_length_cm
+max_weight_kg
+box_weight_kg
+status
+created_at
+updated_at
+
+orders
+
+id
+customer_id
+order_no
+subtotal
+shipping_amount
+total_amount
+shipping_provider
+shipping_service_code
+tracking_number
+shipping_label_url
+status
+created_at
+updated_at
+
+
+order_items
+id
+order_id
+product_id
+product_name
+sku
+quantity
+height_cm
+width_cm
+length_cm
+weight_kg
+created_at
+updated_at
+
+order_packages
+id
+order_id
+packaging_box_id
+box_name
+height_cm
+width_cm
+length_cm
+actual_weight_kg
+volumetric_weight_kg
+chargeable_weight_kg
+items_json
+created_at
+updated_at
+
+shipping_rates
+id
+order_id
+provider
+service_name
+service_code
+amount
+currency
+eta
+raw_response
+created_at
+
+
+
+2. Box Selection Logic
+Formula
+
+$itemVolume = height * width * length;
+$boxVolume = inner_height * inner_width * inner_length;
+$totalWeight = itemWeight * quantity;
+
+
+
+Chargeable Weight
+
+Most courier APIs use:
+
+$volumetricWeight = ($length * $width * $height) / 5000;
+$chargeableWeight = max($actualWeight, $volumetricWeight);
+
+3. Packing Service
+
+class PackingService
+{
+    public function packOrder($orderItems)
+    {
+        $items = [];
+
+        foreach ($orderItems as $item) {
+            for ($i = 1; $i <= $item->quantity; $i++) {
+                $items[] = [
+                    'product_id' => $item->product_id,
+                    'name' => $item->product_name,
+                    'height' => $item->height_cm,
+                    'width' => $item->width_cm,
+                    'length' => $item->length_cm,
+                    'weight' => $item->weight_kg,
+                    'volume' => $item->height_cm * $item->width_cm * $item->length_cm,
+                ];
+            }
+        }
+
+        usort($items, function ($a, $b) {
+            return $b['volume'] <=> $a['volume'];
+        });
+
+        $boxes = PackagingBox::where('status', 1)
+            ->orderByRaw('(inner_height_cm * inner_width_cm * inner_length_cm) ASC')
+            ->get();
+
+        $packages = [];
+
+        while (count($items) > 0) {
+            $packed = false;
+
+            foreach ($boxes as $box) {
+                $boxVolume = $box->inner_height_cm * $box->inner_width_cm * $box->inner_length_cm;
+                $usedVolume = 0;
+                $usedWeight = $box->box_weight_kg;
+                $packageItems = [];
+
+                foreach ($items as $key => $item) {
+                    if (
+                        $item['height'] <= $box->inner_height_cm &&
+                        $item['width'] <= $box->inner_width_cm &&
+                        $item['length'] <= $box->inner_length_cm &&
+                        ($usedVolume + $item['volume']) <= $boxVolume &&
+                        ($usedWeight + $item['weight']) <= $box->max_weight_kg
+                    ) {
+                        $packageItems[] = $item;
+                        $usedVolume += $item['volume'];
+                        $usedWeight += $item['weight'];
+                        unset($items[$key]);
+                    }
+                }
+
+                if (count($packageItems) > 0) {
+                    $packages[] = [
+                        'box_id' => $box->id,
+                        'box_name' => $box->box_name,
+                        'height' => $box->inner_height_cm,
+                        'width' => $box->inner_width_cm,
+                        'length' => $box->inner_length_cm,
+                        'actual_weight' => $usedWeight,
+                        'volumetric_weight' => ($box->inner_length_cm * $box->inner_width_cm * $box->inner_height_cm) / 5000,
+                        'items' => array_values($packageItems),
+                    ];
+
+                    $items = array_values($items);
+                    $packed = true;
+                    break;
+                }
+            }
+
+            if (!$packed) {
+                throw new Exception('Some products do not fit in any available box.');
+            }
+        }
+
+        return $packages;
+    }
+}
+
+
+4. NZ Shipping API Flow
+
+Because different NZ APIs have different payloads, keep one common interface:
+    interface ShippingProviderInterface
+{
+    public function getRates($order, $packages);
+    public function createShipment($order, $packages, $serviceCode);
+    public function trackShipment($trackingNumber);
+}
+
+
+5. Example NZ Shipping Service
+
+class NzShippingService implements ShippingProviderInterface
+{
+    protected $apiUrl;
+    protected $apiKey;
+
+    public function __construct()
+    {
+        $this->apiUrl = config('shipping.nz.api_url');
+        $this->apiKey = config('shipping.nz.api_key');
+    }
+
+    public function getRates($order, $packages)
+    {
+        $payload = [
+            'sender' => [
+                'name' => config('shipping.sender.name'),
+                'address1' => config('shipping.sender.address1'),
+                'city' => config('shipping.sender.city'),
+                'postcode' => config('shipping.sender.postcode'),
+                'country' => 'NZ',
+            ],
+            'receiver' => [
+                'name' => $order->customer_name,
+                'address1' => $order->shipping_address,
+                'city' => $order->shipping_city,
+                'postcode' => $order->shipping_postcode,
+                'country' => 'NZ',
+            ],
+            'packages' => collect($packages)->map(function ($package) {
+                return [
+                    'height_cm' => $package['height'],
+                    'width_cm' => $package['width'],
+                    'length_cm' => $package['length'],
+                    'weight_kg' => max(
+                        $package['actual_weight'],
+                        $package['volumetric_weight']
+                    ),
+                ];
+            })->values()->toArray(),
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->apiKey,
+            'Accept' => 'application/json',
+        ])->post($this->apiUrl . '/rates', $payload);
+
+        if (!$response->successful()) {
+            throw new Exception('Shipping rate API failed.');
+        }
+
+        return $response->json();
+    }
+
+    public function createShipment($order, $packages, $serviceCode)
+    {
+        $payload = [
+            'order_reference' => $order->order_no,
+            'service_code' => $serviceCode,
+            'packages' => $packages,
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->apiKey,
+            'Accept' => 'application/json',
+        ])->post($this->apiUrl . '/shipments', $payload);
+
+        if (!$response->successful()) {
+            throw new Exception('Shipment creation failed.');
+        }
+
+        return $response->json();
+    }
+
+    public function trackShipment($trackingNumber)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->apiKey,
+        ])->get($this->apiUrl . '/tracking/' . $trackingNumber);
+
+        return $response->json();
+    }
+}
+
+
+6. Order Checkout Flow
+
+public function calculateShipping($orderId)
+{
+    $order = Order::with('items')->findOrFail($orderId);
+
+    $packingService = new PackingService();
+    $packages = $packingService->packOrder($order->items);
+
+    foreach ($packages as $package) {
+        OrderPackage::create([
+            'order_id' => $order->id,
+            'packaging_box_id' => $package['box_id'],
+            'box_name' => $package['box_name'],
+            'height_cm' => $package['height'],
+            'width_cm' => $package['width'],
+            'length_cm' => $package['length'],
+            'actual_weight_kg' => $package['actual_weight'],
+            'volumetric_weight_kg' => $package['volumetric_weight'],
+            'chargeable_weight_kg' => max($package['actual_weight'], $package['volumetric_weight']),
+            'items_json' => json_encode($package['items']),
+        ]);
+    }
+
+    $shippingService = new NzShippingService();
+    $rates = $shippingService->getRates($order, $packages);
+
+    foreach ($rates['services'] as $rate) {
+        ShippingRate::create([
+            'order_id' => $order->id,
+            'provider' => 'NZ',
+            'service_name' => $rate['name'],
+            'service_code' => $rate['code'],
+            'amount' => $rate['price'],
+            'currency' => $rate['currency'] ?? 'NZD',
+            'eta' => $rate['eta'] ?? null,
+            'raw_response' => json_encode($rate),
+        ]);
+    }
+
+    return $rates;
+}
+
+
+7. Final Recommended Flow
+Admin:
+1. Add products with H/W/L/Weight
+2. Add packaging boxes with inner H/W/L/max weight
+3. Add shipping API credentials
+
+Customer:
+1. Add products to cart
+2. System packs products into best box
+3. System calculates actual + volumetric weight
+4. System sends package data to NZ shipping API
+5. API returns courier options
+6. Customer selects shipping method
+7. After payment, system creates shipment
+8. Save label + tracking number
+
+
+Use this final structure:
+Products
+Packaging Boxes
+Orders
+Order Items
+Order Packages
+Shipping Rates
+Shipping Shipments
+
+Recommended next development parts:
+
+Part 1: Database migrations
+Part 2: Models and relationships
+Part 3: Product dimension form
+Part 4: Packaging box module
+Part 5: PackingService
+Part 6: NZShippingService
+Part 7: Checkout shipping rate calculation
+Part 8: Create shipment + label
+Part 9: Tracking update
+
+
+
+Below is Part 1: Laravel Database Migrations.
+
+1. products table
+
+Schema::create('products', function (Blueprint $table) {
+    $table->id();
+
+    $table->string('name');
+    $table->string('sku')->unique()->nullable();
+
+    $table->decimal('height_cm', 10, 2)->default(0);
+    $table->decimal('width_cm', 10, 2)->default(0);
+    $table->decimal('length_cm', 10, 2)->default(0);
+    $table->decimal('weight_kg', 10, 3)->default(0);
+
+    $table->boolean('can_rotate')->default(true);
+    $table->boolean('can_stack')->default(true);
+
+    $table->boolean('status')->default(true);
+
+    $table->timestamps();
+});
+
+
+2. packaging_boxes table
+Schema::create('packaging_boxes', function (Blueprint $table) {
+    $table->id();
+
+    $table->string('box_name');
+
+    $table->decimal('inner_height_cm', 10, 2)->default(0);
+    $table->decimal('inner_width_cm', 10, 2)->default(0);
+    $table->decimal('inner_length_cm', 10, 2)->default(0);
+
+    $table->decimal('max_weight_kg', 10, 3)->default(0);
+    $table->decimal('box_weight_kg', 10, 3)->default(0);
+
+    $table->boolean('status')->default(true);
+
+    $table->timestamps();
+});
+
+3. orders table
+Schema::create('orders', function (Blueprint $table) {
+    $table->id();
+
+    $table->string('order_no')->unique();
+
+    $table->string('customer_name')->nullable();
+    $table->string('customer_email')->nullable();
+    $table->string('customer_phone')->nullable();
+
+    $table->text('shipping_address')->nullable();
+    $table->string('shipping_city')->nullable();
+    $table->string('shipping_state')->nullable();
+    $table->string('shipping_postcode')->nullable();
+    $table->string('shipping_country')->default('NZ');
+
+    $table->decimal('subtotal', 12, 2)->default(0);
+    $table->decimal('shipping_amount', 12, 2)->default(0);
+    $table->decimal('total_amount', 12, 2)->default(0);
+
+    $table->string('shipping_provider')->nullable();
+    $table->string('shipping_service_code')->nullable();
+    $table->string('shipping_service_name')->nullable();
+
+    $table->string('tracking_number')->nullable();
+    $table->text('shipping_label_url')->nullable();
+
+    $table->enum('status', [
+        'pending',
+        'shipping_calculated',
+        'paid',
+        'shipment_created',
+        'shipped',
+        'delivered',
+        'cancelled'
+    ])->default('pending');
+
+    $table->timestamps();
+});
+
+
+
+
+
+
+4. order_items table
+Schema::create('order_items', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
+
+    $table->string('product_name');
+    $table->string('sku')->nullable();
+
+    $table->integer('quantity')->default(1);
+
+    $table->decimal('height_cm', 10, 2)->default(0);
+    $table->decimal('width_cm', 10, 2)->default(0);
+    $table->decimal('length_cm', 10, 2)->default(0);
+    $table->decimal('weight_kg', 10, 3)->default(0);
+
+    $table->decimal('price', 12, 2)->default(0);
+    $table->decimal('total', 12, 2)->default(0);
+
+    $table->timestamps();
+});
+
+
+5. order_packages table
+Schema::create('order_packages', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('packaging_box_id')->nullable()->constrained('packaging_boxes')->nullOnDelete();
+
+    $table->string('box_name')->nullable();
+
+    $table->decimal('height_cm', 10, 2)->default(0);
+    $table->decimal('width_cm', 10, 2)->default(0);
+    $table->decimal('length_cm', 10, 2)->default(0);
+
+    $table->decimal('actual_weight_kg', 10, 3)->default(0);
+    $table->decimal('volumetric_weight_kg', 10, 3)->default(0);
+    $table->decimal('chargeable_weight_kg', 10, 3)->default(0);
+
+    $table->json('items_json')->nullable();
+
+    $table->timestamps();
+});
+
+
+6. shipping_rates table
+
+Schema::create('shipping_rates', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+
+    $table->string('provider')->nullable();
+    $table->string('service_name')->nullable();
+    $table->string('service_code')->nullable();
+
+    $table->decimal('amount', 12, 2)->default(0);
+    $table->string('currency')->default('NZD');
+
+    $table->string('eta')->nullable();
+
+    $table->json('raw_response')->nullable();
+
+    $table->timestamps();
+});
+
+7. shipping_shipments table
+
+Schema::create('shipping_shipments', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+
+    $table->string('provider')->nullable();
+    $table->string('service_code')->nullable();
+    $table->string('service_name')->nullable();
+
+    $table->string('tracking_number')->nullable();
+    $table->text('label_url')->nullable();
+
+    $table->json('request_payload')->nullable();
+    $table->json('response_payload')->nullable();
+
+    $table->enum('status', [
+        'created',
+        'in_transit',
+        'delivered',
+        'failed',
+        'cancelled'
+    ])->default('created');
+
+    $table->timestamps();
+});
+
+
+Part 2: Models and Relationships
+
+php artisan make:model PackagingBox
+php artisan make:model OrderItem
+php artisan make:model OrderPackage
+php artisan make:model ShippingRate
+php artisan make:model ShippingShipment
+
+
+Product.php
+
+class Product extends Model
+{
+    protected $fillable = [
+        'name',
+        'sku',
+        'height_cm',
+        'width_cm',
+        'length_cm',
+        'weight_kg',
+        'can_rotate',
+        'can_stack',
+        'status',
+    ];
+
+    protected $casts = [
+        'height_cm' => 'decimal:2',
+        'width_cm' => 'decimal:2',
+        'length_cm' => 'decimal:2',
+        'weight_kg' => 'decimal:3',
+        'can_rotate' => 'boolean',
+        'can_stack' => 'boolean',
+        'status' => 'boolean',
+    ];
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+}
+PackagingBox.php
+
+class PackagingBox extends Model
+{
+    protected $fillable = [
+        'box_name',
+        'inner_height_cm',
+        'inner_width_cm',
+        'inner_length_cm',
+        'max_weight_kg',
+        'box_weight_kg',
+        'status',
+    ];
+
+    protected $casts = [
+        'inner_height_cm' => 'decimal:2',
+        'inner_width_cm' => 'decimal:2',
+        'inner_length_cm' => 'decimal:2',
+        'max_weight_kg' => 'decimal:3',
+        'box_weight_kg' => 'decimal:3',
+        'status' => 'boolean',
+    ];
+
+    public function packages()
+    {
+        return $this->hasMany(OrderPackage::class, 'packaging_box_id');
+    }
+
+    public function getVolumeAttribute()
+    {
+        return $this->inner_height_cm * $this->inner_width_cm * $this->inner_length_cm;
+    }
+}
+
+Order.php
+
+class Order extends Model
+{
+    protected $fillable = [
+        'order_no',
+        'customer_name',
+        'customer_email',
+        'customer_phone',
+        'shipping_address',
+        'shipping_city',
+        'shipping_state',
+        'shipping_postcode',
+        'shipping_country',
+        'subtotal',
+        'shipping_amount',
+        'total_amount',
+        'shipping_provider',
+        'shipping_service_code',
+        'shipping_service_name',
+        'tracking_number',
+        'shipping_label_url',
+        'status',
+    ];
+
+    protected $casts = [
+        'subtotal' => 'decimal:2',
+        'shipping_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+    ];
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function packages()
+    {
+        return $this->hasMany(OrderPackage::class);
+    }
+
+    public function shippingRates()
+    {
+        return $this->hasMany(ShippingRate::class);
+    }
+
+    public function shipment()
+    {
+        return $this->hasOne(ShippingShipment::class);
+    }
+}
+
+
+OrderItem.php
+class OrderItem extends Model
+{
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'product_name',
+        'sku',
+        'quantity',
+        'height_cm',
+        'width_cm',
+        'length_cm',
+        'weight_kg',
+        'price',
+        'total',
+    ];
+
+    protected $casts = [
+        'height_cm' => 'decimal:2',
+        'width_cm' => 'decimal:2',
+        'length_cm' => 'decimal:2',
+        'weight_kg' => 'decimal:3',
+        'price' => 'decimal:2',
+        'total' => 'decimal:2',
+    ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function getVolumeAttribute()
+    {
+        return $this->height_cm * $this->width_cm * $this->length_cm;
+    }
+
+    public function getTotalWeightAttribute()
+    {
+        return $this->weight_kg * $this->quantity;
+    }
+
+    public function getTotalVolumeAttribute()
+    {
+        return $this->volume * $this->quantity;
+    }
+}
+
+OrderPackage.php
+
+class OrderPackage extends Model
+{
+    protected $fillable = [
+        'order_id',
+        'packaging_box_id',
+        'box_name',
+        'height_cm',
+        'width_cm',
+        'length_cm',
+        'actual_weight_kg',
+        'volumetric_weight_kg',
+        'chargeable_weight_kg',
+        'items_json',
+    ];
+
+    protected $casts = [
+        'height_cm' => 'decimal:2',
+        'width_cm' => 'decimal:2',
+        'length_cm' => 'decimal:2',
+        'actual_weight_kg' => 'decimal:3',
+        'volumetric_weight_kg' => 'decimal:3',
+        'chargeable_weight_kg' => 'decimal:3',
+        'items_json' => 'array',
+    ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function box()
+    {
+        return $this->belongsTo(PackagingBox::class, 'packaging_box_id');
+    }
+}
+
+ShippingRate.php
+class ShippingRate extends Model
+{
+    protected $fillable = [
+        'order_id',
+        'provider',
+        'service_name',
+        'service_code',
+        'amount',
+        'currency',
+        'eta',
+        'raw_response',
+    ];
+
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'raw_response' => 'array',
+    ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+}
+
+ShippingShipment.php
+class ShippingShipment extends Model
+{
+    protected $fillable = [
+        'order_id',
+        'provider',
+        'service_code',
+        'service_name',
+        'tracking_number',
+        'label_url',
+        'request_payload',
+        'response_payload',
+        'status',
+    ];
+
+    protected $casts = [
+        'request_payload' => 'array',
+        'response_payload' => 'array',
+    ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+}
+
+Part 3: Product Dimension Form
+1. Route
+Route::resource('products', ProductController::class);
+2. ProductController.php
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use Illuminate\Http\Request;
+
+class ProductController extends Controller
+{
+    public function index()
+    {
+        $products = Product::latest()->paginate(20);
+        return view('products.index', compact('products'));
+    }
+
+    public function create()
+    {
+        return view('products.form', [
+            'product' => null
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name'      => 'required|string|max:255',
+            'sku'       => 'nullable|string|max:100|unique:products,sku',
+            'height_cm' => 'required|numeric|min:0.01',
+            'width_cm'  => 'required|numeric|min:0.01',
+            'length_cm' => 'required|numeric|min:0.01',
+            'weight_kg' => 'required|numeric|min:0.001',
+            'can_rotate'=> 'nullable|boolean',
+            'can_stack' => 'nullable|boolean',
+            'status'    => 'nullable|boolean',
+        ]);
+
+        $data['can_rotate'] = $request->has('can_rotate');
+        $data['can_stack']  = $request->has('can_stack');
+        $data['status']     = $request->has('status');
+
+        Product::create($data);
+
+        return redirect()->route('products.index')
+            ->with('success', 'Product created successfully.');
+    }
+
+    public function edit(Product $product)
+    {
+        return view('products.form', compact('product'));
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        $data = $request->validate([
+            'name'      => 'required|string|max:255',
+            'sku'       => 'nullable|string|max:100|unique:products,sku,' . $product->id,
+            'height_cm' => 'required|numeric|min:0.01',
+            'width_cm'  => 'required|numeric|min:0.01',
+            'length_cm' => 'required|numeric|min:0.01',
+            'weight_kg' => 'required|numeric|min:0.001',
+            'can_rotate'=> 'nullable|boolean',
+            'can_stack' => 'nullable|boolean',
+            'status'    => 'nullable|boolean',
+        ]);
+
+        $data['can_rotate'] = $request->has('can_rotate');
+        $data['can_stack']  = $request->has('can_stack');
+        $data['status']     = $request->has('status');
+
+        $product->update($data);
+
+        return redirect()->route('products.index')
+            ->with('success', 'Product updated successfully.');
+    }
+
+    public function destroy(Product $product)
+    {
+        $product->delete();
+
+        return back()->with('success', 'Product deleted successfully.');
+    }
+}
+
+3. products/form.blade.php
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <h4>{{ $product ? 'Edit Product' : 'Add Product' }}</h4>
+
+    <form method="POST" action="{{ $product ? route('products.update', $product->id) : route('products.store') }}">
+        @csrf
+
+        @if($product)
+            @method('PUT')
+        @endif
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label>Product Name</label>
+                <input type="text" name="name" class="form-control"
+                       value="{{ old('name', $product->name ?? '') }}" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>SKU</label>
+                <input type="text" name="sku" class="form-control"
+                       value="{{ old('sku', $product->sku ?? '') }}">
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label>Height (CM)</label>
+                <input type="number" step="0.01" name="height_cm" class="form-control"
+                       value="{{ old('height_cm', $product->height_cm ?? '') }}" required>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label>Width (CM)</label>
+                <input type="number" step="0.01" name="width_cm" class="form-control"
+                       value="{{ old('width_cm', $product->width_cm ?? '') }}" required>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label>Length (CM)</label>
+                <input type="number" step="0.01" name="length_cm" class="form-control"
+                       value="{{ old('length_cm', $product->length_cm ?? '') }}" required>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label>Weight (KG)</label>
+                <input type="number" step="0.001" name="weight_kg" class="form-control"
+                       value="{{ old('weight_kg', $product->weight_kg ?? '') }}" required>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label>
+                    <input type="checkbox" name="can_rotate" value="1"
+                        {{ old('can_rotate', $product->can_rotate ?? true) ? 'checked' : '' }}>
+                    Can Rotate
+                </label>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label>
+                    <input type="checkbox" name="can_stack" value="1"
+                        {{ old('can_stack', $product->can_stack ?? true) ? 'checked' : '' }}>
+                    Can Stack
+                </label>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label>
+                    <input type="checkbox" name="status" value="1"
+                        {{ old('status', $product->status ?? true) ? 'checked' : '' }}>
+                    Active
+                </label>
+            </div>
+        </div>
+
+        <button class="btn btn-primary">
+            {{ $product ? 'Update Product' : 'Save Product' }}
+        </button>
+
+        <a href="{{ route('products.index') }}" class="btn btn-secondary">Back</a>
+    </form>
+</div>
+@endsection
+
+
+
+4. products/index.blade.php
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="d-flex justify-content-between mb-3">
+        <h4>Products</h4>
+        <a href="{{ route('products.create') }}" class="btn btn-primary">Add Product</a>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>SKU</th>
+                <th>Dimension</th>
+                <th>Weight</th>
+                <th>Rotate</th>
+                <th>Stack</th>
+                <th>Status</th>
+                <th width="150">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach($products as $product)
+                <tr>
+                    <td>{{ $product->name }}</td>
+                    <td>{{ $product->sku }}</td>
+                    <td>
+                        {{ $product->height_cm }} ×
+                        {{ $product->width_cm }} ×
+                        {{ $product->length_cm }} cm
+                    </td>
+                    <td>{{ $product->weight_kg }} kg</td>
+                    <td>{{ $product->can_rotate ? 'Yes' : 'No' }}</td>
+                    <td>{{ $product->can_stack ? 'Yes' : 'No' }}</td>
+                    <td>{{ $product->status ? 'Active' : 'Inactive' }}</td>
+                    <td>
+                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-info">Edit</a>
+
+                        <form action="{{ route('products.destroy', $product->id) }}"
+                              method="POST" class="d-inline"
+                              onsubmit="return confirm('Delete this product?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    {{ $products->links() }}
+</div>
+@endsection
+
+
+Next: Part 4: Packaging box module.
+Part 4: Packaging Box Module
+1. Route
+Route::resource('packaging-boxes', PackagingBoxController::class);
+
+2. Create Controller
+php artisan make:controller PackagingBoxController --resource
+
+3. PackagingBoxController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\PackagingBox;
+use Illuminate\Http\Request;
+
+class PackagingBoxController extends Controller
+{
+    public function index()
+    {
+        $boxes = PackagingBox::latest()->paginate(20);
+
+        return view('packaging-boxes.index', compact('boxes'));
+    }
+
+    public function create()
+    {
+        return view('packaging-boxes.form', [
+            'box' => null,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'box_name'        => 'required|string|max:255',
+            'inner_height_cm' => 'required|numeric|min:0.01',
+            'inner_width_cm'  => 'required|numeric|min:0.01',
+            'inner_length_cm' => 'required|numeric|min:0.01',
+            'max_weight_kg'   => 'required|numeric|min:0.001',
+            'box_weight_kg'   => 'nullable|numeric|min:0',
+            'status'          => 'nullable|boolean',
+        ]);
+
+        $data['box_weight_kg'] = $data['box_weight_kg'] ?? 0;
+        $data['status'] = $request->has('status');
+
+        PackagingBox::create($data);
+
+        return redirect()
+            ->route('packaging-boxes.index')
+            ->with('success', 'Packaging box created successfully.');
+    }
+
+    public function edit(PackagingBox $packaging_box)
+    {
+        return view('packaging-boxes.form', [
+            'box' => $packaging_box,
+        ]);
+    }
+
+    public function update(Request $request, PackagingBox $packaging_box)
+    {
+        $data = $request->validate([
+            'box_name'        => 'required|string|max:255',
+            'inner_height_cm' => 'required|numeric|min:0.01',
+            'inner_width_cm'  => 'required|numeric|min:0.01',
+            'inner_length_cm' => 'required|numeric|min:0.01',
+            'max_weight_kg'   => 'required|numeric|min:0.001',
+            'box_weight_kg'   => 'nullable|numeric|min:0',
+            'status'          => 'nullable|boolean',
+        ]);
+
+        $data['box_weight_kg'] = $data['box_weight_kg'] ?? 0;
+        $data['status'] = $request->has('status');
+
+        $packaging_box->update($data);
+
+        return redirect()
+            ->route('packaging-boxes.index')
+            ->with('success', 'Packaging box updated successfully.');
+    }
+
+    public function destroy(PackagingBox $packaging_box)
+    {
+        $packaging_box->delete();
+
+        return back()->with('success', 'Packaging box deleted successfully.');
+    }
+}
+
+4. Important Model Binding Note
+Laravel route model binding expects:
+$packaging_box
+because route name is:
+packaging-boxes
+So use this:
+public function edit(PackagingBox $packaging_box)
+public function update(Request $request, PackagingBox $packaging_box)
+public function destroy(PackagingBox $packaging_box)
+
+
+5. Blade Folder
+Create folder:
+resources/views/packaging-boxes/
+
+
+6. packaging-boxes/form.blade.php
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <h4>{{ $box ? 'Edit Packaging Box' : 'Add Packaging Box' }}</h4>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Please fix below errors:</strong>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form method="POST"
+          action="{{ $box ? route('packaging-boxes.update', $box->id) : route('packaging-boxes.store') }}">
+
+        @csrf
+
+        @if($box)
+            @method('PUT')
+        @endif
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label>Box Name</label>
+                <input type="text"
+                       name="box_name"
+                       class="form-control"
+                       value="{{ old('box_name', $box->box_name ?? '') }}"
+                       required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Max Weight KG</label>
+                <input type="number"
+                       step="0.001"
+                       name="max_weight_kg"
+                       class="form-control"
+                       value="{{ old('max_weight_kg', $box->max_weight_kg ?? '') }}"
+                       required>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label>Inner Height CM</label>
+                <input type="number"
+                       step="0.01"
+                       name="inner_height_cm"
+                       id="inner_height_cm"
+                       class="form-control dimension-input"
+                       value="{{ old('inner_height_cm', $box->inner_height_cm ?? '') }}"
+                       required>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label>Inner Width CM</label>
+                <input type="number"
+                       step="0.01"
+                       name="inner_width_cm"
+                       id="inner_width_cm"
+                       class="form-control dimension-input"
+                       value="{{ old('inner_width_cm', $box->inner_width_cm ?? '') }}"
+                       required>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label>Inner Length CM</label>
+                <input type="number"
+                       step="0.01"
+                       name="inner_length_cm"
+                       id="inner_length_cm"
+                       class="form-control dimension-input"
+                       value="{{ old('inner_length_cm', $box->inner_length_cm ?? '') }}"
+                       required>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label>Box Weight KG</label>
+                <input type="number"
+                       step="0.001"
+                       name="box_weight_kg"
+                       class="form-control"
+                       value="{{ old('box_weight_kg', $box->box_weight_kg ?? 0) }}">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Box Volume CM³</label>
+                <input type="text"
+                       id="box_volume"
+                       class="form-control"
+                       readonly>
+            </div>
+
+            <div class="col-md-6 mb-3 d-flex align-items-end">
+                <label>
+                    <input type="checkbox"
+                           name="status"
+                           value="1"
+                           {{ old('status', $box->status ?? true) ? 'checked' : '' }}>
+                    Active
+                </label>
+            </div>
+        </div>
+
+        <button class="btn btn-primary">
+            {{ $box ? 'Update Box' : 'Save Box' }}
+        </button>
+
+        <a href="{{ route('packaging-boxes.index') }}" class="btn btn-secondary">
+            Back
+        </a>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const height = document.getElementById('inner_height_cm');
+    const width  = document.getElementById('inner_width_cm');
+    const length = document.getElementById('inner_length_cm');
+    const volume = document.getElementById('box_volume');
+
+    function calculateVolume() {
+        const h = parseFloat(height.value) || 0;
+        const w = parseFloat(width.value) || 0;
+        const l = parseFloat(length.value) || 0;
+
+        volume.value = (h * w * l).toFixed(2);
+    }
+
+    document.querySelectorAll('.dimension-input').forEach(function (input) {
+        input.addEventListener('input', calculateVolume);
+    });
+
+    calculateVolume();
+});
+</script>
+@endsection
+
+7. packaging-boxes/index.blade.php
+
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="d-flex justify-content-between mb-3">
+        <h4>Packaging Boxes</h4>
+
+        <a href="{{ route('packaging-boxes.create') }}" class="btn btn-primary">
+            Add Packaging Box
+        </a>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Box Name</th>
+                <th>Dimension</th>
+                <th>Volume CM³</th>
+                <th>Max Weight</th>
+                <th>Box Weight</th>
+                <th>Status</th>
+                <th width="160">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse($boxes as $box)
+                <tr>
+                    <td>{{ $box->box_name }}</td>
+
+                    <td>
+                        {{ $box->inner_height_cm }} ×
+                        {{ $box->inner_width_cm }} ×
+                        {{ $box->inner_length_cm }} cm
+                    </td>
+
+                    <td>
+                        {{ number_format($box->inner_height_cm * $box->inner_width_cm * $box->inner_length_cm, 2) }}
+                    </td>
+
+                    <td>{{ $box->max_weight_kg }} kg</td>
+
+                    <td>{{ $box->box_weight_kg }} kg</td>
+
+                    <td>
+                        @if($box->status)
+                            <span class="badge bg-success">Active</span>
+                        @else
+                            <span class="badge bg-secondary">Inactive</span>
+                        @endif
+                    </td>
+
+                    <td>
+                        <a href="{{ route('packaging-boxes.edit', $box->id) }}"
+                           class="btn btn-sm btn-info">
+                            Edit
+                        </a>
+
+                        <form action="{{ route('packaging-boxes.destroy', $box->id) }}"
+                              method="POST"
+                              class="d-inline"
+                              onsubmit="return confirm('Delete this packaging box?')">
+                            @csrf
+                            @method('DELETE')
+
+                            <button class="btn btn-sm btn-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" class="text-center">
+                        No packaging boxes found.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    {{ $boxes->links() }}
+</div>
+@endsection
+
+
+Next: Part 5: PackingService.
+Part 5: PackingService
+Create file:
+app/Services/PackingService.php
+<?php
+
+namespace App\Services;
+
+use App\Models\PackagingBox;
+use Exception;
+
+class PackingService
+{
+    protected float $volumetricDivisor = 5000;
+
+    public function packOrder($orderItems): array
+    {
+        $items = $this->expandItems($orderItems);
+
+        if (empty($items)) {
+            throw new Exception('No order items found for packing.');
+        }
+
+        $boxes = PackagingBox::where('status', 1)
+            ->orderByRaw('(inner_height_cm * inner_width_cm * inner_length_cm) ASC')
+            ->get();
+
+        if ($boxes->isEmpty()) {
+            throw new Exception('No active packaging boxes found.');
+        }
+
+        $packages = [];
+
+        while (count($items) > 0) {
+            $package = $this->packSingleBox($items, $boxes);
+
+            if (!$package) {
+                throw new Exception('Some products do not fit in any available box.');
+            }
+
+            $packages[] = $package['package'];
+            $items = $package['remaining_items'];
+        }
+
+        return $packages;
+    }
+
+    private function expandItems($orderItems): array
+    {
+        $items = [];
+
+        foreach ($orderItems as $orderItem) {
+            for ($i = 1; $i <= $orderItem->quantity; $i++) {
+                $height = (float) $orderItem->height_cm;
+                $width  = (float) $orderItem->width_cm;
+                $length = (float) $orderItem->length_cm;
+                $weight = (float) $orderItem->weight_kg;
+
+                $items[] = [
+                    'order_item_id' => $orderItem->id,
+                    'product_id'    => $orderItem->product_id,
+                    'product_name'  => $orderItem->product_name,
+                    'sku'           => $orderItem->sku,
+                    'height'        => $height,
+                    'width'         => $width,
+                    'length'        => $length,
+                    'weight'        => $weight,
+                    'volume'        => $height * $width * $length,
+                ];
+            }
+        }
+
+        usort($items, fn ($a, $b) => $b['volume'] <=> $a['volume']);
+
+        return $items;
+    }
+
+    private function packSingleBox(array $items, $boxes): ?array
+    {
+        foreach ($boxes as $box) {
+            $boxVolume = $box->inner_height_cm * $box->inner_width_cm * $box->inner_length_cm;
+
+            $usedVolume = 0;
+            $usedWeight = (float) $box->box_weight_kg;
+
+            $packedItems = [];
+            $remainingItems = [];
+
+            foreach ($items as $item) {
+                $itemFitsDimension = $this->itemFitsInBox($item, $box);
+                $itemFitsVolume = ($usedVolume + $item['volume']) <= $boxVolume;
+                $itemFitsWeight = ($usedWeight + $item['weight']) <= $box->max_weight_kg;
+
+                if ($itemFitsDimension && $itemFitsVolume && $itemFitsWeight) {
+                    $packedItems[] = $item;
+                    $usedVolume += $item['volume'];
+                    $usedWeight += $item['weight'];
+                } else {
+                    $remainingItems[] = $item;
+                }
+            }
+
+            if (count($packedItems) > 0) {
+                $volumetricWeight = $this->calculateVolumetricWeight(
+                    $box->inner_length_cm,
+                    $box->inner_width_cm,
+                    $box->inner_height_cm
+                );
+
+                return [
+                    'package' => [
+                        'box_id' => $box->id,
+                        'box_name' => $box->box_name,
+
+                        'height_cm' => (float) $box->inner_height_cm,
+                        'width_cm'  => (float) $box->inner_width_cm,
+                        'length_cm' => (float) $box->inner_length_cm,
+
+                        'actual_weight_kg' => round($usedWeight, 3),
+                        'volumetric_weight_kg' => round($volumetricWeight, 3),
+                        'chargeable_weight_kg' => round(max($usedWeight, $volumetricWeight), 3),
+
+                        'items' => $packedItems,
+                    ],
+                    'remaining_items' => $remainingItems,
+                ];
+            }
+        }
+
+        return null;
+    }
+
+    private function itemFitsInBox(array $item, $box): bool
+    {
+        $itemDimensions = [
+            $item['height'],
+            $item['width'],
+            $item['length'],
+        ];
+
+        $boxDimensions = [
+            (float) $box->inner_height_cm,
+            (float) $box->inner_width_cm,
+            (float) $box->inner_length_cm,
+        ];
+
+        sort($itemDimensions);
+        sort($boxDimensions);
+
+        return $itemDimensions[0] <= $boxDimensions[0]
+            && $itemDimensions[1] <= $boxDimensions[1]
+            && $itemDimensions[2] <= $boxDimensions[2];
+    }
+
+    private function calculateVolumetricWeight($length, $width, $height): float
+    {
+        return ((float) $length * (float) $width * (float) $height) / $this->volumetricDivisor;
+    }
+}
+
+Usage Example
+use App\Services\PackingService;
+
+$packingService = new PackingService();
+
+$packages = $packingService->packOrder($order->items);
+
+
+Save Packages in Database
+foreach ($packages as $package) {
+    OrderPackage::create([
+        'order_id' => $order->id,
+        'packaging_box_id' => $package['box_id'],
+        'box_name' => $package['box_name'],
+
+        'height_cm' => $package['height_cm'],
+        'width_cm' => $package['width_cm'],
+        'length_cm' => $package['length_cm'],
+
+        'actual_weight_kg' => $package['actual_weight_kg'],
+        'volumetric_weight_kg' => $package['volumetric_weight_kg'],
+        'chargeable_weight_kg' => $package['chargeable_weight_kg'],
+
+        'items_json' => $package['items'],
+    ]);
+}
+
+Next: Part 6: NZShippingService.
+Part 6: NZShippingService
+app/Services/Shipping/ShippingProviderInterface.php
+app/Services/Shipping/NZShippingService.php
+
+
+1. Interface
+<?php
+
+namespace App\Services\Shipping;
+
+interface ShippingProviderInterface
+{
+    public function getRates($order, array $packages): array;
+
+    public function createShipment($order, array $packages, string $serviceCode): array;
+
+    public function trackShipment(string $trackingNumber): array;
+}
+2. Config File
+Create:
+config/shipping.php
+<?php
+
+return [
+    'provider' => env('SHIPPING_PROVIDER', 'nz'),
+
+    'nz' => [
+        'api_url' => env('NZ_SHIPPING_API_URL'),
+        'api_key' => env('NZ_SHIPPING_API_KEY'),
+        'account_number' => env('NZ_SHIPPING_ACCOUNT_NUMBER'),
+    ],
+
+    'sender' => [
+        'name' => env('SHIPPER_NAME', 'Your Company'),
+        'phone' => env('SHIPPER_PHONE', ''),
+        'email' => env('SHIPPER_EMAIL', ''),
+        'address1' => env('SHIPPER_ADDRESS1', ''),
+        'address2' => env('SHIPPER_ADDRESS2', ''),
+        'city' => env('SHIPPER_CITY', ''),
+        'postcode' => env('SHIPPER_POSTCODE', ''),
+        'country' => env('SHIPPER_COUNTRY', 'NZ'),
+    ],
+
+    'volumetric_divisor' => env('SHIPPING_VOLUMETRIC_DIVISOR', 5000),
+];
+
+3. .env
+SHIPPING_PROVIDER=nz
+
+NZ_SHIPPING_API_URL=https://api.example-nz-shipping.com
+NZ_SHIPPING_API_KEY=your_api_key_here
+NZ_SHIPPING_ACCOUNT_NUMBER=your_account_number_here
+
+SHIPPER_NAME="Your Company"
+SHIPPER_PHONE="0210000000"
+SHIPPER_EMAIL="shipping@example.com"
+SHIPPER_ADDRESS1="Warehouse Address"
+SHIPPER_ADDRESS2=""
+SHIPPER_CITY="Auckland"
+SHIPPER_POSTCODE="1010"
+SHIPPER_COUNTRY="NZ"
+
+SHIPPING_VOLUMETRIC_DIVISOR=5000
+
+
+4. NZShippingService.php
+
+<?php
+
+namespace App\Services\Shipping;
+
+use Exception;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
+class NZShippingService implements ShippingProviderInterface
+{
+    protected string $apiUrl;
+    protected string $apiKey;
+    protected ?string $accountNumber;
+
+    public function __construct()
+    {
+        $this->apiUrl = rtrim(config('shipping.nz.api_url'), '/');
+        $this->apiKey = config('shipping.nz.api_key');
+        $this->accountNumber = config('shipping.nz.account_number');
+
+        if (!$this->apiUrl || !$this->apiKey) {
+            throw new Exception('NZ shipping API credentials are missing.');
+        }
+    }
+
+    public function getRates($order, array $packages): array
+    {
+        $payload = [
+            'account_number' => $this->accountNumber,
+
+            'sender' => $this->senderPayload(),
+
+            'receiver' => [
+                'name' => $order->customer_name,
+                'phone' => $order->customer_phone,
+                'email' => $order->customer_email,
+                'address1' => $order->shipping_address,
+                'city' => $order->shipping_city,
+                'state' => $order->shipping_state,
+                'postcode' => $order->shipping_postcode,
+                'country' => $order->shipping_country ?? 'NZ',
+            ],
+
+            'packages' => $this->packagePayload($packages),
+
+            'options' => [
+                'currency' => 'NZD',
+                'signature_required' => false,
+                'residential' => true,
+            ],
+        ];
+
+        return $this->post('/rates', $payload);
+    }
+
+    public function createShipment($order, array $packages, string $serviceCode): array
+    {
+        $payload = [
+            'account_number' => $this->accountNumber,
+            'order_reference' => $order->order_no,
+            'service_code' => $serviceCode,
+
+            'sender' => $this->senderPayload(),
+
+            'receiver' => [
+                'name' => $order->customer_name,
+                'phone' => $order->customer_phone,
+                'email' => $order->customer_email,
+                'address1' => $order->shipping_address,
+                'city' => $order->shipping_city,
+                'state' => $order->shipping_state,
+                'postcode' => $order->shipping_postcode,
+                'country' => $order->shipping_country ?? 'NZ',
+            ],
+
+            'packages' => $this->packagePayload($packages),
+
+            'label_format' => 'PDF',
+        ];
+
+        return $this->post('/shipments', $payload);
+    }
+
+    public function trackShipment(string $trackingNumber): array
+    {
+        return $this->get('/tracking/' . urlencode($trackingNumber));
+    }
+
+    private function senderPayload(): array
+    {
+        return [
+            'name' => config('shipping.sender.name'),
+            'phone' => config('shipping.sender.phone'),
+            'email' => config('shipping.sender.email'),
+            'address1' => config('shipping.sender.address1'),
+            'address2' => config('shipping.sender.address2'),
+            'city' => config('shipping.sender.city'),
+            'postcode' => config('shipping.sender.postcode'),
+            'country' => config('shipping.sender.country', 'NZ'),
+        ];
+    }
+
+    private function packagePayload(array $packages): array
+    {
+        return collect($packages)->map(function ($package, $index) {
+            return [
+                'reference' => 'PKG-' . ($index + 1),
+                'height_cm' => (float) $package['height_cm'],
+                'width_cm' => (float) $package['width_cm'],
+                'length_cm' => (float) $package['length_cm'],
+                'weight_kg' => (float) $package['chargeable_weight_kg'],
+                'actual_weight_kg' => (float) $package['actual_weight_kg'],
+            ];
+        })->values()->toArray();
+    }
+
+    private function post(string $endpoint, array $payload): array
+    {
+        try {
+            $response = Http::timeout(30)
+                ->withHeaders($this->headers())
+                ->post($this->apiUrl . $endpoint, $payload);
+
+            if (!$response->successful()) {
+                Log::error('NZ Shipping API POST failed', [
+                    'endpoint' => $endpoint,
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                    'payload' => $payload,
+                ]);
+
+                throw new Exception('NZ Shipping API request failed.');
+            }
+
+            return $response->json() ?? [];
+
+        } catch (Exception $e) {
+            Log::error('NZ Shipping API error', [
+                'endpoint' => $endpoint,
+                'message' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
+    }
+
+    private function get(string $endpoint): array
+    {
+        try {
+            $response = Http::timeout(30)
+                ->withHeaders($this->headers())
+                ->get($this->apiUrl . $endpoint);
+
+            if (!$response->successful()) {
+                Log::error('NZ Shipping API GET failed', [
+                    'endpoint' => $endpoint,
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+
+                throw new Exception('NZ Shipping tracking request failed.');
+            }
+
+            return $response->json() ?? [];
+
+        } catch (Exception $e) {
+            Log::error('NZ Shipping tracking error', [
+                'endpoint' => $endpoint,
+                'message' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
+    }
+
+    private function headers(): array
+    {
+        return [
+            'Authorization' => 'Bearer ' . $this->apiKey,
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+    }
+}
+
+Important
+The endpoints below are placeholders:
+/rates
+/shipments
+/tracking/{tracking_number}
+
+Replace them according to your selected NZ courier API docs, for example:
+NZ Post
+GoSweetSpot
+Aramex NZ
+DHL NZ
+Post Haste
+
+Next: Part 7: Checkout shipping rate calculation.
+Part 7: Checkout Shipping Rate Calculation
+1. Route
+Route::post('/orders/{order}/calculate-shipping', [OrderShippingController::class, 'calculate'])
+    ->name('orders.calculate-shipping');
+
+    2. Create Controller
+    php artisan make:controller OrderShippingController
+3. OrderShippingController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use App\Models\OrderPackage;
+use App\Models\ShippingRate;
+use App\Services\PackingService;
+use App\Services\Shipping\NZShippingService;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class OrderShippingController extends Controller
+{
+    public function calculate(Request $request, Order $order)
+    {
+        try {
+            DB::beginTransaction();
+
+            $order->load('items');
+
+            if ($order->items->isEmpty()) {
+                return back()->with('error', 'Order has no items.');
+            }
+
+            // Remove old package/rate calculation
+            OrderPackage::where('order_id', $order->id)->delete();
+            ShippingRate::where('order_id', $order->id)->delete();
+
+            // 1. Pack order items into best boxes
+            $packingService = new PackingService();
+            $packages = $packingService->packOrder($order->items);
+
+            // 2. Save packages
+            foreach ($packages as $package) {
+                OrderPackage::create([
+                    'order_id' => $order->id,
+                    'packaging_box_id' => $package['box_id'],
+                    'box_name' => $package['box_name'],
+
+                    'height_cm' => $package['height_cm'],
+                    'width_cm' => $package['width_cm'],
+                    'length_cm' => $package['length_cm'],
+
+                    'actual_weight_kg' => $package['actual_weight_kg'],
+                    'volumetric_weight_kg' => $package['volumetric_weight_kg'],
+                    'chargeable_weight_kg' => $package['chargeable_weight_kg'],
+
+                    'items_json' => $package['items'],
+                ]);
+            }
+
+            // 3. Call NZ Shipping API
+            $shippingService = new NZShippingService();
+            $apiResponse = $shippingService->getRates($order, $packages);
+
+            // 4. Save shipping rates
+            $services = $apiResponse['services'] ?? $apiResponse['rates'] ?? [];
+
+            if (empty($services)) {
+                DB::rollBack();
+                return back()->with('error', 'No shipping rates found from API.');
+            }
+
+            foreach ($services as $service) {
+                ShippingRate::create([
+                    'order_id' => $order->id,
+                    'provider' => $service['provider'] ?? 'NZ',
+                    'service_name' => $service['name'] ?? $service['service_name'] ?? null,
+                    'service_code' => $service['code'] ?? $service['service_code'] ?? null,
+                    'amount' => $service['price'] ?? $service['amount'] ?? 0,
+                    'currency' => $service['currency'] ?? 'NZD',
+                    'eta' => $service['eta'] ?? $service['delivery_time'] ?? null,
+                    'raw_response' => $service,
+                ]);
+            }
+
+            $order->update([
+                'status' => 'shipping_calculated',
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('orders.shipping-options', $order->id)
+                ->with('success', 'Shipping rates calculated successfully.');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::error('Shipping calculation failed', [
+                'order_id' => $order->id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function shippingOptions(Order $order)
+    {
+        $order->load(['items', 'packages', 'shippingRates']);
+
+        return view('orders.shipping-options', compact('order'));
+    }
+
+    public function selectShipping(Request $request, Order $order)
+    {
+        $request->validate([
+            'shipping_rate_id' => 'required|exists:shipping_rates,id',
+        ]);
+
+        $rate = ShippingRate::where('order_id', $order->id)
+            ->where('id', $request->shipping_rate_id)
+            ->firstOrFail();
+
+        $order->update([
+            'shipping_provider' => $rate->provider,
+            'shipping_service_code' => $rate->service_code,
+            'shipping_service_name' => $rate->service_name,
+            'shipping_amount' => $rate->amount,
+            'total_amount' => $order->subtotal + $rate->amount,
+        ]);
+
+        return redirect()
+            ->route('orders.show', $order->id)
+            ->with('success', 'Shipping method selected successfully.');
+    }
+}
+
+
+4. Add More Routes
+Route::get('/orders/{order}/shipping-options', [OrderShippingController::class, 'shippingOptions'])
+    ->name('orders.shipping-options');
+
+Route::post('/orders/{order}/select-shipping', [OrderShippingController::class, 'selectShipping'])
+    ->name('orders.select-shipping');
+
+5. shipping-options.blade.php
+resources/views/orders/shipping-options.blade.php
+
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <h4>Shipping Options - Order #{{ $order->order_no }}</h4>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
+    <div class="card mb-3">
+        <div class="card-header">
+            Package Details
+        </div>
+
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Box</th>
+                        <th>Dimension</th>
+                        <th>Actual Weight</th>
+                        <th>Volumetric Weight</th>
+                        <th>Chargeable Weight</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach($order->packages as $package)
+                        <tr>
+                            <td>{{ $package->box_name }}</td>
+                            <td>
+                                {{ $package->height_cm }} ×
+                                {{ $package->width_cm }} ×
+                                {{ $package->length_cm }} cm
+                            </td>
+                            <td>{{ $package->actual_weight_kg }} kg</td>
+                            <td>{{ $package->volumetric_weight_kg }} kg</td>
+                            <td>{{ $package->chargeable_weight_kg }} kg</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ route('orders.select-shipping', $order->id) }}">
+        @csrf
+
+        <div class="card">
+            <div class="card-header">
+                Select Shipping Method
+            </div>
+
+            <div class="card-body">
+                @forelse($order->shippingRates as $rate)
+                    <label class="border rounded p-3 mb-2 d-block">
+                        <input type="radio"
+                               name="shipping_rate_id"
+                               value="{{ $rate->id }}"
+                               required>
+
+                        <strong>{{ $rate->service_name }}</strong>
+
+                        <span class="float-end">
+                            {{ $rate->currency }} {{ number_format($rate->amount, 2) }}
+                        </span>
+
+                        <br>
+
+                        <small>
+                            Provider: {{ $rate->provider }}
+                            @if($rate->eta)
+                                | ETA: {{ $rate->eta }}
+                            @endif
+                        </small>
+                    </label>
+                @empty
+                    <div class="alert alert-warning">
+                        No shipping rates available.
+                    </div>
+                @endforelse
+            </div>
+
+            <div class="card-footer">
+                <button class="btn btn-primary">
+                    Select Shipping
+                </button>
+
+                <a href="{{ route('orders.show', $order->id) }}" class="btn btn-secondary">
+                    Back
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+@endsection
+
+
+
+6. Button on Order View Page
+Add this button on your order detail page:
+<form method="POST" action="{{ route('orders.calculate-shipping', $order->id) }}">
+    @csrf
+    <button class="btn btn-warning">
+        Calculate Shipping
+    </button>
+</form>
+
+
+7. Final Checkout Flow
+Order Created
+↓
+Click Calculate Shipping
+↓
+PackingService selects box/boxes
+↓
+Order packages saved
+↓
+NZShippingService calls rate API
+↓
+Shipping rates saved
+↓
+Customer/Admin selects shipping method
+↓
+Order total updated
+
+
+Next: Part 8: Create shipment + label.
+Part 8: Create Shipment + Label
+1. Route
+Route::post('/orders/{order}/create-shipment', [OrderShippingController::class, 'createShipment'])
+    ->name('orders.create-shipment');
+
+
+2. Add Method in OrderShippingController.php
+
+use App\Models\ShippingShipment;
+use App\Models\ShippingShipment;
+public function createShipment(Order $order)
+{
+    try {
+        DB::beginTransaction();
+
+        $order->load(['packages']);
+
+        if (!$order->shipping_service_code) {
+            return back()->with('error', 'Please select shipping method first.');
+        }
+
+        if ($order->packages->isEmpty()) {
+            return back()->with('error', 'Please calculate shipping packages first.');
+        }
+
+        $packages = $order->packages->map(function ($package) {
+            return [
+                'height_cm' => $package->height_cm,
+                'width_cm' => $package->width_cm,
+                'length_cm' => $package->length_cm,
+                'actual_weight_kg' => $package->actual_weight_kg,
+                'volumetric_weight_kg' => $package->volumetric_weight_kg,
+                'chargeable_weight_kg' => $package->chargeable_weight_kg,
+                'items' => $package->items_json,
+            ];
+        })->toArray();
+
+        $shippingService = new NZShippingService();
+
+        $response = $shippingService->createShipment(
+            $order,
+            $packages,
+            $order->shipping_service_code
+        );
+
+        $trackingNumber = $response['tracking_number']
+            ?? $response['trackingNumber']
+            ?? null;
+
+        $labelUrl = $response['label_url']
+            ?? $response['labelUrl']
+            ?? $response['label_pdf']
+            ?? null;
+
+        ShippingShipment::updateOrCreate(
+            ['order_id' => $order->id],
+            [
+                'provider' => $order->shipping_provider,
+                'service_code' => $order->shipping_service_code,
+                'service_name' => $order->shipping_service_name,
+                'tracking_number' => $trackingNumber,
+                'label_url' => $labelUrl,
+                'request_payload' => [
+                    'order_id' => $order->id,
+                    'packages' => $packages,
+                ],
+                'response_payload' => $response,
+                'status' => 'created',
+            ]
+        );
+
+        $order->update([
+            'tracking_number' => $trackingNumber,
+            'shipping_label_url' => $labelUrl,
+            'status' => 'shipment_created',
+        ]);
+
+        DB::commit();
+
+        return back()->with('success', 'Shipment created successfully.');
+
+    } catch (Exception $e) {
+        DB::rollBack();
+
+        Log::error('Shipment creation failed', [
+            'order_id' => $order->id,
+            'message' => $e->getMessage(),
+        ]);
+
+        return back()->with('error', $e->getMessage());
+    }
+}
+
+
+3. Add Button on Order View Page
+@if($order->shipping_service_code && !$order->tracking_number)
+    <form method="POST" action="{{ route('orders.create-shipment', $order->id) }}">
+        @csrf
+
+        <button class="btn btn-success">
+            Create Shipment + Label
+        </button>
+    </form>
+@endif
+
+4. Show Tracking + Label
+@if($order->tracking_number)
+    <div class="card mt-3">
+        <div class="card-header">
+            Shipment Details
+        </div>
+
+        <div class="card-body">
+            <p>
+                <strong>Provider:</strong>
+                {{ $order->shipping_provider }}
+            </p>
+
+            <p>
+                <strong>Service:</strong>
+                {{ $order->shipping_service_name }}
+            </p>
+
+            <p>
+                <strong>Tracking Number:</strong>
+                {{ $order->tracking_number }}
+            </p>
+
+            @if($order->shipping_label_url)
+                <a href="{{ $order->shipping_label_url }}"
+                   target="_blank"
+                   class="btn btn-primary">
+                    Download Label
+                </a>
+            @endif
+        </div>
+    </div>
+@endif
+
+
+5. Flow
+Select Shipping Method
+↓
+Create Shipment
+↓
+Send order + package data to NZ API
+↓
+API returns tracking number + label URL
+↓
+Save in shipping_shipments table
+↓
+Update orders table
+↓
+Show label download button
+
+
+
+Next: Part 9: Tracking update.
+Part 9: Tracking Update
+
+1. Update shipping_shipments table
+php artisan make:migration add_tracking_fields_to_shipping_shipments_table
+
+Schema::table('shipping_shipments', function (Blueprint $table) {
+    $table->string('tracking_status')->nullable()->after('tracking_number');
+    $table->text('tracking_message')->nullable()->after('tracking_status');
+    $table->timestamp('last_tracked_at')->nullable()->after('tracking_message');
+});
+
+Run
+
+php artisan migrate
+
+2. Update ShippingShipment.php
+protected $fillable = [
+    'order_id',
+    'provider',
+    'service_code',
+    'service_name',
+    'tracking_number',
+    'tracking_status',
+    'tracking_message',
+    'last_tracked_at',
+    'label_url',
+    'request_payload',
+    'response_payload',
+    'status',
+];
+
+protected $casts = [
+    'request_payload' => 'array',
+    'response_payload' => 'array',
+    'last_tracked_at' => 'datetime',
+];
+
+3. Add Route
+Route::post('/orders/{order}/track-shipment', [OrderShippingController::class, 'trackShipment'])
+    ->name('orders.track-shipment');
+
+ 4. Add Method in OrderShippingController.php
+    use App\Models\ShippingShipment;
+use App\Services\Shipping\NZShippingService;
+use Illuminate\Support\Facades\Log;
+
+
+
+public function trackShipment(Order $order)
+{
+    try {
+        $shipment = ShippingShipment::where('order_id', $order->id)->first();
+
+        if (!$shipment || !$shipment->tracking_number) {
+            return back()->with('error', 'Tracking number not found.');
+        }
+
+        $shippingService = new NZShippingService();
+
+        $response = $shippingService->trackShipment($shipment->tracking_number);
+
+        $trackingStatus = $response['status']
+            ?? $response['tracking_status']
+            ?? $response['current_status']
+            ?? null;
+
+        $trackingMessage = $response['message']
+            ?? $response['tracking_message']
+            ?? $response['description']
+            ?? null;
+
+        $shipment->update([
+            'tracking_status' => $trackingStatus,
+            'tracking_message' => $trackingMessage,
+            'response_payload' => $response,
+            'last_tracked_at' => now(),
+        ]);
+
+        if ($trackingStatus) {
+            $orderStatus = match (strtolower($trackingStatus)) {
+                'delivered' => 'delivered',
+                'in_transit', 'in transit', 'out_for_delivery', 'out for delivery' => 'shipped',
+                default => $order->status,
+            };
+
+            $order->update([
+                'status' => $orderStatus,
+            ]);
+        }
+
+        return back()->with('success', 'Tracking updated successfully.');
+
+    } catch (Exception $e) {
+        Log::error('Tracking update failed', [
+            'order_id' => $order->id,
+            'message' => $e->getMessage(),
+        ]);
+
+        return back()->with('error', $e->getMessage());
+    }
+}
+
+
+
+5. Add Button on Order View Page
+
+@if($order->tracking_number)
+    <form method="POST" action="{{ route('orders.track-shipment', $order->id) }}" class="d-inline">
+        @csrf
+
+        <button class="btn btn-info">
+            Update Tracking
+        </button>
+    </form>
+@endif
+
+
+
+6. Show Tracking Status
+@if($order->shipment)
+    <div class="card mt-3">
+        <div class="card-header">
+            Tracking Details
+        </div>
+
+        <div class="card-body">
+            <p><strong>Tracking Number:</strong> {{ $order->shipment->tracking_number }}</p>
+            <p><strong>Status:</strong> {{ $order->shipment->tracking_status ?? 'Not updated' }}</p>
+            <p><strong>Message:</strong> {{ $order->shipment->tracking_message ?? '-' }}</p>
+
+            @if($order->shipment->last_tracked_at)
+                <p><strong>Last Updated:</strong> {{ $order->shipment->last_tracked_at->format('d M Y h:i A') }}</p>
+            @endif
+        </div>
+    </div>
+@endif
+
+
+
+7. Optional Cron Command
+php artisan make:command UpdateShipmentTracking
+
+public function handle()
+{
+    $shipments = ShippingShipment::whereNotNull('tracking_number')
+        ->whereNotIn('status', ['delivered', 'cancelled'])
+        ->get();
+
+    $shippingService = new NZShippingService();
+
+    foreach ($shipments as $shipment) {
+        try {
+            $response = $shippingService->trackShipment($shipment->tracking_number);
+
+            $status = $response['status']
+                ?? $response['tracking_status']
+                ?? $response['current_status']
+                ?? null;
+
+            $shipment->update([
+                'tracking_status' => $status,
+                'tracking_message' => $response['message'] ?? null,
+                'response_payload' => $response,
+                'last_tracked_at' => now(),
+                'status' => strtolower($status) === 'delivered' ? 'delivered' : $shipment->status,
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Cron tracking failed', [
+                'shipment_id' => $shipment->id,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    $this->info('Shipment tracking updated successfully.');
+}
+
+
+Schedule in app/Console/Kernel.php:
+$schedule->command('shipments:update-tracking')->hourly();
+
+
+
+Final flow completed:
+
+
+Product Dimensions
+↓
+Packaging Boxes
+↓
+PackingService
+↓
+Shipping Rate
+↓
+Select Courier
+↓
+Create Shipment + Label
+↓
+Update Tracking

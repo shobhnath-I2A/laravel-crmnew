@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivityRateController;
+use App\Http\Controllers\AutomationController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\ItineraryController;
@@ -144,23 +145,38 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::resource('weather-setting', WeatherSettingController::class);
     Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
+
     Route::middleware(['auth', 'admin.only'])->group(function () {
         Route::resource('settings', SettingController::class);
+        Route::get('/organisation/settings', [SettingController::class, 'createOrganization'])
+            ->name('settings.createorganization');
+        Route::post('/organisation/settings', [SettingController::class, 'saveOrganisation'])
+            ->name('settings.organisation.save');
+        Route::post('/default/settings', [SettingController::class, 'saveDefault'])
+            ->name('settings.default.save');
+        Route::post('/payment-gateway/settings', [SettingController::class, 'savePaymentGateway'])
+            ->name('settings.payment.save');
+        Route::post('/package-inclusions/settings', [SettingController::class, 'savePackageInclusions'])
+            ->name('settings.package-inclusions.save');
         Route::resource('staff', StaffController::class);
         Route::resource('roles', RoleController::class);
         Route::resource('branch-master', BranchMasterController::class);
+        Route::resource('automation', AutomationController::class);
     });
 
-    Route::post('/settings/organisation', [SettingController::class, 'saveOrganisation'])
-    ->name('settings.organisation.save');
+    // Route::get('/settings/organisation', [SettingController::class, 'createOrganization'])
+    // ->name('settings.createorganization');
 
-    Route::post('/settings/default', [SettingController::class, 'saveDefault'])
-        ->name('settings.default.save');
+    // Route::post('/settings/organisation', [SettingController::class, 'saveOrganisation'])
+    // ->name('settings.organisation.save');
 
-    Route::post('/settings/payment-gateway', [SettingController::class, 'savePaymentGateway'])
-        ->name('settings.payment.save');
-    Route::post('/settings/package-inclusions', [SettingController::class, 'savePackageInclusions'])
-        ->name('settings.package-inclusions.save');
+    // Route::post('/settings/default', [SettingController::class, 'saveDefault'])
+    //     ->name('settings.default.save');
+
+    // Route::post('/settings/payment-gateway', [SettingController::class, 'savePaymentGateway'])
+    //     ->name('settings.payment.save');
+    // Route::post('/settings/package-inclusions', [SettingController::class, 'savePackageInclusions'])
+    //     ->name('settings.package-inclusions.save');
 
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::get('/notifications/latest', [NotificationController::class, 'latest']);

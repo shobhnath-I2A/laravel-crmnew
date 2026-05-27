@@ -54,23 +54,33 @@ html{background-image:none !important;background-color:#FFFFFF !important;}
                         </td>
                         <td align="left" valign="top">
                         @if ($tab == 'team-management')
-                            @include('setting.team-management',['teams' => $data['teams'] ?? null])
+                            @include('setting.team-management',[
+                                'teams' => $data['teams'] ?? null
+                            ])
                         @elseif ($tab == 'organisation-settings')
-                            @include('setting.organisation-setting',['organisation'=> $data['organisation'] ?? null])
+                            @include('setting.organisation-setting',[
+                                'organisation'=> $data['organisation'] ?? null
+                            ])
                         @elseif ($tab == 'default-setting')
-                            @include('setting.default-setting',['default' => $data['default'] ?? null])
+                            @include('setting.default.default-setting',[
+                                'default' => $data['default'] ?? null
+                            ])
                         @elseif ($tab == 'admin-settings')
-                            @include('setting.admin-setting',['payment_gateway'=> $data['payment_gateway'] ?? null])
+                            @include('setting.admin-setting',[
+                                'payment_gateway'=> $data['payment_gateway'] ?? null
+                            ])
                         @elseif ($tab == 'package-inclusions')
-                            @include('setting.package-inclusion', [
-                                'inclusions' => $data['inclusions'] ?? null
+                            @include('setting.inclusion.package-inclusion', [
+                                'package_inclusions' => $data['package_inclusions'] ?? null
                             ])
                         @elseif ($tab == 'automation')
-                            @include('setting.automation')
+                            @include('setting.automation.index',[
+                                'automations'=> $data['automations'] ?? null
+                            ])
                         @elseif ($tab == 'branches-setting')
-                             @include('setting.branches-setting', [
+                            @include('setting.branches-setting', [
                                     'branches' => $data['branches'] ?? collect()
-                                ])
+                            ])
                         @elseif ($tab == 'roles')
                             @include('setting.roles', [
                                 'roles' => $data['roles'] ?? collect()

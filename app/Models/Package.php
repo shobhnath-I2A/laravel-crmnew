@@ -19,7 +19,8 @@ class Package extends Model
         'is_special',
         'package_theme_id',
         'created_by',
-        'itinerary_id'
+        'itinerary_id',
+        'status'
     ];
 
     public function destinations()

@@ -9,6 +9,7 @@ use App\Models\BranchMaster;
 use App\Models\Rolemaster;
 use App\Models\RolePermission;
 use App\Models\PackageInclusion;
+use App\Models\Automation;
 use App\Models\User;
 use App\Models\AppSetting;
 use Illuminate\Support\Facades\Cache;
@@ -74,11 +75,7 @@ class SettingController extends Controller
             $data['teams'] = $teams;
             // dd($data['branches']);
         }
-        if ($tab === 'package-inclusions') {
-            $inclusions = PackageInclusion::where('user_id', auth()->id())->first();
-            $data['inclusions'] = $inclusions;
-            // dd($data['branches']);
-        }
+
         if ($tab === 'branches-setting') {
             $data['branches'] = BranchMaster::latest()->get();
             // dd($data['branches']);
@@ -98,7 +95,19 @@ class SettingController extends Controller
         if ($tab === 'package-inclusions') {
             $data['package_inclusions'] = $this->getSettingsGroup('package_inclusions');
         }
+        if ($tab === 'automation') {
 
+            $data['automations'] = Automation::with([
+                'destination',
+                'package',
+                'queryStatus',
+                'user'
+            ])->latest()->get();
+        }
+        // if ($tab === 'automation') {
+        //     $automation = Automation::get();
+        //     $data['automation'] = $automation;
+        // }
         if ($tab === 'roles') {
 
             $roles = RoleMaster::with([
@@ -171,21 +180,47 @@ class SettingController extends Controller
                 ->pluck('value', 'key_name');
         });
     }
-
     public function saveOrganisation(Request $request)
     {
-        $this->saveSettingsGroup('organisation', $request->only([
-            'organisation_name',
-            'invoice_email',
-            'invoice_phone',
-            'address',
-            'gstn',
-            'state',
-            'state_code',
-        ]));
+        $request->validate([
+            'organisation_name' => 'required|string|max:255',
+            'invoice_email'    => 'nullable|email|max:255',
+            'invoice_phone'    => 'nullable|string|max:50',
+            'address'          => 'nullable|string|max:500',
+            'gstn'             => 'nullable|string|max:100',
+            'state'            => 'nullable|string|max:100',
+            'state_code'       => 'nullable|string|max:100',
+        ]);
 
-        return back()->with('success', 'Organisation settings saved successfully.');
+        $this->saveSettingsGroup('organisation', [
+            'organisation_name' => $request->organisation_name,
+            'invoice_email'    => $request->invoice_email,
+            'invoice_phone'    => $request->invoice_phone,
+            'address'          => $request->address,
+            'gstn'             => $request->gstn,
+            'state'            => $request->state,
+            'state_code'       => $request->state_code,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Organisation settings saved successfully.',
+        ]);
     }
+    // public function saveOrganisation(Request $request)
+    // {
+    //     $this->saveSettingsGroup('organisation', $request->only([
+    //         'organisation_name',
+    //         'invoice_email',
+    //         'invoice_phone',
+    //         'address',
+    //         'gstn',
+    //         'state',
+    //         'state_code',
+    //     ]));
+
+    //     return back()->with('success', 'Organisation settings saved successfully.');
+    // }
 
     public function saveDefault(Request $request)
     {
@@ -216,36 +251,56 @@ class SettingController extends Controller
     }
 
     public function savePackageInclusions(Request $request)
-{
-    $data = $request->only([
-        'inclusions_title',
-        'package_inclusions',
+    {
+        $this->saveSettingsGroup('package_inclusions', $request->only([
+            'inclusions_title',
+            'package_inclusions',
+            'important_tips_title',
+            'package_important_tips',
+            'exclusions_title',
+            'package_exclusions',
+            'travel_information_title',
+            'package_travel_info',
+        ]));
 
-        'important_tips_title',
-        'package_important_tips',
-
-        'exclusions_title',
-        'package_exclusions',
-
-        'travel_information_title',
-        'package_travel_info',
-    ]);
-
-    foreach ([
-        'inclusions_img',
-        'important_tips_img',
-        'exclusions_img',
-        'travel_info_img',
-    ] as $fileKey) {
-        if ($request->hasFile($fileKey)) {
-            $data[$fileKey] = $request->file($fileKey)->store('settings/package', 'public');
-        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Package inclusions saved successfully.',
+        ]);
     }
+    // public function savePackageInclusions(Request $request)
+    // {
+    //     $data = $request->only([
+    //         'inclusions_title',
+    //         'package_inclusions',
 
-    $this->saveSettingsGroup('package_inclusions', $data);
+    //         'important_tips_title',
+    //         'package_important_tips',
 
-    return back()->with('success', 'Package inclusions settings saved successfully.');
-}
+    //         'exclusions_title',
+    //         'package_exclusions',
+
+    //         'travel_information_title',
+    //         'package_travel_info',
+    //     ]);
+
+    //     foreach (
+    //         [
+    //             'inclusions_img',
+    //             'important_tips_img',
+    //             'exclusions_img',
+    //             'travel_info_img',
+    //         ] as $fileKey
+    //     ) {
+    //         if ($request->hasFile($fileKey)) {
+    //             $data[$fileKey] = $request->file($fileKey)->store('settings/package', 'public');
+    //         }
+    //     }
+
+    //     $this->saveSettingsGroup('package_inclusions', $data);
+
+    //     return back()->with('success', 'Package inclusions settings saved successfully.');
+    // }
     /**
      * Show the form for creating a new resource.
      */
@@ -281,6 +336,15 @@ class SettingController extends Controller
                 ->with('error', 'Something went wrong!');
         }
     }
+    public function createOrganization()
+    {
+        $organisation = $this->getSettingsGroup('organisation');
+
+        return view('setting.organisationsettings.index', compact('organisation'));
+    }
+    // public function createOrganization(){
+    //     return view('setting.organisationsettings.index');
+    // }
 
     /**
      * Show the form for editing the specified resource.

@@ -12,8 +12,8 @@
         @if (isset($user))
             @method('PUT')
         @endif
-        <form action="{{ route('staff.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
+        {{-- <form action="{{ route('staff.store') }}" method="POST" enctype="multipart/form-data"> --}}
+            {{-- @csrf --}}
             <div class="container-fluid">
                 <div class="card-body">
                     <div class="row">

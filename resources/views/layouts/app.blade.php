@@ -228,7 +228,7 @@
     <script type="text/javascript">
         function initCRMUI() {
             tinymce.init({
-                selector: "#description",
+                selector: ".editorclass",
                 themes: "modern",
                 plugins: [
                     "advlist autolink lists link image charmap print preview anchor",
@@ -347,7 +347,7 @@
 
         <script>
             tinymce.init({
-                selector: "#description",
+                selector: ".editorclass",
                 themes: "modern",
                 plugins: [
                     "advlist autolink lists link image charmap print preview anchor",
