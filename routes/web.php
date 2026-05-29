@@ -29,6 +29,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BranchMasterController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SmtpSettingController;
 
 function permissionResource($uri, $controller, $module)
 {
@@ -162,6 +163,7 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         Route::resource('roles', RoleController::class);
         Route::resource('branch-master', BranchMasterController::class);
         Route::resource('automation', AutomationController::class);
+        Route::resource('smtp-setting', SmtpSettingController::class);
     });
 
     // Route::get('/settings/organisation', [SettingController::class, 'createOrganization'])

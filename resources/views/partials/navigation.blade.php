@@ -98,7 +98,7 @@
                             &nbsp; &nbsp; Manage Your
                         </div>
                     </a>
-                    <a href="display.html?ga=mailsetting">
+                    <a href="{{ route('smtp-setting.index') }}">
                         <div class="buttonprofile" style="margin-bottom:5px;">
                             <i class="fa fa-envelope" aria-hidden="true"></i> &nbsp; &nbsp;Mail Setting
                         </div>
