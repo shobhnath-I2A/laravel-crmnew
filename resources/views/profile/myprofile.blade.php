@@ -75,7 +75,7 @@
                                         <tbody>
                                             <tr>
                                                 <td style="padding-right:80px;">Language</td>
-                                                <td>{{ $user->language ?? 'English (United States)' }}</td>
+                                                <td>{{ $user->language ?? config('crm.default_language') }}</td>
                                             </tr>
                                             <tr>
                                                 <td>Country Location</td>
@@ -83,8 +83,8 @@
                                             </tr>
                                             <tr>
                                                 <td>Time Format</td>
-                                               <td>
-                                                 {{ str_contains(config('app.time_format', 'h:i A'), 'A') ? '12 Hours' : '24 Hours' }}
+                                                <td>
+                                                    {{ str_contains(config('app.time_format', 'h:i A'), 'A') ? '12 Hours' : '24 Hours' }}
                                                 </td>
                                             </tr>
                                             <tr>

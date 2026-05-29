@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('smtp_settings', function (Blueprint $table) {
-            $table->string('country_code', 10)->default('1550')->after('id');
+            $table->string('country_code', 10)->default('91')->after('id');
         });
     }
 

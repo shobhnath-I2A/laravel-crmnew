@@ -43,7 +43,7 @@ class StaffController extends Controller
 
                 'branch_Id'        => $request->branch_Id,
                 'user_type'        => $request->user_type ?? 1,
-                'user_country'     => $request->user_country ?? 1550,
+                'user_country'     => $request->user_country ?? config('crm.default_country_code'),
                 'show_query_status' => $request->show_query_status ?? 0,
                 'status'          => $request->has('status') ? 1 : 0,
             ]);
@@ -93,7 +93,7 @@ class StaffController extends Controller
 
                 'branch_Id'        => $request->branch_Id,
                 'user_type'        => $request->user_type ?? 1,
-                'user_country'     => $request->user_country ?? 1550,
+                'user_country'     => $request->user_country ?? config('crm.default_country_code'),
                 'show_query_status' => $request->show_query_status ?? 0,
                 'status'          => $request->has('status') ? 1 : 0,
             ]);

@@ -11,7 +11,7 @@ class SmtpSettingController extends Controller
      */
     public function index()
     {
-        $countryCode = auth()->user()->country_code ?? auth()->user()->userCountry ?? 1550;
+        $countryCode = auth()->user()->country_code ?? auth()->user()->userCountry ?? config('crm.default_country_code');
         $smtpSetting = SmtpSetting::where('country_code', $countryCode)->first();
         return view('setting.smtp-settings.index', compact('smtpSetting', 'countryCode'));
     }

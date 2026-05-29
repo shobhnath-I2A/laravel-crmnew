@@ -9,7 +9,7 @@ class AppSettingService
 {
     public function getCountryCode(): string
     {
-        return (string) (auth()->user()->user_country ?? '1550');
+        return (string) (auth()->user()->user_country ?? config('crm.default_country_code'));
     }
 
     public function saveGroup(string $groupName, array $data, ?string $countryCode = null): void

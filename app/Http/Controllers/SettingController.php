@@ -147,7 +147,7 @@ class SettingController extends Controller
 
     private function countryCode()
     {
-        return auth()->user()->user_country ?? '1550';
+        return auth()->user()->user_country ?? config('crm.default_country_code');
     }
 
     private function saveSettingsGroup($groupName, array $settings)

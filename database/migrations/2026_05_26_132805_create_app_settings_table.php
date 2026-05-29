@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('app_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('country_code', 20)->default('1550');
+            $table->string('country_code', 20)->default('91');
             $table->string('group_name', 100);
             $table->string('key_name', 150);
             $table->longText('value')->nullable();
