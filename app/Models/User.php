@@ -29,7 +29,14 @@ class User extends Authenticatable
         'branch_id',
         'user_type',
         'user_country',
-        'show_query_status'
+        'show_query_status',
+
+        'submit_name',
+        'mobile_code',
+        'mobile',
+        'website',
+        'profile_image',
+        'theme_color'
     ];
 
     /**
@@ -86,7 +93,7 @@ class User extends Authenticatable
     }
     public function isAdmin()
     {
-       return $this->role_id == 1;
+        return $this->role_id == 1;
     }
     // public function isAdmin()
     // {
@@ -126,5 +133,13 @@ class User extends Authenticatable
     public function canDownload($module)
     {
         return $this->hasPermission($module, 'can_download');
+    }
+    public function country()
+    {
+        return $this->belongsTo(
+            CountryMaster::class,
+            'user_country',
+            'country_code'
+        );
     }
 }

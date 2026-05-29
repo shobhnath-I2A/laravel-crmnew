@@ -93,7 +93,7 @@
                     }
                 </script>
                 <div class="content" style="border-bottom:2px solid #2d2f31; text-align:center;">
-                    <a href="display.html?ga=myprofile">
+                    <a href="{{ route('profile.edit') }}">
                         <div class="buttonprofile" style="margin-top:5px;"><i class="fa fa-user" aria-hidden="true"></i>
                             &nbsp; &nbsp; Manage Your
                         </div>
