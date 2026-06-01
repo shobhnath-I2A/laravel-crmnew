@@ -27,6 +27,7 @@ use App\Http\Controllers\WeatherSettingController;
 use App\Http\Controllers\CurrencyExchangeMasterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BranchMasterController;
+use App\Http\Controllers\ItineraryPriceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SmtpSettingController;
@@ -82,6 +83,24 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     permissionResource('room-type', HotelRoomTypeController::class, 'RoomType');
     permissionResource('activities', ActivityController::class, 'Activity');
     permissionResource('transfers', TransferMasterController::class, 'Transfer');
+    // permissionResource('itineraries-price', ItineraryPriceController::class, 'ItineraryPrice');
+
+    // Route::get('itineraries-price/{id}', [ItineraryPriceController::class, 'index'])
+    // ->name('itineraries-price.index');
+
+    // Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
+    //     ->name('itineraries.final')
+    //     ->middleware('module.permission:itineraries-final,view');
+
+    Route::get('/itineraries/{id}', [ItineraryController::class, 'show'])
+    ->name('itineraries.show');
+
+Route::get('/itineraries-price/{id}', [ItineraryPriceController::class, 'index'])
+    ->name('itineraries-price.index');
+
+Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
+    ->name('itineraries.final');
+
 
     Route::resource('query-tasks', QueryTaskController::class)
         ->middleware('module.permission:Task,view');

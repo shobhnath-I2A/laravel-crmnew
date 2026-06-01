@@ -310,6 +310,13 @@ class ItineraryController extends Controller
             'price' => $rate->double ?? 0
         ]);
     }
+
+   public function finalItinerary(String $id)
+    {
+        $itinerary = Itinerary::findOrFail($id);
+
+        return view('itinerary.final-itinerary', compact('itinerary'));
+    }
     // public function loadHotelData(Request $request)
     // {
     //     $hotel = Hotel::with('rates')->find($request->hotelnamemaster);

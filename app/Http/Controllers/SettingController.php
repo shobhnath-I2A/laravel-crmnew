@@ -21,114 +21,126 @@ class SettingController extends Controller
      */
     public function index(Request $request)
     {
+        try {
+            $tabs = [
+                'team-management' => [
+                    'view' => 'setting.tabs.team-management',
+                    'title' => 'Team Management',
+                ],
+                'organisation-settings' => [
+                    'view' => 'setting.tabs.organisation-settings',
+                    'title' => 'Organisation Settings',
+                ],
+                'default-setting' => [
+                    'view' => 'setting.tabs.default-setting',
+                    'title' => 'Default Settings',
+                ],
+                'admin-settings' => [
+                    'view' => 'setting.tabs.admin-settings',
+                    'title' => 'Admin Settings',
+                ],
+                'package-inclusions' => [
+                    'view' => 'setting.tabs.package-inclusions',
+                    'title' => 'Package Inclusions',
+                ],
+                'automation' => [
+                    'view' => 'setting.tabs.automation',
+                    'title' => 'Automation',
+                ],
+                'branches-setting' => [
+                    'view' => 'setting.tabs.branches-setting',
+                    'title' => 'Branch Setting',
+                ],
+                'roles' => [
+                    'view' => 'setting.tabs.roles',
+                    'title' => 'Roles',
+                ],
+                'apidocs' => [
+                    'view' => 'setting.tabs.apidocs',
+                    'title' => 'API Docs',
+                ],
+            ];
 
-        $tabs = [
-            'team-management' => [
-                'view' => 'setting.tabs.team-management',
-                'title' => 'Team Management',
-            ],
-            'organisation-settings' => [
-                'view' => 'setting.tabs.organisation-settings',
-                'title' => 'Organisation Settings',
-            ],
-            'default-setting' => [
-                'view' => 'setting.tabs.default-setting',
-                'title' => 'Default Settings',
-            ],
-            'admin-settings' => [
-                'view' => 'setting.tabs.admin-settings',
-                'title' => 'Admin Settings',
-            ],
-            'package-inclusions' => [
-                'view' => 'setting.tabs.package-inclusions',
-                'title' => 'Package Inclusions',
-            ],
-            'automation' => [
-                'view' => 'setting.tabs.automation',
-                'title' => 'Automation',
-            ],
-            'branches-setting' => [
-                'view' => 'setting.tabs.branches-setting',
-                'title' => 'Branch Setting',
-            ],
-            'roles' => [
-                'view' => 'setting.tabs.roles',
-                'title' => 'Roles',
-            ],
-            'apidocs' => [
-                'view' => 'setting.tabs.apidocs',
-                'title' => 'API Docs',
-            ],
-        ];
+            $tab = $request->query('tab', 'team-management');
 
-        $tab = $request->query('tab', 'team-management');
+            if (!array_key_exists($tab, $tabs)) {
+                $tab = 'team-management';
+            }
 
-        if (!array_key_exists($tab, $tabs)) {
-            $tab = 'team-management';
+            $data = [];
+
+            if ($tab === 'team-management') {
+                // $teams = User::all();
+                $teams = User::with('role.branch')->get();
+                $data['teams'] = $teams;
+                // dd($data['branches']);
+            }
+
+            if ($tab === 'branches-setting') {
+                $data['branches'] = BranchMaster::latest()->get();
+                // dd($data['branches']);
+            }
+            if ($tab === 'organisation-settings') {
+                $data['organisation'] = $this->getSettingsGroup('organisation');
+            }
+
+            if ($tab === 'default-setting') {
+                $data['default'] = $this->getSettingsGroup('default');
+            }
+
+            if ($tab === 'admin-settings') {
+                $data['payment_gateway'] = $this->getSettingsGroup('payment_gateway');
+            }
+
+            if ($tab === 'package-inclusions') {
+                $data['package_inclusions'] = $this->getSettingsGroup('package_inclusions');
+            }
+            // dd($data);
+            if ($tab === 'automation') {
+
+                $data['automations'] = Automation::with([
+                    'destination',
+                    'package',
+                    'queryStatus',
+                    'user'
+                ])->latest()->get();
+            }
+            // if ($tab === 'automation') {
+            //     $automation = Automation::get();
+            //     $data['automation'] = $automation;
+            // }
+            if ($tab === 'roles') {
+
+                $roles = RoleMaster::with([
+                    'branch',
+                    'childrenRecursive'
+                ])
+                    ->where('parent_id', 0)
+                    ->where('status', 1)
+                    ->orderBy('id', 'asc')
+                    ->get();
+
+                $data['roles'] = $roles;
+            }
+
+            return view('setting.index', [
+                'tab' => $tab,
+                'tabs' => $tabs,
+                'tabView' => $tabs[$tab]['view'],
+                'tabTitle' => $tabs[$tab]['title'],
+                'data' => $data,
+            ]);
+        } catch (\Exception $e) {
+
+            Log::error('Setting page error', [
+                'tab' => $request->tab,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->with('error', 'Unable to load settings page.');
         }
-
-        $data = [];
-
-        if ($tab === 'team-management') {
-            // $teams = User::all();
-            $teams = User::with('role.branch')->get();
-            $data['teams'] = $teams;
-            // dd($data['branches']);
-        }
-
-        if ($tab === 'branches-setting') {
-            $data['branches'] = BranchMaster::latest()->get();
-            // dd($data['branches']);
-        }
-        if ($tab === 'organisation-settings') {
-            $data['organisation'] = $this->getSettingsGroup('organisation');
-        }
-
-        if ($tab === 'default-setting') {
-            $data['default'] = $this->getSettingsGroup('default');
-        }
-
-        if ($tab === 'admin-settings') {
-            $data['payment_gateway'] = $this->getSettingsGroup('payment_gateway');
-        }
-
-        if ($tab === 'package-inclusions') {
-            $data['package_inclusions'] = $this->getSettingsGroup('package_inclusions');
-        }
-        if ($tab === 'automation') {
-
-            $data['automations'] = Automation::with([
-                'destination',
-                'package',
-                'queryStatus',
-                'user'
-            ])->latest()->get();
-        }
-        // if ($tab === 'automation') {
-        //     $automation = Automation::get();
-        //     $data['automation'] = $automation;
-        // }
-        if ($tab === 'roles') {
-
-            $roles = RoleMaster::with([
-                'branch',
-                'childrenRecursive'
-            ])
-                ->where('parent_id', 0)
-                ->where('status', 1)
-                ->orderBy('id', 'asc')
-                ->get();
-
-            $data['roles'] = $roles;
-        }
-
-        return view('setting.index', [
-            'tab' => $tab,
-            'tabs' => $tabs,
-            'tabView' => $tabs[$tab]['view'],
-            'tabTitle' => $tabs[$tab]['title'],
-            'data' => $data,
-        ]);
         //  try {
         //         // Default tab = teams
         //         $tab = $request->query('tab', 'team-management');
@@ -152,60 +164,102 @@ class SettingController extends Controller
 
     private function saveSettingsGroup($groupName, array $settings)
     {
-        $countryCode = $this->countryCode();
+        try {
+            $countryCode = $this->countryCode();
 
-        foreach ($settings as $key => $value) {
-            AppSetting::updateOrCreate(
-                [
-                    'country_code' => $countryCode,
-                    'group_name'   => $groupName,
-                    'key_name'     => $key,
-                ],
-                [
-                    'value' => $value,
-                ]
-            );
+            foreach ($settings as $key => $value) {
+                AppSetting::updateOrCreate(
+                    [
+                        'country_code' => $countryCode,
+                        'group_name'   => $groupName,
+                        'key_name'     => $key,
+                    ],
+                    [
+                        'value' => $value,
+                    ]
+                );
+            }
+
+            Cache::forget("settings_{$countryCode}_{$groupName}");
+            return true;
+        } catch (\Exception $e) {
+
+            Log::error('Error saving settings group', [
+                'group_name' => $groupName,
+                'country_code' => $countryCode ?? null,
+                'settings' => $settings,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return false;
         }
-
-        Cache::forget("settings_{$countryCode}_{$groupName}");
     }
 
     private function getSettingsGroup($groupName)
     {
-        $countryCode = $this->countryCode();
+        try {
+            $countryCode = $this->countryCode();
 
-        return Cache::remember("settings_{$countryCode}_{$groupName}", 3600, function () use ($countryCode, $groupName) {
-            return AppSetting::where('country_code', $countryCode)
-                ->where('group_name', $groupName)
-                ->pluck('value', 'key_name');
-        });
+            return Cache::remember("settings_{$countryCode}_{$groupName}", 3600, function () use ($countryCode, $groupName) {
+                return AppSetting::where('country_code', $countryCode)
+                    ->where('group_name', $groupName)
+                    ->pluck('value', 'key_name');
+            });
+        } catch (\Exception $e) {
+            Log::error('Error fetching settings group', [
+                'group_name' => $groupName,
+                'country_code' => $countryCode ?? null,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return collect();
+        }
     }
     public function saveOrganisation(Request $request)
     {
-        $request->validate([
-            'organisation_name' => 'required|string|max:255',
-            'invoice_email'    => 'nullable|email|max:255',
-            'invoice_phone'    => 'nullable|string|max:50',
-            'address'          => 'nullable|string|max:500',
-            'gstn'             => 'nullable|string|max:100',
-            'state'            => 'nullable|string|max:100',
-            'state_code'       => 'nullable|string|max:100',
-        ]);
+        try {
+            $request->validate([
+                'organisation_name' => 'required|string|max:255',
+                'invoice_email'    => 'nullable|email|max:255',
+                'invoice_phone'    => 'nullable|string|max:50',
+                'address'          => 'nullable|string|max:500',
+                'gstn'             => 'nullable|string|max:100',
+                'state'            => 'nullable|string|max:100',
+                'state_code'       => 'nullable|string|max:100',
+            ]);
 
-        $this->saveSettingsGroup('organisation', [
-            'organisation_name' => $request->organisation_name,
-            'invoice_email'    => $request->invoice_email,
-            'invoice_phone'    => $request->invoice_phone,
-            'address'          => $request->address,
-            'gstn'             => $request->gstn,
-            'state'            => $request->state,
-            'state_code'       => $request->state_code,
-        ]);
+            $this->saveSettingsGroup('organisation', [
+                'organisation_name' => $request->organisation_name,
+                'invoice_email'    => $request->invoice_email,
+                'invoice_phone'    => $request->invoice_phone,
+                'address'          => $request->address,
+                'gstn'             => $request->gstn,
+                'state'            => $request->state,
+                'state_code'       => $request->state_code,
+            ]);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Organisation settings saved successfully.',
-        ]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Organisation settings saved successfully.',
+            ]);
+        } catch (\Exception $e) {
+
+            Log::error('Error saving organisation settings', [
+                'request' => $request->all(),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong.',
+            ], 500);
+        }
     }
     // public function saveOrganisation(Request $request)
     // {

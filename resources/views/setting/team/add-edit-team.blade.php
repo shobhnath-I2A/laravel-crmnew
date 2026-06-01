@@ -107,6 +107,10 @@
                                         'label' => 'Itinerary',
                                         'add_edit' => true,
                                     ],
+                                    'ItineraryPrice' => [
+                                        'label' => 'Itinerary Price',
+                                        'add_edit' => true,
+                                    ],
                                     'Client' => [
                                         'label' => 'Client',
                                         'add_edit' => true,

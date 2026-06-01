@@ -2,48 +2,7 @@
 @section('content')
     </div>
     <div class="wrapper">
-        <div class="row"
-            style="background-color: #06304c; margin-bottom: 38px; z-index: 99; position: fixed; left: 30px; width: 100%; margin: 0px; top: 46px; border-top: 1px solid #ffffff61;">
-            <div class="container-fluid topnavigation" style=" position: relative;">
-                <ul class="nav nav-tabs" style="border:0px;">
-                    <li class="nav-item">
-                        @if (isset($itinerary) && $itinerary->queryId > 0)
-                            <a class="nav-link {{ $tab == 'proposals' ? 'active' : '' }}"
-                                href="{{ route('queries.show', ['id' => $itinerary->queryId, 'tab' => 'proposals']) }}">
-                                <i class="fa fa-arrow-left"></i> &nbsp;QUERY
-                            </a>
-                        @else
-                            <a class="nav-link" href="{{ route('itineraries.index') }}">
-                                <i class="fa fa-arrow-left"></i> &nbsp;ITINERARIES
-                            </a>
-                        @endif
-                    </li>
-                    <li class="nav-item"><a class="nav-link"
-                            href="display.html?ga=itineraries&amp;view=1&amp;id=109135">BUILD</a></li>
-                    <li class="nav-item"><a class="nav-link"
-                            href="display.html?ga=itineraries&amp;view=1&amp;id=109135&amp;b=2">PRICING</a></li>
-
-                    <li class="nav-item"><a class="nav-link"
-                            href="display.html?ga=itineraries&amp;view=1&amp;id=109135&amp;b=4">FINAL</a></li>
-
-                    <!-- <li class="nav-item" style="position:absolute; right:120px;"><a  class="nav-link" href="http://localhost:8081/API/tcpdf/pdf/download-package.php?pageurl=http://localhost:8081/API/downloadpackagepdf.php?id=109135" ><i class="fa fa-file-text" aria-hidden="true"></i> &nbsp;Exportddd</a></li> -->
-
-                    <li class="nav-item" style="position:absolute; right:247px;"><a href="#" class="nav-link"
-                            onclick="loadpop('View Quotation',this,'1000px')" data-toggle="modal"
-                            data-target=".bs-example-modal-center" popaction="action=viewquotation&amp;id=109135"><i
-                                class="fa fa-file-text" aria-hidden="true"></i> &nbsp;Quotation</a></li>
-                    <li class="nav-item" style="position:absolute; right:120px;"><a href="#" class="nav-link"
-                            onclick="loadpop('Export Itinerary',this,'500px')" data-toggle="modal"
-                            data-target=".bs-example-modal-center" popaction="action=exportitinerary&amp;pid=109135"><i
-                                class="fa fa-file-text" aria-hidden="true"></i> &nbsp;Export</a></li>
-                    <li class="nav-item" style="position:absolute; right:0px;"><a class="nav-link" href="#"
-                            onclick="loadpop('Share',this,'700px')" data-toggle="modal"
-                            data-target=".bs-example-modal-center" popaction="action=shareitinerary&amp;pid=109135"><i
-                                class="fa fa-paper-plane" aria-hidden="true"></i> &nbsp;Share</a></li>
-
-                </ul>
-            </div>
-        </div>
+      @include('itinerary.partials.top-nav', ['itinerary' => $itinerary])
         <div style="padding:10px;">
             <div class="card" style="padding:10px; margin-top:40px;">
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" style="min-height:600px;">
