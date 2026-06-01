@@ -164,9 +164,3 @@
     </div>
 </div>
 
-<input name="action" type="hidden" id="action" value="addTransportation">
-<input name="editId" type="hidden" id="editId" value="">
-<input name="pid" type="hidden" id="editId" value="108998">
-<input name="packageDays" type="hidden" id="packageDays" value="1">
-<input name="day" type="hidden" id="day" value="2025-08-21">
-<input name="photo" type="hidden" value="">

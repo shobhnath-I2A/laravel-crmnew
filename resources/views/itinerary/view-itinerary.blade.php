@@ -35,32 +35,30 @@
                                                 @php
                                                     $i = 1;
                                                 @endphp
-                                               @for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay())
-    <div class="itidaytab"
-         data-day="{{ $i }}"
-         data-date="{{ $date->format('Y-m-d') }}"
-         onclick="selectItineraryDay(this)">
+                                                @for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay())
+                                                    <div class="itidaytab" data-day="{{ $i }}"
+                                                        data-date="{{ $date->format('Y-m-d') }}"
+                                                        onclick="selectItineraryDay(this)">
 
-        <strong>
-            <span>{{ $i }}</span> {{ $date->format('d M - D') }}
-        </strong>
+                                                        <strong>
+                                                            <span>{{ $i }}</span> {{ $date->format('d M - D') }}
+                                                        </strong>
 
-        <i class="fa fa-chevron-right"></i>
+                                                        <i class="fa fa-chevron-right"></i>
 
-        <select id="destinationName{{ $i }}"
-                class="form-control"
-                onchange="event.stopPropagation(); selectItineraryDay(this.closest('.itidaytab'));">
-            @foreach ($itinerary->destinations as $destination)
-                <option value="{{ $destination->id }}"
-                    {{ isset($dayItems[$i]) && $dayItems[$i]->destination_id == $destination->id ? 'selected' : '' }}>
-                    {{ $destination->name }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+                                                        <select id="destinationName{{ $i }}" class="form-control"
+                                                            onchange="event.stopPropagation(); selectItineraryDay(this.closest('.itidaytab'));">
+                                                            @foreach ($itinerary->destinations as $destination)
+                                                                <option value="{{ $destination->id }}"
+                                                                    {{ isset($dayItems[$i]) && $dayItems[$i]->destination_id == $destination->id ? 'selected' : '' }}>
+                                                                    {{ $destination->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
 
-    @php $i++; @endphp
-@endfor
+                                                    @php $i++; @endphp
+                                                @endfor
                                                 <div class="itidaytab" id="dayid100000"
                                                     onclick="load_build_day_details('100000','2026-05-04');">
                                                     <strong><i class="fa fa-file-text-o" aria-hidden="true"></i> &nbsp;
@@ -78,7 +76,8 @@
                                     </tbody>
                                 </table>
                             </td>
-                            <td width="35%" align="left" valign="top" t="" style="position:relative; background-color:#f5f7f9;">
+                            <td width="35%" align="left" valign="top" t=""
+                                style="position:relative; background-color:#f5f7f9;">
                                 <div
                                     style="padding: 15px; position: absolute; z-index: 1; width: 100%; box-sizing: border-box; padding-top: 0px; padding-right: 0px; background-color:#fff; border-bottom:1px solid #ddd;">
                                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -125,19 +124,18 @@
 
                                         <div id="manualAddButtonContainer">
 
-                                            <input type="button"
-       id="manualAddButton"
-       style="padding:10px;color:#fff;background-color:#23ae73;height:46px;width:100%;box-sizing:border-box;margin:15px 0 0;border-radius:4px;border:0;font-size:16px;cursor:pointer;"
-       value="+ Add Accommodation Manually">
+                                            <input type="button" id="manualAddButton"
+                                                style="padding:10px;color:#fff;background-color:#23ae73;height:46px;width:100%;box-sizing:border-box;margin:15px 0 0;border-radius:4px;border:0;font-size:16px;cursor:pointer;"
+                                                value="+ Add Accommodation Manually">
 
                                         </div>
 
-                                      <div style="margin-bottom:15px;color:#000;font-size:12px;font-weight:600;">
-    Suggested Accommodation in
-    <span id="suggestedDestinationName" style="font-weight:600;color:#0066CC;">
-        {{ $itinerary->destinations->first()->name ?? '' }}
-    </span>
-</div>
+                                        <div style="margin-bottom:15px;color:#000;font-size:12px;font-weight:600;">
+                                            Suggested Accommodation in
+                                            <span id="suggestedDestinationName" style="font-weight:600;color:#0066CC;">
+                                                {{ $itinerary->destinations->first()->name ?? '' }}
+                                            </span>
+                                        </div>
 
                                         <div class="daydetailsbox">
                                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -181,15 +179,15 @@
             </div>
         </div>
 
-<script>
-    window.itineraryContext = {
-        itineraryId: {{ $itinerary->id }},
-        day: 1,
-        date: null,
-        destinationId: null,
-        destinationName: null
-    };
-</script>
+        <script>
+            window.itineraryContext = {
+                itineraryId: {{ $itinerary->id }},
+                day: 1,
+                date: null,
+                destinationId: null,
+                destinationName: null
+            };
+        </script>
 
         <script>
             function load_build_day_details(day, date) {
@@ -247,7 +245,7 @@
                 document.querySelector('.itidaytab')?.click();
             });
         </script>
-       <script>
+        <script>
             window.itineraryContext = {
                 itineraryId: {{ $itinerary->id }},
                 day: null,
@@ -365,7 +363,7 @@
                 $('#manualAddButton')
                     .val(config.text)
                     .off('click')
-                    .on('click', function () {
+                    .on('click', function() {
                         if (!window.itineraryContext.day || !window.itineraryContext.destinationId) {
                             alert('Please select day and destination first.');
                             return;
@@ -379,14 +377,14 @@
                 updateManualAddButton();
             }
 
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const firstDay = document.querySelector('.itidaytab[data-day]');
 
                 if (firstDay) {
                     selectItineraryDay(firstDay);
                 }
 
-                $('#eventsection').on('change', function () {
+                $('#eventsection').on('change', function() {
                     updateManualAddButton();
                 });
             });

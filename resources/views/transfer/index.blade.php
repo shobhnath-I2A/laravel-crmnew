@@ -9,7 +9,7 @@
                         <div class="col-md-12 col-xl-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title cardtitle">TransferMaster
+                                    <h4 class="card-title cardtitle">Transfer
                                         <form action="{{ route('transfers.index') }}" class="newsearchsecform" style="left:54px;" method="get"
                                             enctype="multipart/form-data">
                                             <input type="text" name="keyword" class="form-control newsearchsec"

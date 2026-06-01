@@ -21,13 +21,10 @@
 
         <input type="hidden" name="type" value="{{ old('type', $type) }}">
         <input type="hidden" name="day" value="{{ old('day', $packageDayItem->day ?? '') }}">
-        <input type="hidden" name="day_id"
-            value="{{ old('day_id', $packageDayItem->day_id ?? ($packageDayItem->day ?? '')) }}">
+        <input type="hidden" name="day_id" value="{{ old('day_id', $packageDayItem->day_id ?? ($packageDayItem->day ?? '')) }}">
         <input type="hidden" name="day_order" value="{{ old('day_order', $packageDayItem->day_order ?? 1) }}">
-        <input type="hidden" name="itinerary_id"
-            value="{{ old('itinerary_id', $packageDayItem->itinerary_id ?? '') }}">
-        <input type="hidden" name="destination_id"
-            value="{{ old('destination_id', $packageDayItem->destination_id ?? '') }}">
+        <input type="hidden" name="itinerary_id" value="{{ old('itinerary_id', $packageDayItem->itinerary_id ?? '') }}">
+        <input type="hidden" name="destination_id" value="{{ old('destination_id', $packageDayItem->destination_id ?? '') }}">
 
         <div class="row">
 

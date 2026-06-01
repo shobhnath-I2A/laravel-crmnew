@@ -20,7 +20,7 @@ class TransferMasterController extends Controller
             if ($request->filled('keyword')) {
                 $transferMasterBuilder->where('name', 'like', '%' . $request->keyword . '%');
             }
-            $transferMaster = $transferMasterBuilder->latest()->paginate(5);
+            $transferMaster = $transferMasterBuilder->latest()->paginate(20);
             $transferMaster->appends($request->all());
             $transferCount = TransferMaster::count();
 

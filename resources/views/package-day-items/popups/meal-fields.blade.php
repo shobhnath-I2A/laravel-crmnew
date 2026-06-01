@@ -102,10 +102,13 @@
                     <table border="0" cellpadding="2" cellspacing="0">
                         <tbody>
                             <tr>
-                                <td colspan="2"><input type="checkbox" name="showTime"
-                                        class="stip1" value="1"
-                                        style="width: 19px; height: 22px;"></td>
-                                <td>&nbsp;Show Time </td>
+                             <td colspan="2">
+                                <input type="checkbox"
+                                        name="show_time"
+                                        value="1"
+                                        {{ ($packageDayItem->show_time ?? 0) == 1 ? 'checked' : '' }}>
+                            </td>
+                            <td>Show Time</td>
                             </tr>
                         </tbody>
                     </table>
@@ -118,7 +121,7 @@
             <div class="form-group">
                 <label for="validationCustom02">Description
                 </label>
-                <textarea name="description" rows="5" class="editorclass" id="description" aria-hidden="true"></textarea>
+                <textarea name="description" rows="5" class="editorclass" id="description" aria-hidden="true">{{ old('description', $packageDayItem->description ?? '') }}</textarea>
             </div>
         </div>
     </div>

@@ -103,8 +103,3 @@
         </div>
     </div>
 </div>
-
-<input name="action" type="hidden" id="action" value="addOther">
-<input name="editId" type="hidden" id="editId" value="2368726">
-<input name="pid" type="hidden" id="editId" value="108998">
-<input name="packageDays" type="hidden" id="packageDays" value="">

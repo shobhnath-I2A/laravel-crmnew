@@ -22,7 +22,7 @@ class HotelController extends Controller
             if ($request->filled('keyword')) {
                 $hotelBuilder->where('name', 'like', '%' . $request->keyword . '%');
             }
-            $hotels = $hotelBuilder->latest()->paginate(5);
+            $hotels = $hotelBuilder->latest()->paginate(20);
             $hotels->appends($request->all());
             $hotelCount = Hotel::count();
 
