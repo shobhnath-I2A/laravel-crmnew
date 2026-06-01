@@ -7,7 +7,7 @@
             <li class="nav-item">
                 @if (isset($itinerary) && $itinerary->queryId > 0)
                     <a class="nav-link"
-                       href="{{ route('queries.show', ['id' => $itinerary->queryId, 'tab' => 'proposals']) }}">
+                        href="{{ route('queries.show', ['id' => $itinerary->queryId, 'tab' => 'proposals']) }}">
                         <i class="fa fa-arrow-left"></i> &nbsp;QUERY
                     </a>
                 @else
@@ -18,52 +18,44 @@
             </li>
 
             <li class="nav-item">
-    <a class="nav-link {{ activeRoute('itineraries.show') }}"
-       href="{{ route('itineraries.show', $itinerary->id) }}">
-        BUILD
-    </a>
-</li>
+                <a class="nav-link {{ activeRoute('itineraries.show') }}"
+                    href="{{ route('itineraries.show', $itinerary->id) }}">
+                    BUILD
+                </a>
+            </li>
 
-<li class="nav-item">
-    <a class="nav-link {{ activeRoute('itineraries-price.index') }}"
-       href="{{ route('itineraries-price.index', $itinerary->id) }}">
-        PRICING
-    </a>
-</li>
+            <li class="nav-item">
+                <a class="nav-link {{ activeRoute('itineraries-price.index') }}"
+                    href="{{ route('itineraries-price.index', $itinerary->id) }}">
+                    PRICING
+                </a>
+            </li>
 
-<li class="nav-item">
-    <a class="nav-link {{ activeRoute('itineraries.final') }}"
-       href="{{ route('itineraries.final', $itinerary->id) }}">
-        FINAL
-    </a>
-</li>
+            <li class="nav-item">
+                <a class="nav-link {{ activeRoute('itineraries.final') }}"
+                    href="{{ route('itineraries.final', $itinerary->id) }}">
+                    FINAL
+                </a>
+            </li>
 
             <li class="nav-item" style="position:absolute;right:247px;">
-                <a href="#" class="nav-link"
-                   onclick="loadpop('View Quotation',this,'1000px')"
-                   data-toggle="modal"
-                   data-target=".bs-example-modal-center"
-                   popaction="action=viewquotation&id={{ $itinerary->id }}">
+                <a href="#" class="nav-link" onclick="loadpop('View Quotation',this,'1000px')" data-toggle="modal"
+                    data-target=".bs-example-modal-center" popaction="action=viewquotation&id={{ $itinerary->id }}">
                     <i class="fa fa-file-text"></i> &nbsp;Quotation
                 </a>
             </li>
 
             <li class="nav-item" style="position:absolute;right:120px;">
-                <a href="#" class="nav-link"
-                   onclick="loadpop('Export Itinerary',this,'500px')"
-                   data-toggle="modal"
-                   data-target=".bs-example-modal-center"
-                   popaction="action=exportitinerary&pid={{ $itinerary->id }}">
+                <a href="#" class="nav-link" onclick="loadpop('Export Itinerary',this,'500px')"
+                    data-toggle="modal" data-target=".bs-example-modal-center"
+                    popaction="action=exportitinerary&pid={{ $itinerary->id }}">
                     <i class="fa fa-file-text"></i> &nbsp;Export
                 </a>
             </li>
 
             <li class="nav-item" style="position:absolute;right:0;">
-                <a href="#" class="nav-link"
-                   onclick="loadpop('Share',this,'700px')"
-                   data-toggle="modal"
-                   data-target=".bs-example-modal-center"
-                   popaction="action=shareitinerary&pid={{ $itinerary->id }}">
+                <a href="#" class="nav-link" onclick="loadpop('Share',this,'700px')" data-toggle="modal"
+                    data-target=".bs-example-modal-center" popaction="action=shareitinerary&pid={{ $itinerary->id }}">
                     <i class="fa fa-paper-plane"></i> &nbsp;Share
                 </a>
             </li>

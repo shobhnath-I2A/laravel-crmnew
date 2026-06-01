@@ -118,8 +118,7 @@
             <div class="form-group">
                 <label for="validationCustom02">Description
                 </label>
-                <textarea name="description" rows="5" class="editorclass" id="description" aria-hidden="true"
-                    style="display: none;"></textarea>
+                <textarea name="description" rows="5" class="editorclass" id="description" aria-hidden="true"></textarea>
             </div>
         </div>
     </div>

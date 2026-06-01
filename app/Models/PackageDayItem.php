@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PackageDayItem extends Model
 {
     protected $table = 'package_day_items';
-
+    protected $guarded = [];
     protected $fillable = [
        'package_id',
         'hotel_id',

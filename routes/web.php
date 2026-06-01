@@ -95,11 +95,11 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/itineraries/{id}', [ItineraryController::class, 'show'])
     ->name('itineraries.show');
 
-Route::get('/itineraries-price/{id}', [ItineraryPriceController::class, 'index'])
-    ->name('itineraries-price.index');
+    Route::get('/itineraries-price/{id}', [ItineraryPriceController::class, 'index'])
+        ->name('itineraries-price.index');
 
-Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
-    ->name('itineraries.final');
+    Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
+        ->name('itineraries.final');
 
 
     Route::resource('query-tasks', QueryTaskController::class)
