@@ -21,7 +21,7 @@ class HotelRoomTypeController extends Controller
                 $roomTypeBuilder->where('name', 'like', '%' . $request->keyword . '%');
             }
 
-            $roomType = $roomTypeBuilder->latest()->paginate(10);
+            $roomType = $roomTypeBuilder->latest()->paginate(20);
             $roomType->appends($request->all());
             $roomTypeCount = RoomType::count();
             // dd($roomType);

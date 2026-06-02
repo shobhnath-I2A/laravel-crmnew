@@ -45,16 +45,16 @@
                         </div>
                         <div class="col-md-6">
                             <label>Destination</label>
-                           <select name="destination" class="form-control reqfield @error('destination') is-invalid @enderror">
+                           <select name="destination_id" class="form-control reqfield @error('destination_id') is-invalid @enderror">
                                 <option value="">Select Destination</option>
                                 @foreach($destinationList as $id => $name)
                                     <option value="{{ $id }}"
-                                        {{ old('destination', $hotel->destination ?? '') == $id ? 'selected' : '' }}>
+                                        {{ old('destination_id', $hotel->destination_id ?? '') == $id ? 'selected' : '' }}>
                                         {{ $name }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('destination')
+                            @error('destination_id')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>

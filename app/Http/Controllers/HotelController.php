@@ -7,6 +7,8 @@ use App\Models\Hotel;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\MealPlanMaster;
+
 use Exception;
 
 class HotelController extends Controller
@@ -181,4 +183,18 @@ class HotelController extends Controller
 
         return $html;
     }
+    public function loadMealPlans(Request $request)
+{
+    $mealPlans = MealPlanMaster::where('status', 1)
+        ->orderBy('name')
+        ->get();
+
+    $html = '<option value="">Select Meal Plan</option>';
+
+    foreach ($mealPlans as $mealPlan) {
+        $html .= '<option value="'.$mealPlan->name.'">'.$mealPlan->name.'</option>';
+    }
+
+    return response($html);
+}
 }

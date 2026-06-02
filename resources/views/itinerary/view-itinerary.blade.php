@@ -36,18 +36,14 @@
                                                     $i = 1;
                                                 @endphp
                                                 @for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay())
-                                                    <div class="itidaytab" data-day="{{ $i }}"
-                                                        data-date="{{ $date->format('Y-m-d') }}"
-                                                        onclick="selectItineraryDay(this)">
-
-                                                        <strong>
-                                                            <span>{{ $i }}</span> {{ $date->format('d M - D') }}
-                                                        </strong>
-
-                                                        <i class="fa fa-chevron-right"></i>
-
+                                                    <div class="itidaytab"
+                                                        onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
+                                                        {{-- <div class="itidaytab {{ $i == 1 ? 'activedaytab' : '' }}" id="dayid{{ $i }}"  onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');"> --}}
+                                                        <strong><span>{{ $i }}</span>
+                                                            {{ $date->format('d M - D') }}</strong>
+                                                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
                                                         <select id="destinationName{{ $i }}" class="form-control"
-                                                            onchange="event.stopPropagation(); selectItineraryDay(this.closest('.itidaytab'));">
+                                                            onchange="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
                                                             @foreach ($itinerary->destinations as $destination)
                                                                 <option value="{{ $destination->id }}"
                                                                     {{ isset($dayItems[$i]) && $dayItems[$i]->destination_id == $destination->id ? 'selected' : '' }}>
@@ -55,6 +51,14 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
+                                                        <div class="reorder-controls">
+                                                            <button class="btn-move-up" data-day-order="1" disabled="">
+                                                                <i class="fa fa-chevron-up"></i>
+                                                            </button>
+                                                            <button class="btn-move-down" data-day-order="1">
+                                                                <i class="fa fa-chevron-down"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
 
                                                     @php $i++; @endphp
@@ -178,76 +182,10 @@
                 </table>
             </div>
         </div>
-
         <script>
             window.itineraryContext = {
-                itineraryId: {{ $itinerary->id }},
-                day: 1,
-                date: null,
-                destinationId: null,
-                destinationName: null
-            };
-        </script>
-
-        <script>
-            function load_build_day_details(day, date) {
-
-                const destinationSelect = document.getElementById('destinationName' + day);
-
-                const destinationId = destinationSelect.value;
-                const destinationName = destinationSelect.options[destinationSelect.selectedIndex].text;
-
-                window.itineraryContext.day = day;
-                window.itineraryContext.date = date;
-                window.itineraryContext.destinationId = destinationId;
-                window.itineraryContext.destinationName = destinationName;
-
-                $('#suggestedDestinationName').text(destinationName);
-
-                $('#load_build_day_details').load(
-                    `/itinerary/day-details?day=${day}&date=${date}&destination_id=${destinationId}&itinerary_id={{ $itinerary->id }}`
-                );
-
-                updateManualAddButton();
-            }
-            // function load_build_day_details(day, date) {
-            //     let destination_id = $('#destinationName' + day).val();
-            //     let destination_name = $('#destinationName' + day + ' option:selected').text().trim();
-
-            //     $('#suggestedDestinationName').text(destination_name);
-
-            //     $('#load_build_day_details').load(
-            //         `/itinerary/day-details?day=${day}&date=${date}&destination_id=${destination_id}&itinerary_id={{ $itinerary->id }}`
-            //     );
-            // }
-
-            document.addEventListener("DOMContentLoaded", function() {
-
-                document.querySelectorAll('.itidaytab').forEach(tab => {
-
-                    tab.addEventListener('click', function() {
-
-                        let day = this.dataset.day;
-                        let date = this.dataset.date;
-
-                        loadDayDetails(day, date);
-
-                        document.querySelectorAll('.itidaytab').forEach(t => t.classList.remove(
-                            'activedaytab'));
-                        this.classList.add('activedaytab');
-                    });
-
-                });
-
-            });
-
-            document.addEventListener("DOMContentLoaded", function() {
-                document.querySelector('.itidaytab')?.click();
-            });
-        </script>
-        <script>
-            window.itineraryContext = {
-                itineraryId: {{ $itinerary->id }},
+                itineraryId: {{ (int) $itinerary->id }},
+                packageId: {{ (int) $package->id }},
                 day: null,
                 date: null,
                 destinationId: null,
@@ -255,6 +193,11 @@
             };
 
             const manualRoutes = {
+                DayItinerary: {
+                    title: 'Add Day Itinerary',
+                    route: "{{ route('package-days-items.create') }}",
+                    text: '+ Add Day Itinerary Manually'
+                },
                 Accommodation: {
                     title: 'Add Accommodation',
                     route: "{{ route('package-days-items.create') }}",
@@ -297,41 +240,38 @@
                 }
             };
 
-            function selectItineraryDay(tabElement) {
-                if (!tabElement) return;
-
-                const day = tabElement.dataset.day;
-                const date = tabElement.dataset.date;
+            function load_build_day_details(day, date) {
                 const destinationSelect = document.getElementById('destinationName' + day);
 
-                if (!destinationSelect) return;
+                if (!destinationSelect) {
+                    console.log('Destination select not found: destinationName' + day);
+                    return;
+                }
 
                 const destinationId = destinationSelect.value;
                 const destinationName = destinationSelect.options[destinationSelect.selectedIndex].text.trim();
 
-                window.itineraryContext = {
-                    itineraryId: {{ $itinerary->id }},
-                    day: day,
-                    date: date,
-                    destinationId: destinationId,
-                    destinationName: destinationName
-                };
+                window.itineraryContext.day = day;
+                window.itineraryContext.date = date;
+                window.itineraryContext.destinationId = destinationId;
+                window.itineraryContext.destinationName = destinationName;
 
-                document.querySelectorAll('.itidaytab').forEach(item => {
-                    item.classList.remove('activedaytab');
-                });
-
-                tabElement.classList.add('activedaytab');
+                $('.itidaytab').removeClass('activedaytab');
+                $('#dayid' + day).addClass('activedaytab');
 
                 $('#suggestedDestinationName').text(destinationName);
 
-                $('#load_build_day_details').load(
-                    "{{ url('/itinerary/day-details') }}" +
+                const url = "{{ url('/itinerary/day-details') }}" +
                     "?itinerary_id=" + encodeURIComponent(window.itineraryContext.itineraryId) +
+                    "&package_id=" + encodeURIComponent(window.itineraryContext.packageId) +
                     "&day=" + encodeURIComponent(day) +
                     "&date=" + encodeURIComponent(date) +
-                    "&destination_id=" + encodeURIComponent(destinationId)
-                );
+                    "&destination_id=" + encodeURIComponent(destinationId);
+
+                console.log('Loading day details:', url);
+
+                $('#load_build_day_details').html('<div style="padding:20px;">Loading...</div>');
+                $('#load_build_day_details').load(url);
 
                 updateManualAddButton();
             }
@@ -341,6 +281,7 @@
 
                 const params = new URLSearchParams({
                     itinerary_id: ctx.itineraryId || '',
+                    package_id: ctx.packageId || '',
                     day: ctx.day || '',
                     date: ctx.date || '',
                     destination_id: ctx.destinationId || '',
@@ -352,23 +293,18 @@
 
             function updateManualAddButton() {
                 const type = $('#eventsection').val() || 'Accommodation';
+
                 const config = manualRoutes[type] || {
                     title: 'Add Item',
                     route: "{{ route('package-days-items.create') }}",
                     text: '+ Add Item'
                 };
 
-                const popupUrl = buildPopupUrl(config.route, type);
-
                 $('#manualAddButton')
                     .val(config.text)
                     .off('click')
                     .on('click', function() {
-                        if (!window.itineraryContext.day || !window.itineraryContext.destinationId) {
-                            alert('Please select day and destination first.');
-                            return;
-                        }
-
+                        const popupUrl = buildPopupUrl(config.route, type);
                         openPopup(config.title, popupUrl);
                     });
             }
@@ -377,17 +313,18 @@
                 updateManualAddButton();
             }
 
-            document.addEventListener('DOMContentLoaded', function() {
-                const firstDay = document.querySelector('.itidaytab[data-day]');
+            $(document).ready(function() {
+                updateManualAddButton();
 
-                if (firstDay) {
-                    selectItineraryDay(firstDay);
+                const firstDate = $('#dayid1').data('date');
+
+                if (firstDate) {
+                    load_build_day_details(1, firstDate);
                 }
 
-                $('#eventsection').on('change', function() {
-                    updateManualAddButton();
-                });
+                $('#eventsection').off('change').on('change', loadeventlibrary);
             });
         </script>
+
     </div>
 @endsection

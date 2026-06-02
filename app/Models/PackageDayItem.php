@@ -17,7 +17,7 @@ class PackageDayItem extends Model
         'day_order',
         'name',
         'room_type',
-        'category',
+        'hotel_category',
         'room_name',
         'meal_plan',
         'hotel_options',

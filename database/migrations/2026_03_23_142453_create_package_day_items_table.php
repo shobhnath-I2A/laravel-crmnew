@@ -25,7 +25,7 @@ return new class extends Migration
         $table->string('day_order')->default(0);
         $table->string('name')->nullable();
         $table->string('room_type')->nullable();
-        $table->string('category')->nullable();
+        $table->string('hotel_category')->nullable();
         $table->string('room_name')->nullable();
         $table->string('meal_plan')->nullable();
         $table->string('hotel_options')->nullable();

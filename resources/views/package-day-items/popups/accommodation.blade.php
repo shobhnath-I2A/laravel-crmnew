@@ -77,9 +77,9 @@
         <div class="col-md-6 master" style="display:none;">
             <div class="form-group">
                 <label for="validationCustom02">Room Name</label>
-              <select name="room_type_id" id="hotelRoommaster" class="form-control">
-                <option value="">Select Room Type</option>
-            </select>
+                <select name="room_type" id="hotelRoommaster" class="form-control">
+                    <option value="">Select Room Type</option>
+                </select>
             </div>
         </div>
 
@@ -87,7 +87,7 @@
             <div class="form-group">
                 <label for="validationCustom02">Room Name
                 </label>
-                <input type="text" name="name" class="form-control" value="{{ old('room_name', $packageDayItem->room_name ?? '') }}">
+                <input type="text" name="room_name" class="form-control" value="{{ old('room_name', $packageDayItem->room_name ?? '') }}">
             </div>
         </div>
         <div class="col-md-6 master-section d-none">
@@ -98,18 +98,21 @@
         </div>
         <div class="col-md-6 master" style="display:none;">
             <div class="form-group">
-                <label for="validationCustom02">Meal Plan </label>
-                <select name="mealPlanmaster" id="mealPlanmaster" class="form-control"
-                    onchange="getmealname();getprice();">
+                <label>Meal Plan</label>
+                <select name="meal_plan" id="mealPlanmaster" class="form-control">
+                    <option value="">Select Meal Plan</option>
                 </select>
             </div>
         </div>
 
         <div class="col-md-6 manual">
             <div class="form-group">
-                <label for="validationCustom02">Meal Plan
-                </label>
-                <input name="meal_plan" id="mealPlan" type="text" class="form-control manual ui-autocomplete-input" value="{{ old('meal_plan', $packageDayItem->meal_plan ?? '') }}" autocomplete="off">
+                <label>Meal Plan</label>
+                <input name="meal_plan_manual"
+                    id="mealPlanManual"
+                    type="text"
+                    class="form-control"
+                    value="{{ old('meal_plan', $packageDayItem->meal_plan ?? '') }}">
             </div>
         </div>
 
@@ -193,14 +196,14 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-in time</label>
-                    <select id="check_in" name="check_in" autocomplete="off" class="form-control"
+                    <select id="check_in_time" name="check_in_time" autocomplete="off" class="form-control"
                         style="width:130px;">
                          @for ($i = 0; $i < 24 * 60; $i += 15)
                             @php
                                 $time = \Carbon\Carbon::createFromTime(0, 0)->addMinutes($i);
                             @endphp
                             <option value="{{ $time->format('H:i:s') }}"
-                                {{ old('checkIn', isset($packageDayItem->check_in_time) ? \Carbon\Carbon::parse($packageDayItem->check_in_time)->format('H:i:s') : '') == $time->format('H:i:s') ? 'selected' : '' }}>
+                                {{ old('check_in_time', isset($packageDayItem->check_in_time) ? \Carbon\Carbon::parse($packageDayItem->check_in_time)->format('H:i:s') : '') == $time->format('H:i:s') ? 'selected' : '' }}>
 
                                 {{ $time->format('h:i A') }}
                             </option>
@@ -221,7 +224,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-out time</label>
-                    <select id="check_out" name="check_out" autocomplete="off" class="form-control"
+                    <select id="check_out_time" name="check_out_time" autocomplete="off" class="form-control"
                         style="width:130px;">
                          @for ($i = 0; $i < 24 * 60; $i += 15)
                             @php

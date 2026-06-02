@@ -19,7 +19,7 @@ class ActivityController extends Controller
             if ($request->filled('keyword')) {
                 $activityBuilder->where('name', 'like', '%' . $request->keyword . '%');
             }
-            $activities = $activityBuilder->latest()->paginate(5);
+            $activities = $activityBuilder->latest()->paginate(20);
             $activities->appends($request->all());
             $activityCount = Activity::count();
 

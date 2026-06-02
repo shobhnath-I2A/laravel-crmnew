@@ -122,8 +122,8 @@ class ItineraryController extends Controller
             // create package
             $package = app(PackageService::class)->createFromItinerary($id);
             $dayItems = PackageDayItem::where('package_id', $package->id)
-            ->get()
-            ->keyBy('day');
+                ->get()
+                ->keyBy('day');
             $tab = $request->query('tab', 'proposals');
             $startDate = Carbon::parse($itinerary->start_date);
             $endDate   = Carbon::parse($itinerary->end_date);
@@ -226,10 +226,7 @@ class ItineraryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-
-    }
+    public function destroy(string $id) {}
 
     public function getDayDetails(Request $request)
     {
@@ -247,7 +244,7 @@ class ItineraryController extends Controller
             // $PackageDayItem = PackageDayItem::where('package_id', $package->id)
             //     ->where('day', $request->day)
             //     ->first();
-           $packageDayItems = PackageDayItem::with('destination')
+            $packageDayItems = PackageDayItem::with('destination')
                 ->where('package_id', $package->id)
                 ->where('day', $request->day)
                 ->get()
@@ -270,48 +267,79 @@ class ItineraryController extends Controller
     }
 
 
-    public function createAccomodation(){
+    public function createAccomodation()
+    {
         return view('itinerary.popups.accommodation');
     }
 
-    public function storeAccomodation(Request $request){
+    public function storeAccomodation(Request $request)
+    {
         dd($request);
     }
-
     public function loadHotels(Request $request)
     {
-        $hotels = Hotel::where('destination_id', $request->destinationName)->get();
-        return view('package-day-items.popups.hotel-options', compact('hotels'));
-    }
-   public function loadHotelData(Request $request)
-    {
-        $hotel = Hotel::with(['rates', 'roomTypes'])
-            ->find($request->hotel_id);
+        $destinationId = $request->destination_id;
 
-        if (!$hotel) {
-            return response()->json([
-                'roomTypes' => [],
-                'price' => 0
-            ]);
+        $hotels = Hotel::where('destination_id', $destinationId)
+            ->orderBy('name')
+            ->get();
+
+        $html = '<option value="">Select Hotel</option>';
+
+        foreach ($hotels as $hotel) {
+            $html .= '<option value="' . $hotel->id . '">' . $hotel->name . '</option>';
         }
 
-        $roomTypes = $hotel->roomTypes->map(function ($room) {
-            return [
-                'id' => $room->id,
-                'name' => $room->name
-            ];
-        });
-
-        $rate = $hotel->rates->first();
+        return response($html);
+    }
+    public function loadHotelData(Request $request)
+    {
+        $hotel = Hotel::with('roomTypes')->findOrFail($request->hotel_id);
 
         return response()->json([
-            'roomTypes' => $roomTypes,
-            'meal'  => $rate->meal_plan ?? '',
-            'price' => $rate->double ?? 0
+            'hotel' => $hotel,
+            'roomTypes' => $hotel->roomTypes->map(function ($room) {
+                return [
+                    'id' => $room->id,
+                    'name' => $room->name,
+                ];
+            }),
         ]);
     }
+    // public function loadHotels(Request $request)
+    // {
+    //     $hotels = Hotel::where('destination_id', $request->destinationName)->get();
+    //     return view('package-day-items.popups.hotel-options', compact('hotels'));
+    // }
+    //    public function loadHotelData(Request $request)
+    //     {
+    //         $hotel = Hotel::with(['rates', 'roomTypes'])
+    //             ->find($request->hotel_id);
 
-   public function finalItinerary(String $id)
+    //         if (!$hotel) {
+    //             return response()->json([
+    //                 'roomTypes' => [],
+    //                 'price' => 0
+    //             ]);
+    //         }
+
+    //         $roomTypes = $hotel->roomTypes->map(function ($room) {
+    //             return [
+    //                 'id' => $room->id,
+    //                 'name' => $room->name
+    //             ];
+    //         });
+
+    //         $rate = $hotel->rates->first();
+
+    //         return response()->json([
+    //             'roomTypes' => $roomTypes,
+    //             'meal'  => $rate->meal_plan ?? '',
+    //             'price' => $rate->double ?? 0
+    //         ]);
+    //     }
+
+    public function finalItinerary(String $id)
     {
         $itinerary = Itinerary::findOrFail($id);
 

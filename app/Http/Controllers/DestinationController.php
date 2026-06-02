@@ -21,7 +21,7 @@ class DestinationController extends Controller
             if ($request->filled('keyword')) {
                 $destinationBuilder->where('name', 'like', '%' . $request->keyword . '%');
             }
-            $destinations = $destinationBuilder->latest()->paginate(5);
+            $destinations = $destinationBuilder->latest()->paginate(20);
             $destinations->appends($request->all());
             $destinationCount = Destination::count();
 

@@ -123,11 +123,13 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         ->middleware('module.permission:Itinerary,edit')
         ->name('itinerary.storeaccomodation');
 
-    Route::get('/load-hotels', [ItineraryController::class, 'loadHotels'])
+    Route::get('/load-hotels', [ItineraryController::class, 'loadHotels'])->name('load.hotels')
         ->middleware('module.permission:Itinerary,view');
 
-    Route::get('/load-hotel-data', [ItineraryController::class, 'loadHotelData'])
+    Route::get('/load-hotel-data', [ItineraryController::class, 'loadHotelData'])->name('load.hotel.data')
         ->middleware('module.permission:Itinerary,view');
+    Route::get('/load-meal-plans', [HotelController::class, 'loadMealPlans'])
+    ->name('load.meal.plans');
 
     Route::resource('hotels-rates', HotelRateController::class)
         ->middleware('module.permission:Hotel,edit');

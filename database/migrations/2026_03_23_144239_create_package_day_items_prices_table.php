@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('package_day_items_prices', function (Blueprint $table) {
+        Schema::create('package_day_item_prices', function (Blueprint $table) {
             $table->id();
 
             // Link to package_day_accommodation
@@ -42,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('package_day_items_prices');
+        Schema::dropIfExists('package_day_item_prices');
     }
 };
