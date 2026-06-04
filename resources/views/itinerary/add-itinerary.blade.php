@@ -1,169 +1,158 @@
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
-    <form class="custom-validation ajax-form" action="{{ route('itineraries.index') }}" target="actoinfrm" method="post"
-        enctype="multipart/form-data">
+    <form class="custom-validation ajax-form"
+          action="{{ route('suppliers.store') }}"
+          method="POST"
+          enctype="multipart/form-data">
+        @csrf
+
         <div class="container-fluid">
+
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
-                    <strong>Itinerary Information</strong>
+                    <strong>Supplier Information</strong>
                 </div>
+
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12">
-                            <label>Itinerary Name <span class="redmtext">*</span></label>
-                            <input name="name" type="text"
-                                class="form-control reqfield @error('name') is-invalid @enderror" required
-                                id="name" value="{{ old('name') }}" aria-required="true">
-                            @error('name')
+
+                        <div class="col-md-6 position-relative">
+                            <label>City <span class="redmtext">*</span></label>
+
+                            <input type="text"
+                                   class="form-control reqfield"
+                                   id="citySearch"
+                                   value="{{ old('city_name') }}"
+                                   autocomplete="off"
+                                   placeholder="Type city slowly">
+
+                            <input type="hidden"
+                                   name="city_id"
+                                   id="cityId"
+                                   value="{{ old('city_id') }}">
+
+                            <div id="cityList"
+                                 class="list-group position-absolute w-100"
+                                 style="z-index:99999; display:none;"></div>
+
+                            @error('city_id')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
+
                         <div class="col-md-6">
-                            <label>Start Date <span class="redmtext">*</span></label>
-                            <input type="text" name="start_date" id="startDate" value="{{ old('start_date') }}"
-                                class="form-control reqfield" required>
-                            @error('start_date')
+                            <label>Company Name <span class="redmtext">*</span></label>
+                            <input type="text"
+                                   name="company"
+                                   class="form-control reqfield @error('company') is-invalid @enderror"
+                                   value="{{ old('company') }}"
+                                   required>
+                            @error('company')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-6">
-                            <label>End Date <span class="redmtext">*</span></label>
-                            <input type="text" name="end_date" id="endDate" value="{{ old('end_date') }}"
-                                class="form-control reqfield" required>
-                            @error('end_date')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
+
                     </div>
                 </div>
             </div>
+
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
-                    <strong>Travellers</strong>
+                    <strong>Contact Person</strong>
                 </div>
+
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-3">
-                            <label>Adult</label>
-                            <input type="number" name="adult" min="1" value="{{ old('adult') }}"
-                                class="form-control reqfield" required>
-                            @error('adult')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-3">
-                            <label>Child</label>
-                            <input type="number" name="child" min="0" value="{{ old('child') }}"
-                                class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label>Destinations <span class="redmtext">*</span></label>
-                            {{-- <input type="text" name="destinations" value="{{ old('destinations') }}" class="form-control reqfield" required placeholder="Enter comma separated destinations"> --}}
-                            <select name="destination_id[]" id="destination" multiple class="form-control">
-                                @foreach ($destinationList as $id => $name)
-                                    <option value="{{ $id }}"
-                                        {{ in_array($id, old('destination_id', [])) ? 'selected' : '' }}>
-                                        {{ $name }}
-                                    </option>
-                                @endforeach
+
+                        <div class="col-md-2">
+                            <label>Title</label>
+                            <select name="submit_name" class="form-control">
+                                <option value="Mr." {{ old('submit_name') == 'Mr.' ? 'selected' : '' }}>Mr.</option>
+                                <option value="Mrs." {{ old('submit_name') == 'Mrs.' ? 'selected' : '' }}>Mrs.</option>
+                                <option value="Ms." {{ old('submit_name') == 'Ms.' ? 'selected' : '' }}>Ms.</option>
+                                <option value="Dr." {{ old('submit_name') == 'Dr.' ? 'selected' : '' }}>Dr.</option>
+                                <option value="Prof." {{ old('submit_name') == 'Prof.' ? 'selected' : '' }}>Prof.</option>
                             </select>
-                            @error('destination_id')
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>First Name <span class="redmtext">*</span></label>
+                            <input type="text"
+                                   name="first_name"
+                                   class="form-control reqfield @error('first_name') is-invalid @enderror"
+                                   value="{{ old('first_name') }}"
+                                   required>
+                            @error('first_name')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="col-md-6">
+                            <label>Last Name</label>
+                            <input type="text"
+                                   name="last_name"
+                                   class="form-control"
+                                   value="{{ old('last_name') }}">
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label>Email</label>
+                            <input type="email"
+                                   name="email"
+                                   class="form-control @error('email') is-invalid @enderror"
+                                   value="{{ old('email') }}">
+                            @error('email')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-2 mt-3">
+                            <label>Mobile Code</label>
+                            <input type="text"
+                                   name="mobile_code"
+                                   class="form-control"
+                                   value="{{ old('mobile_code', '+91') }}"
+                                   placeholder="+91">
+                        </div>
+
+                        <div class="col-md-4 mt-3">
+                            <label>Mobile</label>
+                            <input type="text"
+                                   name="mobile"
+                                   class="form-control"
+                                   value="{{ old('mobile') }}">
+                        </div>
+
                     </div>
                 </div>
             </div>
+
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
-                    <strong>Notes</strong>
+                    <strong>Address</strong>
                 </div>
+
                 <div class="card-body">
-                    <textarea name="notes" rows="2" class="form-control" placeholder="Notes">{{ old('notes') }}</textarea>
+                    <textarea name="address"
+                              rows="2"
+                              class="form-control"
+                              placeholder="Address">{{ old('address') }}</textarea>
                 </div>
             </div>
-            <div class="card shadow-sm mb-3">
-                <div class="card-header bg-light">
-                    <strong>Website Settings</strong>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label>Theme</label>
-                            <select name="package_theme_id" class="form-control">
-                                <option value="4" {{ old('package_theme_id') == 4 ? 'selected' : '' }}>Adventure
-                                </option>
-                                <option value="5" {{ old('package_theme_id') == 5 ? 'selected' : '' }}>Beach
-                                    Holiday</option>
-                                <option value="3" {{ old('package_theme_id') == 3 ? 'selected' : '' }}>Hill
-                                    Station</option>
-                                <option value="6" {{ old('package_theme_id') == 6 ? 'selected' : '' }}>Honeymoon
-                                </option>
-                                <option value="2" {{ old('package_theme_id') == 2 ? 'selected' : '' }}>Leisure
-                                </option>
-                                <option value="1" {{ old('package_theme_id') == 1 ? 'selected' : '' }}>Wildlife
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label>Show on Website</label>
-                            <select name="show_website" class="form-control">
-                                <option value="0" {{ old('show_website') == 0 ? 'selected' : '' }}>No</option>
-                                <option value="1" {{ old('show_website') == 1 ? 'selected' : '' }}>Yes</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label>Per Person Price <span class="redmtext">*</span></label>
-                            <input type="text" name="website_cost" value="{{ old('website_cost') }}"
-                                class="form-control reqfield" required>
-                            @error('website_cost')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label>Validity <span class="redmtext">*</span></label>
-                            <input type="text" name="website_validity" id="websiteValidity"
-                                value="{{ old('website_validity') }}" class="form-control reqfield" required>
-                            @error('website_validity')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-3">
-                            <label>Popular</label>
-                            <select name="show_in_popular" class="form-control">
-                                <option value="0" {{ old('show_in_popular') == 0 ? 'selected' : '' }}>No</option>
-                                <option value="1" {{ old('show_in_popular') == 1 ? 'selected' : '' }}>Yes
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Special</label>
-                            <select name="show_in_special" class="form-control">
-                                <option value="0" {{ old('show_in_special') == 0 ? 'selected' : '' }}>No</option>
-                                <option value="1" {{ old('show_in_special') == 1 ? 'selected' : '' }}>Yes
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card shadow-sm mb-3">
-                <div class="card-header bg-light">
-                    <strong>About Package</strong>
-                </div>
-                <div class="card-body">
-                    <textarea name="about_package" rows="3" class="form-control">{{ old('about_package') }}</textarea>
-                </div>
-            </div>
+
             <div class="text-end mb-3">
                 <button type="button"
-                    class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray valid"
-                    onclick="closeSidebar()">
+                        class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray valid"
+                        onclick="closeSidebar()">
                     Cancel
                 </button>
-                <button type="submit" class="btn btn-primary savingbutton" id="savingbutton">
+
+                <button type="submit"
+                        class="btn btn-primary savingbutton"
+                        id="savingbutton">
                     Save
                 </button>
             </div>
+
         </div>
     </form>
 </div>

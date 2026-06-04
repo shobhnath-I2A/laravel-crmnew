@@ -31,6 +31,7 @@ use App\Http\Controllers\ItineraryPriceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SmtpSettingController;
+use App\Http\Controllers\SupplierController;
 
 function permissionResource($uri, $controller, $module)
 {
@@ -83,6 +84,7 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     permissionResource('room-type', HotelRoomTypeController::class, 'RoomType');
     permissionResource('activities', ActivityController::class, 'Activity');
     permissionResource('transfers', TransferMasterController::class, 'Transfer');
+    permissionResource('suppliers', SupplierController::class, 'Supplier');
     // permissionResource('itineraries-price', ItineraryPriceController::class, 'ItineraryPrice');
 
     // Route::get('itineraries-price/{id}', [ItineraryPriceController::class, 'index'])

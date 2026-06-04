@@ -36,20 +36,33 @@
                                                     $i = 1;
                                                 @endphp
                                                 @for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay())
-                                                    <div class="itidaytab"
-                                                        onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
+                                                    <div class="itidaytab {{ $i == 1 ? 'activedaytab' : '' }}"
+                                                        id="dayid{{ $i }}"
+                                                        data-day="{{ $i }}"
+                                                        data-date="{{ $date->format('Y-m-d') }}"
+                                                        onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}')">
                                                         {{-- <div class="itidaytab {{ $i == 1 ? 'activedaytab' : '' }}" id="dayid{{ $i }}"  onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');"> --}}
                                                         <strong><span>{{ $i }}</span>
                                                             {{ $date->format('d M - D') }}</strong>
                                                         <i class="fa fa-chevron-right" aria-hidden="true"></i>
-                                                        <select id="destinationName{{ $i }}" class="form-control"
-                                                            onchange="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
+                                                        @php
+                                                            $selectedDestinationId =
+                                                                $dayItems[$i]->destination_id
+                                                                ?? $itinerary->destinations->first()?->id;
+                                                        @endphp
+
+                                                        <select id="destinationName{{ $i }}"
+                                                            class="form-control"
+                                                            onclick="event.stopPropagation();"
+                                                            onchange="event.stopPropagation(); load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
+
                                                             @foreach ($itinerary->destinations as $destination)
                                                                 <option value="{{ $destination->id }}"
-                                                                    {{ isset($dayItems[$i]) && $dayItems[$i]->destination_id == $destination->id ? 'selected' : '' }}>
+                                                                    {{ $selectedDestinationId == $destination->id ? 'selected' : '' }}>
                                                                     {{ $destination->name }}
                                                                 </option>
                                                             @endforeach
+
                                                         </select>
                                                         <div class="reorder-controls">
                                                             <button class="btn-move-up" data-day-order="1" disabled="">
@@ -64,7 +77,7 @@
                                                     @php $i++; @endphp
                                                 @endfor
                                                 <div class="itidaytab" id="dayid100000"
-                                                    onclick="load_build_day_details('100000','2026-05-04');">
+                                                    onclick="$('.itidaytab').removeClass('activedaytab'); $(this).addClass('activedaytab');">
                                                     <strong><i class="fa fa-file-text-o" aria-hidden="true"></i> &nbsp;
                                                         Package Terms</strong>
                                                     <i class="fa fa-chevron-right" aria-hidden="true"></i>
@@ -313,16 +326,15 @@
                 updateManualAddButton();
             }
 
-            $(document).ready(function() {
-                updateManualAddButton();
+            $(document).ready(function () {
+                $('#eventsection').off('change').on('change', loadeventlibrary);
 
-                const firstDate = $('#dayid1').data('date');
+                const firstDay = $('.itidaytab').first();
+                const firstDate = firstDay.data('date');
 
                 if (firstDate) {
                     load_build_day_details(1, firstDate);
                 }
-
-                $('#eventsection').off('change').on('change', loadeventlibrary);
             });
         </script>
 
