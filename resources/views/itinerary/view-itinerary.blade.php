@@ -37,8 +37,7 @@
                                                 @endphp
                                                 @for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay())
                                                     <div class="itidaytab {{ $i == 1 ? 'activedaytab' : '' }}"
-                                                        id="dayid{{ $i }}"
-                                                        data-day="{{ $i }}"
+                                                        id="dayid{{ $i }}" data-day="{{ $i }}"
                                                         data-date="{{ $date->format('Y-m-d') }}"
                                                         onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}')">
                                                         {{-- <div class="itidaytab {{ $i == 1 ? 'activedaytab' : '' }}" id="dayid{{ $i }}"  onclick="load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');"> --}}
@@ -47,13 +46,12 @@
                                                         <i class="fa fa-chevron-right" aria-hidden="true"></i>
                                                         @php
                                                             $selectedDestinationId =
-                                                                $dayItems[$i]->destination_id
-                                                                ?? $itinerary->destinations->first()?->id;
+                                                                $dayItems[$i]->destination_id ??
+                                                                $itinerary->destinations->first()?->id;
                                                         @endphp
 
                                                         <select id="destinationName{{ $i }}"
-                                                            class="form-control"
-                                                            onclick="event.stopPropagation();"
+                                                            class="form-control" onclick="event.stopPropagation();"
                                                             onchange="event.stopPropagation(); load_build_day_details('{{ $i }}','{{ $date->format('Y-m-d') }}');">
 
                                                             @foreach ($itinerary->destinations as $destination)
@@ -109,7 +107,7 @@
                                                     <select name="eventsection" id="eventsection"
                                                         style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #ddd;border-radius: 4px;height: 43px;"
                                                         onchange="loadeventlibrary();">
-                                                        <option value="DayItinerary">Day Itinerary dddd eeee</option>
+                                                        <option value="DayItinerary">Day Itinerary</option>
                                                         <option value="Accommodation">Accommodation</option>
                                                         <option value="Activity">Activity</option>
                                                         <option value="Transportation">Transportation</option>
@@ -325,8 +323,23 @@
             function loadeventlibrary() {
                 updateManualAddButton();
             }
+            document.addEventListener("DOMContentLoaded", function() {
+                document.querySelectorAll('.itidaytab').forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        let day = this.dataset.day;
+                        let date = this.dataset.date;
+                        loadDayDetails(day, date);
+                        document.querySelectorAll('.itidaytab').forEach(t => t.classList.remove(
+                            'activedaytab'));
+                        this.classList.add('activedaytab');
+                    });
+                });
+            });
 
-            $(document).ready(function () {
+            document.addEventListener("DOMContentLoaded", function() {
+                document.querySelector('.itidaytab')?.click();
+            });
+            $(document).ready(function() {
                 $('#eventsection').off('change').on('change', loadeventlibrary);
 
                 const firstDay = $('.itidaytab').first();
