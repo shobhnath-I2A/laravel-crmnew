@@ -168,6 +168,11 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         ->middleware('module.permission:Itinerary,edit');
 
     Route::resource('weather-setting', WeatherSettingController::class);
+    Route::get('weather-setting/{id}/weather', [WeatherSettingController::class, 'fetchWeather'])
+    ->name('weather-setting.weather');
+    Route::post('weather-setting/{id}/refresh', [WeatherSettingController::class, 'refreshWeather'])
+    ->name('weather-setting.refresh');
+
     Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
 
     Route::middleware(['auth', 'admin.only'])->group(function () {

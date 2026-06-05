@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Supplier;
 use App\Models\Destination;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class SupplierController extends Controller
 {
@@ -43,35 +45,52 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
-        $request->validate([
-            'destination_id' => 'nullable|exists:destinations,id',
-            'company_name'      => 'required|string|max:255',
-            'submit_name'  => 'nullable|string|max:20',
-            'first_name'   => 'required|string|max:100',
-            'last_name'    => 'nullable|string|max:100',
-            'email'        => 'nullable|email|max:255',
-            'mobile_code'  => 'nullable|string|max:10',
-            'mobile'       => 'nullable|string|max:20',
-            'address'      => 'nullable|string|max:500',
-        ]);
+        try {
+            // dd($request->all());
+            $request->validate([
+                'destination_id' => 'nullable|exists:destinations,id',
+                'company_name'      => 'required|string|max:255',
+                'submit_name'  => 'nullable|string|max:20',
+                'first_name'   => 'required|string|max:100',
+                'last_name'    => 'nullable|string|max:100',
+                'email'        => 'nullable|email|max:255',
+                'mobile_code'  => 'nullable|string|max:10',
+                'mobile'       => 'nullable|string|max:20',
+                'address'      => 'nullable|string|max:500',
+            ]);
 
-        Supplier::create([
-            'destination_id' => $request->destination_id,
-            'company_name'      => $request->company_name,
-            'submit_name'  => $request->submit_name,
-            'first_name'   => $request->first_name,
-            'last_name'    => $request->last_name,
-            'email'        => $request->email,
-            'mobile_code'  => $request->mobile_code,
-            'mobile'       => $request->mobile,
-            'address'      => $request->address,
-            'created_by'   => auth()->id(),
-        ]);
-
-        return redirect()
-            ->route('suppliers.create')
-            ->with('success', 'Supplier added successfully.');
+            Supplier::create([
+                'destination_id' => $request->destination_id,
+                'company_name'      => $request->company_name,
+                'submit_name'  => $request->submit_name,
+                'first_name'   => $request->first_name,
+                'last_name'    => $request->last_name,
+                'email'        => $request->email,
+                'mobile_code'  => $request->mobile_code,
+                'mobile'       => $request->mobile,
+                'address'      => $request->address,
+                'created_by'   => auth()->id(),
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => "Supplier created successfully",
+                'data' => $supplier
+            ], 201);
+        } catch (ValidationException $ve) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Failed',
+                'errors' => $ve->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+        // return redirect()
+        //     ->route('suppliers.create')
+        //     ->with('success', 'Supplier added successfully.');
     }
     public function searchCities(Request $request)
     {
@@ -105,36 +124,53 @@ class SupplierController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $supplier = Supplier::findOrFail($id);
-        // dd($request->all());
-        $request->validate([
-            'destination_id' => 'nullable|exists:destinations,id',
-            'company_name'      => 'required|string|max:255',
-            'submit_name'  => 'nullable|string|max:20',
-            'first_name'   => 'required|string|max:100',
-            'last_name'    => 'nullable|string|max:100',
-            'email'        => 'nullable|email|max:255',
-            'mobile_code'  => 'nullable|string|max:10',
-            'mobile'       => 'nullable|string|max:20',
-            'address'      => 'nullable|string|max:500',
-        ]);
+        try {
+            $supplier = Supplier::findOrFail($id);
+            // dd($request->all());
+            $request->validate([
+                'destination_id' => 'nullable|exists:destinations,id',
+                'company_name'      => 'required|string|max:255',
+                'submit_name'  => 'nullable|string|max:20',
+                'first_name'   => 'required|string|max:100',
+                'last_name'    => 'nullable|string|max:100',
+                'email'        => 'nullable|email|max:255',
+                'mobile_code'  => 'nullable|string|max:10',
+                'mobile'       => 'nullable|string|max:20',
+                'address'      => 'nullable|string|max:500',
+            ]);
 
-        $supplier->update([
-            'destination_id' => $request->destination_id,
-            'company_name'      => $request->company_name,
-            'submit_name'  => $request->submit_name,
-            'first_name'   => $request->first_name,
-            'last_name'    => $request->last_name,
-            'email'        => $request->email,
-            'mobile_code'  => $request->mobile_code,
-            'mobile'       => $request->mobile,
-            'address'      => $request->address,
-            'created_by'   => auth()->id(),
-        ]);
-
-        return redirect()
-            ->route('suppliers.create')
-            ->with('success', 'Supplier updated successfully.');
+            $supplier->update([
+                'destination_id' => $request->destination_id,
+                'company_name'      => $request->company_name,
+                'submit_name'  => $request->submit_name,
+                'first_name'   => $request->first_name,
+                'last_name'    => $request->last_name,
+                'email'        => $request->email,
+                'mobile_code'  => $request->mobile_code,
+                'mobile'       => $request->mobile,
+                'address'      => $request->address,
+                'created_by'   => auth()->id(),
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => "Supplier updated successfully",
+                'data' => $supplier
+            ], 200);
+        } catch (ValidationException $ve) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Failed',
+                'errors' => $ve->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+        // return redirect()
+        //     ->route('suppliers.create')
+        //     ->with('success', 'Supplier updated successfully.');
     }
 
     /**

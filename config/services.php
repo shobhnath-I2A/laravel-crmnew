@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'rapidapi_weather' => [
+        'url' => env('RAPIDAPI_WEATHER_URL'),
+        'key' => env('RAPIDAPI_WEATHER_KEY'),
+        'host' => env('RAPIDAPI_WEATHER_HOST', 'weather-by-api-ninjas.p.rapidapi.com'),
+    ],
 
 ];

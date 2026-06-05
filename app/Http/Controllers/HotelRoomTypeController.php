@@ -60,7 +60,7 @@ class HotelRoomTypeController extends Controller
                 'status' => true,
                 'message' => "Room created successfully",
                 'data' => $roomType
-            ]);
+            ],201);
         } catch (ValidationException $ve) {
             return response()->json([
                 'status' => false,

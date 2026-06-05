@@ -22,10 +22,10 @@
                     {{-- NAME --}}
                     <div class="col-md-12">
                         <label>City (Block 1)<span class="redmtext">*</span></label>
-                        <input type="text" name="city_name1"
-                            class="form-control reqfield @error('city_name1') is-invalid @enderror"
-                            value="{{ old('city_name1', $weatherSetting->city_name1 ?? '') }}">
-                        @error('city_name1')
+                        <input type="text" name="city_name"
+                            class="form-control reqfield @error('city_name') is-invalid @enderror"
+                            value="{{ old('city_name', $weatherSetting->city_name ?? '') }}">
+                        @error('city_name')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>

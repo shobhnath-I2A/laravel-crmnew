@@ -20,5 +20,6 @@ class WeatherSetting extends Model
         'wind_degrees',
         'sunrise',
         'sunset',
+        'status',
     ];
 }

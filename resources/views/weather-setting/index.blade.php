@@ -10,10 +10,11 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title cardtitle"> Weather Settings
-                                        <form action="{{ route('weather-setting.index') }}" class="newsearchsecform" style="left:54px;" method="get"
-                                            enctype="multipart/form-data">
+                                        <form action="{{ route('weather-setting.index') }}" class="newsearchsecform"
+                                            style="left:54px;" method="get" enctype="multipart/form-data">
                                             <input type="text" name="keyword" class="form-control newsearchsec"
-                                                placeholder="Search by name" value="{{ request('keyword') }}" style="margin-top: 3px;">
+                                                placeholder="Search by name" value="{{ request('keyword') }}"
+                                                style="margin-top: 3px;">
                                         </form>
                                         <div class="float-right">
                                             <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
@@ -34,27 +35,29 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                            <tbody>
                                                 @foreach ($weatherSetting as $setting)
                                                     <tr>
-                                                        <td width="35%" style="cursor:pointer;" onclick="openPopup('Edit Weather Setting', '{{ route('weather-setting.show', $setting->id) }}')">
-                                                            <table border="0" cellpadding="0" cellspacing="0"
-                                                                class="addbynewbadges">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td colspan="2"style="padding-right:10px !important;">
-                                                                            <img src="{{ asset('assets/images/profilepic/16942404066793789211693635606.jpg')}}"  width="25" height="25">
-                                                                        </td>
-                                                                        <td>{{ $setting->name ?? '' }}</td>
+                                                        <td style="cursor:pointer;"
+                                                            onclick="openPopup('Edit Weather Setting', '{{ route('weather-setting.show', $setting->id) }}')">
+                                                            <strong>{{ ucfirst($setting->city_name) }}</strong>
+                                                        </td>
 
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
+                                                        <td>
+                                                            Temp: {{ $setting->temp_weather ?? '-' }}°C <br>
+                                                            Feels Like: {{ $setting->feels_like ?? '-' }}°C <br>
+                                                            Humidity: {{ $setting->humidity ?? '-' }}% <br>
+                                                            Wind: {{ $setting->wind_speed ?? '-' }}
                                                         </td>
-                                                         <td>{{ $setting->details ?? '' }}</td>
-                                                        <td width="1%" align="left">
-                                                          <span class="badge {{ $setting->status == 1 ? 'badge-success' : 'badge-danger' }}"> {{ $setting->status == 1 ? 'Active' : 'Inactive' }} </span>
+
+                                                        <td>
+                                                            <span
+                                                                class="badge {{ $setting->status == 1 ? 'badge-success' : 'badge-danger' }}">
+                                                                {{ $setting->status == 1 ? 'Active' : 'Inactive' }}
+                                                            </span>
                                                         </td>
-                                                        <td width="15%" align="left">
+
+                                                        <td>
                                                             <table border="0" cellpadding="0" cellspacing="0"
                                                                 class="addbynewbadges">
                                                                 <tbody>
@@ -64,24 +67,27 @@
                                                                         </td>
                                                                         <td>i2a</td>
                                                                     </tr>
-
                                                                 </tbody>
                                                             </table>
                                                         </td>
-                                                        <td width="12%" align="left">{{ $setting->created_at }}</td>
-                                                        <td width="1%">
+
+                                                        <td>{{ optional($setting->created_at)->format('d M Y') }}</td>
+
+                                                        <td>
                                                             <a class="dropdown-item neweditpan"
-                                                            onclick="openPopup('Edit Weather Setting', '{{ route('weather-setting.edit', $setting->id ) }}')">
+                                                                onclick="openPopup('Edit Weather Setting', '{{ route('weather-setting.edit', $setting->id) }}')">
                                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                                             </a>
                                                         </td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
+                                            </tbody>
                                         </table>
                                     </div>
                                     <div class="mt-3 pageingouter">
-                                        <div style="float: left; font-size: 13px; padding: 7px 11px; border: 1px solid #ededed; background-color: #fff; color: #000;">
+                                        <div
+                                            style="float: left; font-size: 13px; padding: 7px 11px; border: 1px solid #ededed; background-color: #fff; color: #000;">
                                             Total Records: <strong>{{ $weatherSettingCount }}</strong></div>
                                         <div class="d-flex justify-content-end">
                                             {{ $weatherSetting->links() }}
@@ -95,5 +101,4 @@
             </div>
         </div>
     </div>
-
 @endsection
