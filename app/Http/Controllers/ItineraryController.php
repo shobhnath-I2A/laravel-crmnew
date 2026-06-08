@@ -9,9 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Models\PackageDayItem;
-use App\Models\Query;
-use App\Models\Supplier;
 use App\Models\Package;
+use App\Models\Query;
 use App\Services\PackageService;
 use Illuminate\Validation\ValidationException;
 use App\Models\Hotel;
@@ -27,20 +26,29 @@ class ItineraryController extends Controller
     public function index(Request $request)
     {
         try {
-            $itineraryBuilder = Itinerary::query();
+
+            $itineraryBuilder = Itinerary::where('queryId', 0);
 
             if ($request->filled('keyword')) {
                 $itineraryBuilder->where('name', 'like', '%' . $request->keyword . '%');
             }
 
-            $itinerary = $itineraryBuilder->latest()->paginate(20);
+            $itineraryCount = (clone $itineraryBuilder)->count();
+
+            $itinerary = $itineraryBuilder
+                ->latest()
+                ->paginate(20);
 
             $itinerary->appends($request->all());
 
-            $itineraryCount = Itinerary::count();
-            return view('itinerary.index', compact('itinerary', 'itineraryCount'));
+            return view('itinerary.index', compact(
+                'itinerary',
+                'itineraryCount'
+            ));
         } catch (\Exception $e) {
-            Log::error('Error featching Itinerary', $e->getMessage());
+
+            Log::error('Error fetching Itinerary: ' . $e->getMessage());
+
             return view('itinerary.index');
         }
     }
@@ -118,7 +126,6 @@ class ItineraryController extends Controller
     /**
      * Display the specified resource.
      */
-
     public function show(Request $request, string $id)
     {
         try {
@@ -387,7 +394,7 @@ class ItineraryController extends Controller
             $itinerary = Itinerary::findOrFail($id);
 
             $itinerary->update([
-                'status' => 1
+                'status' => 3
             ]);
 
             return response()->json([
@@ -424,38 +431,129 @@ class ItineraryController extends Controller
             ], 500);
         }
     }
-    // public function loadHotels(Request $request)
+    public function markAccepted(Request $request, $id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $request->validate([
+                'hotel_options' => 'required|in:1,2,3',
+            ]);
+
+            $itinerary = Itinerary::findOrFail($id);
+
+            $package = Package::where('itinerary_id', $itinerary->id)->firstOrFail();
+
+            $queryId = $itinerary->queryId;
+            $confirmedOption = (int) $request->hotel_options;
+
+            /*
+        |--------------------------------------------------------------------------
+        | Delete other hotel options from accommodation
+        |--------------------------------------------------------------------------
+        */
+            PackageDayItem::where('package_id', $package->id)
+                ->where('type', 'Accommodation')
+                ->whereIn('hotel_options', array_diff([1, 2, 3], [$confirmedOption]))
+                ->delete();
+
+            /*
+        |--------------------------------------------------------------------------
+        | Reset all itineraries of this query
+        |--------------------------------------------------------------------------
+        */
+            Itinerary::where('queryId', $queryId)
+                ->update([
+                    'status' => 0,
+                    'confirmed_by' => null,
+                    'confirm_date' => null,
+                ]);
+
+            /*
+        |--------------------------------------------------------------------------
+        | Mark selected itinerary accepted
+        |--------------------------------------------------------------------------
+        */
+            $itinerary->update([
+                'status' => 1,
+                'confirmed_by' => auth()->id(),
+                'confirm_date' => now(),
+            ]);
+
+            /*
+        |--------------------------------------------------------------------------
+        | Update query status
+        |--------------------------------------------------------------------------
+        */
+            Query::where('id', $queryId)->update([
+                'statusid' => 9,
+            ]);
+
+            /*
+        |--------------------------------------------------------------------------
+        | Optional: update invoice/payment tables if models exist
+        |--------------------------------------------------------------------------
+        */
+            // InvoiceMaster::where('queryId', $queryId)->update([
+            //     'package_id' => $package->id,
+            // ]);
+            //
+            // PackagePayment::where('queryId', $queryId)->update([
+            //     'package_id' => $package->id,
+            // ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Itinerary confirmed successfully',
+                'redirect_url' => route('itineraries.show', $itinerary->id),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    // public function markAccepted($id)
     // {
-    //     $hotels = Hotel::where('destination_id', $request->destinationName)->get();
-    //     return view('package-day-items.popups.hotel-options', compact('hotels'));
-    // }
-    //    public function loadHotelData(Request $request)
-    //     {
-    //         $hotel = Hotel::with(['rates', 'roomTypes'])
-    //             ->find($request->hotel_id);
+    //     DB::beginTransaction();
 
-    //         if (!$hotel) {
-    //             return response()->json([
-    //                 'roomTypes' => [],
-    //                 'price' => 0
+    //     try {
+
+    //         $itinerary = Itinerary::findOrFail($id);
+
+    //         // Remove accepted status from all itineraries
+    //         // of the same query
+    //         Itinerary::where('queryId', $itinerary->queryId)
+    //             ->update([
+    //                 'status' => 0
     //             ]);
-    //         }
 
-    //         $roomTypes = $hotel->roomTypes->map(function ($room) {
-    //             return [
-    //                 'id' => $room->id,
-    //                 'name' => $room->name
-    //             ];
-    //         });
+    //         // Mark selected itinerary accepted
+    //         $itinerary->update([
+    //             'status' => 1
+    //         ]);
 
-    //         $rate = $hotel->rates->first();
+    //         DB::commit();
 
     //         return response()->json([
-    //             'roomTypes' => $roomTypes,
-    //             'meal'  => $rate->meal_plan ?? '',
-    //             'price' => $rate->double ?? 0
+    //             'status' => true,
+    //             'message' => 'Itinerary accepted successfully'
     //         ]);
+    //     } catch (\Exception $e) {
+
+    //         DB::rollBack();
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => $e->getMessage()
+    //         ], 500);
     //     }
+    // }
 
     public function finalItinerary(String $id)
     {
@@ -463,25 +561,4 @@ class ItineraryController extends Controller
 
         return view('itinerary.final-itinerary', compact('itinerary'));
     }
-    // public function loadHotelData(Request $request)
-    // {
-    //     $hotel = Hotel::with('rates')->find($request->hotelnamemaster);
-
-    //     dd($hotel);
-    //     if (!$hotel || $hotel->rates->isEmpty()) {
-    //         return response()->json([
-    //             'room' => '',
-    //             'price' => 0
-    //         ]);
-    //     }
-
-    //     //  Get first rate (or you can filter later)
-    //     $rate = $hotel->rates->first();
-
-    //     return response()->json([
-    //         'room'  => $rate->room_type ?? '',
-    //         'meal'  => $rate->meal_plan ?? '',
-    //         'price' => $rate->double ?? 0 // you can choose single/double
-    //     ]);
-    // }
 }

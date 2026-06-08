@@ -137,6 +137,7 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     ->name('itineraries.duplicate');
     Route::post('/itineraries/{id}/archive', [ItineraryController::class, 'archive'])
         ->name('itineraries.archive');
+    Route::post( '/itineraries/{id}/accept', [ItineraryController::class, 'markAccepted'] )->name('itineraries.accept');
 
     Route::resource('hotels-rates', HotelRateController::class)
         ->middleware('module.permission:Hotel,edit');

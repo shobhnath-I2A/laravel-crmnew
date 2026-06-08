@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Query;
+use App\Models\QueryStatus;
 use App\Models\Supplier;
 use App\Models\Itinerary;
 use App\Models\PackageDayItem;
@@ -18,26 +19,70 @@ class QueryController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index(Request $request)
+    // {
+    //     try {
+
+    //         $queryBuilder = Query::query();
+
+    //         if ($request->statusid) {
+    //             $queryBuilder->where('statusId', $request->statusid);
+    //         }
+
+    //         $queries = $queryBuilder->latest()->paginate(10);
+
+    //         $totalQueries = Query::count();
+
+    //         $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
+    //             ->groupBy('statusId')
+    //             ->pluck('total', 'statusId');
+
+    //         return view('queries.index', compact(
+    //             'queries',
+    //             'statusCounts',
+    //             'totalQueries'
+    //         ));
+    //     } catch (Exception $e) {
+
+    //         Log::error('Error fetching queries: ' . $e->getMessage());
+
+    //         return view('queries.index', [
+    //             'queries' => collect(),
+    //             'statusCounts' => [],
+    //             'totalQueries' => 0,
+    //             'error' => 'Unable to fetch queries at this time.'
+    //         ]);
+    //     }
+    // }
     public function index(Request $request)
     {
         try {
 
-            $queryBuilder = Query::query();
+            $queryBuilder = Query::with('status');
 
-            if ($request->statusid) {
-                $queryBuilder->where('statusId', $request->statusid);
+            if ($request->filled('statusid')) {
+                $queryBuilder->where('statusid', $request->statusid);
             }
 
-            $queries = $queryBuilder->latest()->paginate(10);
+            $queries = $queryBuilder
+                ->latest()
+                ->paginate(10);
+
+            $queries->appends($request->all());
 
             $totalQueries = Query::count();
 
-            $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
-                ->groupBy('statusId')
-                ->pluck('total', 'statusId');
+            $statuses = QueryStatus::where('is_active', 1)
+                ->orderBy('sort_order')
+                ->get();
+
+            $statusCounts = Query::selectRaw('statusid, COUNT(*) as total')
+                ->groupBy('statusid')
+                ->pluck('total', 'statusid');
 
             return view('queries.index', compact(
                 'queries',
+                'statuses',
                 'statusCounts',
                 'totalQueries'
             ));
@@ -47,7 +92,8 @@ class QueryController extends Controller
 
             return view('queries.index', [
                 'queries' => collect(),
-                'statusCounts' => [],
+                'statuses' => collect(),
+                'statusCounts' => collect(),
                 'totalQueries' => 0,
                 'error' => 'Unable to fetch queries at this time.'
             ]);
@@ -119,6 +165,7 @@ class QueryController extends Controller
     {
         try {
             $tab = $request->query('tab', 'details');
+            $status = $request->query('status', 'active');
 
             $allowedTabs = [
                 'details',
@@ -138,7 +185,16 @@ class QueryController extends Controller
             }
 
             $query = Query::with([
-                'itineraries',
+                'itineraries' => function ($q) use ($status) {
+
+                    if ((string) $status === '3') {
+                        $q->where('status', 3);
+                    } else {
+                        $q->whereIn('status', [0, 1, 2]);
+                    }
+
+                    $q->latest();
+                },
             ])->findOrFail($id);
 
             $suppliers = collect();
@@ -150,7 +206,6 @@ class QueryController extends Controller
                     ->latest()
                     ->get();
             }
-            $postSaleItems = collect();
 
             if ($tab === 'post-sales-supplier') {
                 $postSaleItems = PackageDayItem::with([
@@ -160,11 +215,8 @@ class QueryController extends Controller
                     ->whereHas('package.itinerary', function ($q) use ($query) {
                         $q->where('queryId', $query->id);
                     })
-                    // ->whereNotIn('type', ['Leisure'])
-                    // ->whereNotNull('title')
                     ->orderBy('type')
                     ->orderBy('day')
-                    // ->orderBy('start_date')
                     ->get()
                     ->groupBy('type');
             }
@@ -173,7 +225,8 @@ class QueryController extends Controller
                 'query',
                 'tab',
                 'suppliers',
-                'postSaleItems'
+                'postSaleItems',
+                'status'
             ));
         } catch (Exception $e) {
             Log::error('Error fetching query: ' . $e->getMessage());
@@ -183,6 +236,74 @@ class QueryController extends Controller
                 ->with('error', 'Query not found.');
         }
     }
+    // public function show(Request $request, $id)
+    // {
+    //     try {
+    //         $tab = $request->query('tab', 'details');
+
+    //         $allowedTabs = [
+    //             'details',
+    //             'proposals',
+    //             'mails',
+    //             'followups',
+    //             'suppliers-communication',
+    //             'post-sales-supplier',
+    //             'voucher',
+    //             'billing',
+    //             'guest-documents',
+    //             'history',
+    //         ];
+
+    //         if (! in_array($tab, $allowedTabs)) {
+    //             $tab = 'details';
+    //         }
+
+    //         $query = Query::with([
+    //             'itineraries',
+    //         ])->findOrFail($id);
+
+    //         $suppliers = collect();
+    //         $postSaleItems = collect();
+
+    //         if ($tab === 'suppliers-communication') {
+    //             $suppliers = Supplier::with('destination')
+    //                 ->where('status', 1)
+    //                 ->latest()
+    //                 ->get();
+    //         }
+    //         $postSaleItems = collect();
+
+    //         if ($tab === 'post-sales-supplier') {
+    //             $postSaleItems = PackageDayItem::with([
+    //                 'package.itinerary',
+    //                 'supplier',
+    //             ])
+    //                 ->whereHas('package.itinerary', function ($q) use ($query) {
+    //                     $q->where('queryId', $query->id);
+    //                 })
+    //                 // ->whereNotIn('type', ['Leisure'])
+    //                 // ->whereNotNull('title')
+    //                 ->orderBy('type')
+    //                 ->orderBy('day')
+    //                 // ->orderBy('start_date')
+    //                 ->get()
+    //                 ->groupBy('type');
+    //         }
+
+    //         return view('queries.view-query', compact(
+    //             'query',
+    //             'tab',
+    //             'suppliers',
+    //             'postSaleItems'
+    //         ));
+    //     } catch (Exception $e) {
+    //         Log::error('Error fetching query: ' . $e->getMessage());
+
+    //         return redirect()
+    //             ->route('queries.index')
+    //             ->with('error', 'Query not found.');
+    //     }
+    // }
     // public function show(Request $request, $id)
     // {
     //     try {

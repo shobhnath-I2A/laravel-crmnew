@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('itineraries', function (Blueprint $table) {
             $table->tinyInteger('status')
               ->default(0)
-              ->comment('0=Active,1=Archived');
+              ->comment('0 = Proposal 1 = Accepted 2 = Final 3 = Archived');
         });
     }
 
@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('itineraries', function (Blueprint $table) {
-            //
+            $table->dropColumn('status');
         });
     }
 };

@@ -53,4 +53,8 @@ class Query extends Model
     {
         return $this->hasMany(PackageDayItem::class, 'queryId', 'id');
     }
+    public function status()
+    {
+        return $this->belongsTo(QueryStatus::class, 'statusid');
+    }
 }

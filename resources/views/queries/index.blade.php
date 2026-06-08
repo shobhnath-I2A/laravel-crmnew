@@ -148,7 +148,22 @@
                                         class="querytabslead">
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                             <tr>
-                                                <td width="6%" align="left" valign="top">
+                                                @foreach($statuses as $status)
+
+                                                <td width="10%">
+                                                    <a href="{{ route('queries.index',['statusid'=>$status->id]) }}">
+                                                        <div class="statusbox"
+                                                            style="background-color:{{ $status->color }}">
+                                                            <div style="font-size:30px;">
+                                                                {{ $statusCounts[$status->id] ?? 0 }}
+                                                            </div>
+                                                            {{ $status->name }}
+                                                        </div>
+                                                    </a>
+                                                </td>
+
+                                                @endforeach
+                                                {{-- <td width="6%" align="left" valign="top">
                                                     <a href="{{ route('queries.index') }}">
                                                         <div class="statusbox" style="background-color:#000;">
                                                             <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
@@ -252,7 +267,7 @@
                                                             Invalid
                                                         </div>
                                                     </a>
-                                                </td>
+                                                </td> --}}
                                             </tr>
                                         </table>
                                     </div>

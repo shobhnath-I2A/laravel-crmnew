@@ -9,19 +9,22 @@
         <div class="overflowautomobiletable">
             <div class="querydetailinsideheading">Proposals
                 <div>
-                    <a class="nav-link active show"
-                        href="display.html?ga=query&amp;view=1&amp;id=127368&amp;c=2&amp;status=0&amp;s=0">
+                   <a class="nav-link {{ request('status', 'active') != 3 ? 'active show' : '' }}"
+                    href="{{ route('queries.show', [
+                            'id' => $query->id,
+                            'tab' => 'proposals',
+                            'status' => 'active'
+                    ]) }}">
                         <span class="d-none d-md-block">All Proposals</span>
-                        <span class="d-block d-md-none">
-                            <i class="mdi mdi-home-variant h5"></i>
-                        </span>
                     </a>
-                    <a class="nav-link"
-                        href="display.html?ga=query&amp;view=1&amp;id=127368&amp;status=1&amp;c=2&amp;s=4">
+
+                    <a class="nav-link {{ request('status') == 3 ? 'active show' : '' }}"
+                    href="{{ route('queries.show', [
+                            'id' => $query->id,
+                            'tab' => 'proposals',
+                            'status' => 3
+                    ]) }}">
                         <span class="d-none d-md-block">Archived Proposals</span>
-                        <span class="d-block d-md-none">
-                            <i class="mdi mdi-settings h5"></i>
-                        </span>
                     </a>
                 </div>
             </div>
@@ -137,13 +140,26 @@
                                         </tr>
                                         <tr>
                                             <td colspan="2" align="left" valign="top">
-                                                <button type="button"
+                                                @if ($itinerary->status == 1)
+                                                    <button type="button" class="btn btn-success btn-lg"
+                                                        style="width:100%;font-weight:600;" disabled>
+                                                        <i class="fa fa-check-circle"></i>
+                                                        Accepted
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-warning btn-lg"
+                                                        style="width:100%;"
+                                                        onclick="acceptItinerary({{ $itinerary->id }})">
+                                                        Mark as Accepted
+                                                    </button>
+                                                @endif
+                                                {{-- <button type="button"
                                                     class="btn btn-warning btn-lg waves-effect waves-light"
                                                     style="width: 100%; background-color: #f9f9f9 !important; border-color: #cbcbcb !important; color: #464646; font-weight: 600 !important;"
                                                     onclick="loadpop('Alert',this,'600px')" data-toggle="modal"
                                                     data-target=".bs-example-modal-center"
                                                     popaction="action=confirmitineararies&amp;id=109047&amp;queryid=127368">Mark
-                                                    as Accepted</button>
+                                                    as Accepted</button> --}}
                                                 <button type="button"
                                                     class="btn btn-info btn-lg waves-effect waves-light"
                                                     style="width: 100%; background-color: #3574b3 !important; border-color: #246090 !important; color: #ffffff; font-weight: 600 !important; margin-top: 10px;"
@@ -211,6 +227,24 @@
 
                 $.ajax({
                     url: '/itineraries/' + id + '/archive',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        alert(res.message);
+                        location.reload();
+                    }
+                });
+            }
+
+            function acceptItinerary(id) {
+                if (!confirm('Mark this itinerary as accepted?')) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '/itineraries/' + id + '/accept',
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}'
