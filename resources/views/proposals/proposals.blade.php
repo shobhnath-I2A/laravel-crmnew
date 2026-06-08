@@ -7,7 +7,7 @@
             }
         </style>
         <div class="overflowautomobiletable">
-            <div class="querydetailinsideheading">Proposals {{ $query ?? '' }}
+            <div class="querydetailinsideheading">Proposals
                 <div>
                     <a class="nav-link active show"
                         href="display.html?ga=query&amp;view=1&amp;id=127368&amp;c=2&amp;status=0&amp;s=0">
@@ -79,15 +79,17 @@
                                                             popaction="action=addtineraries&amp;id=109047&amp;queryid=127368&amp;fromquery=1">Edit
                                                             Itinerary</a>
 
-                                                       <a href="javascript:void(0)"
+                                                        <a href="javascript:void(0)"
                                                             onclick="duplicateItinerary({{ $itinerary->id }})"
                                                             class="dropdown-item">
-                                                                Duplicate
-                                                            </a>
-                                                        {{-- <a href="#" onclick="duplicatePackage('109047');"
-                                                            class="dropdown-item">Duplicate</a> --}}
-                                                        <a href="display.html?ga=query&amp;view=1&amp;id=127368&amp;c=2&amp;status=4&amp;i=109047&amp;s="
-                                                            class="dropdown-item">Archive</a>
+                                                            Duplicate
+                                                        </a>
+
+                                                        <a href="javascript:void(0)"
+                                                            onclick="archiveItinerary({{ $itinerary->id }})"
+                                                            class="dropdown-item">
+                                                            Archive
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -200,6 +202,26 @@
                     }
                 });
             }
+
+            // archive itinerary
+            function archiveItinerary(id) {
+                if (!confirm('Are you sure you want to archive this itinerary?')) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '/itineraries/' + id + '/archive',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        alert(res.message);
+                        location.reload();
+                    }
+                });
+            }
         </script>
+
     </div>
 </div>

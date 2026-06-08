@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Models\PackageDayItem;
+use App\Models\Query;
+use App\Models\Supplier;
 use App\Models\Package;
 use App\Services\PackageService;
 use Illuminate\Validation\ValidationException;
@@ -116,6 +118,7 @@ class ItineraryController extends Controller
     /**
      * Display the specified resource.
      */
+
     public function show(Request $request, string $id)
     {
         try {
@@ -309,26 +312,109 @@ class ItineraryController extends Controller
     }
     public function duplicate($id)
     {
+        DB::beginTransaction();
+
         try {
 
             $oldItinerary = Itinerary::with('destinations')->findOrFail($id);
 
-            // Clone itinerary
+            // 1. Duplicate itinerary
             $newItinerary = $oldItinerary->replicate();
-
             $newItinerary->name = $oldItinerary->name . ' Copy';
-
+            $newItinerary->created_at = now();
+            $newItinerary->updated_at = now();
             $newItinerary->save();
 
-            // Clone destinations
+            // 2. Duplicate itinerary destinations
             $newItinerary->destinations()->sync(
                 $oldItinerary->destinations->pluck('id')->toArray()
             );
+
+            // 3. Find old package
+            $oldPackage = Package::where('itinerary_id', $oldItinerary->id)->first();
+
+            if ($oldPackage) {
+
+                // 4. Duplicate package
+                $newPackage = $oldPackage->replicate();
+
+                $newPackage->itinerary_id = $newItinerary->id;
+
+                // If your package table has this spelling also
+                if (isset($newPackage->itinery_id)) {
+                    $newPackage->itinery_id = $newItinerary->id;
+                }
+
+                $newPackage->created_at = now();
+                $newPackage->updated_at = now();
+                $newPackage->save();
+
+                // 5. Duplicate package day items
+                $oldDayItems = PackageDayItem::where('package_id', $oldPackage->id)->get();
+
+                foreach ($oldDayItems as $oldItem) {
+                    $newItem = $oldItem->replicate();
+                    $newItem->package_id = $newPackage->id;
+                    $newItem->created_at = now();
+                    $newItem->updated_at = now();
+                    $newItem->save();
+                }
+            }
+
+            DB::commit();
 
             return response()->json([
                 'status' => true,
                 'message' => 'Itinerary duplicated successfully',
                 'id' => $newItinerary->id
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            Log::error('Duplicate itinerary failed: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function archive($id)
+    {
+        try {
+
+            $itinerary = Itinerary::findOrFail($id);
+
+            $itinerary->update([
+                'status' => 1
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Itinerary archived successfully'
+            ]);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function unarchive($id)
+    {
+        try {
+
+            $itinerary = Itinerary::findOrFail($id);
+
+            $itinerary->update([
+                'status' => 0
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Itinerary restored successfully'
             ]);
         } catch (\Exception $e) {
 
