@@ -28,16 +28,25 @@ class Package extends Model
         return $this->belongsToMany(Destination::class);
     }
 
+    // public function itinerary()
+    // {
+    //     return $this->belongsTo(Itinerary::class);
+    // }
+
+    // public function dayItems()
+    // {
+    //     return $this->hasMany(PackageDayItem::class);
+    // }
+
     public function itinerary()
     {
-        return $this->belongsTo(Itinerary::class);
+        return $this->belongsTo(Itinerary::class, 'itinerary_id');
     }
 
     public function dayItems()
     {
-        return $this->hasMany(PackageDayItem::class);
+        return $this->hasMany(PackageDayItem::class, 'package_id');
     }
-
     public function queries()
     {
         return $this->hasMany(Query::class);

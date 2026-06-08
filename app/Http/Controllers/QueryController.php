@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Query;
+use App\Models\Supplier;
+use App\Models\Itinerary;
+use App\Models\PackageDayItem;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Exception;
+
 
 class QueryController extends Controller
 {
@@ -114,17 +118,98 @@ class QueryController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            // $query = Query::findOrFail($id);
-            $query = Query::with('itineraries')->findOrFail($id);
             $tab = $request->query('tab', 'details');
-            // $tab = $request->get('tab', 'details'); // default tab
-            return view('queries.view-query', compact('query', 'tab'));
+
+            $allowedTabs = [
+                'details',
+                'proposals',
+                'mails',
+                'followups',
+                'suppliers-communication',
+                'post-sales-supplier',
+                'voucher',
+                'billing',
+                'guest-documents',
+                'history',
+            ];
+
+            if (! in_array($tab, $allowedTabs)) {
+                $tab = 'details';
+            }
+
+            $query = Query::with([
+                'itineraries',
+            ])->findOrFail($id);
+
+            $suppliers = collect();
+            $postSaleItems = collect();
+
+            if ($tab === 'suppliers-communication') {
+                $suppliers = Supplier::with('destination')
+                    ->where('status', 1)
+                    ->latest()
+                    ->get();
+            }
+            $postSaleItems = collect();
+
+            if ($tab === 'post-sales-supplier') {
+                $postSaleItems = PackageDayItem::with([
+                    'package.itinerary',
+                    'supplier',
+                ])
+                    ->whereHas('package.itinerary', function ($q) use ($query) {
+                        $q->where('queryId', $query->id);
+                    })
+                    // ->whereNotIn('type', ['Leisure'])
+                    // ->whereNotNull('title')
+                    ->orderBy('type')
+                    ->orderBy('day')
+                    // ->orderBy('start_date')
+                    ->get()
+                    ->groupBy('type');
+            }
+
+            return view('queries.view-query', compact(
+                'query',
+                'tab',
+                'suppliers',
+                'postSaleItems'
+            ));
         } catch (Exception $e) {
             Log::error('Error fetching query: ' . $e->getMessage());
-            return redirect()->route('queries.index')
+
+            return redirect()
+                ->route('queries.index')
                 ->with('error', 'Query not found.');
         }
     }
+    // public function show(Request $request, $id)
+    // {
+    //     try {
+    //         // $query = Query::findOrFail($id);
+    //         $tab = $request->query('tab', 'details');
+    //         $query = Query::with('itineraries')->findOrFail($id);
+    //         $suppliers = collect();
+
+    //     if ($tab === 'suppliers-communication') {
+    //         $suppliers = Supplier::with('destination')
+    //             ->latest()
+    //             ->get();
+    //     }
+    //     if ($tab === 'post-sales-supplier') {
+    //         $suppliers = Supplier::with('destination')
+    //             ->latest()
+    //             ->get();
+    //     }
+
+    //     return view('queries.view-query', compact('query', 'tab', 'suppliers'));
+    //         // return view('queries.view-query', compact('query', 'tab'));
+    //     } catch (Exception $e) {
+    //         Log::error('Error fetching query: ' . $e->getMessage());
+    //         return redirect()->route('queries.index')
+    //             ->with('error', 'Query not found.');
+    //     }
+    // }
 
     /**
      * Show the form for editing the specified resource.

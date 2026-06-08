@@ -44,9 +44,18 @@ class PackageDayItem extends Model
         'check_in_date' => 'date',
         'check_out_date' => 'date',
     ];
+    // public function package()
+    // {
+    //     return $this->belongsTo(Package::class);
+    // }
     public function package()
     {
-        return $this->belongsTo(Package::class);
+        return $this->belongsTo(Package::class, 'package_id');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
     public function hotel()
     {

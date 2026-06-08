@@ -339,16 +339,16 @@
             document.addEventListener("DOMContentLoaded", function() {
                 document.querySelector('.itidaytab')?.click();
             });
-            $(document).ready(function() {
-                $('#eventsection').off('change').on('change', loadeventlibrary);
+            // $(document).ready(function() {
+            //     $('#eventsection').off('change').on('change', loadeventlibrary);
 
-                const firstDay = $('.itidaytab').first();
-                const firstDate = firstDay.data('date');
+            //     const firstDay = $('.itidaytab').first();
+            //     const firstDate = firstDay.data('date');
 
-                if (firstDate) {
-                    load_build_day_details(1, firstDate);
-                }
-            });
+            //     if (firstDate) {
+            //         load_build_day_details(1, firstDate);
+            //     }
+            // });
         </script>
 
     </div>
