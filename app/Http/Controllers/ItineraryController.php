@@ -13,6 +13,7 @@ use App\Models\Package;
 use App\Services\PackageService;
 use Illuminate\Validation\ValidationException;
 use App\Models\Hotel;
+use Illuminate\Support\Facades\DB;
 
 use Exception;
 
@@ -305,6 +306,37 @@ class ItineraryController extends Controller
                 ];
             }),
         ]);
+    }
+    public function duplicate($id)
+    {
+        try {
+
+            $oldItinerary = Itinerary::with('destinations')->findOrFail($id);
+
+            // Clone itinerary
+            $newItinerary = $oldItinerary->replicate();
+
+            $newItinerary->name = $oldItinerary->name . ' Copy';
+
+            $newItinerary->save();
+
+            // Clone destinations
+            $newItinerary->destinations()->sync(
+                $oldItinerary->destinations->pluck('id')->toArray()
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Itinerary duplicated successfully',
+                'id' => $newItinerary->id
+            ]);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
     // public function loadHotels(Request $request)
     // {

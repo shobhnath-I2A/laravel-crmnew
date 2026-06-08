@@ -133,6 +133,9 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/load-meal-plans', [HotelController::class, 'loadMealPlans'])
     ->name('load.meal.plans');
 
+    Route::post('/itineraries/{id}/duplicate', [ItineraryController::class, 'duplicate'])
+    ->name('itineraries.duplicate');
+
     Route::resource('hotels-rates', HotelRateController::class)
         ->middleware('module.permission:Hotel,edit');
 

@@ -79,9 +79,13 @@
                                                             popaction="action=addtineraries&amp;id=109047&amp;queryid=127368&amp;fromquery=1">Edit
                                                             Itinerary</a>
 
-
-                                                        <a href="#" onclick="duplicatePackage('109047');"
-                                                            class="dropdown-item">Duplicate</a>
+                                                       <a href="javascript:void(0)"
+                                                            onclick="duplicateItinerary({{ $itinerary->id }})"
+                                                            class="dropdown-item">
+                                                                Duplicate
+                                                            </a>
+                                                        {{-- <a href="#" onclick="duplicatePackage('109047');"
+                                                            class="dropdown-item">Duplicate</a> --}}
                                                         <a href="display.html?ga=query&amp;view=1&amp;id=127368&amp;c=2&amp;status=4&amp;i=109047&amp;s="
                                                             class="dropdown-item">Archive</a>
                                                     </div>
@@ -172,13 +176,29 @@
             </div>
         </div>
         <script>
-            function duplicatePackage(id) {
-                var result = confirm("Are you sure you want to create duplicate package?");
-                if (result == true) {
-                    $('#ActionDiv').load('actionpage.php?pid=' + id + '&action=addduplicatepackage&queryid=127368');
-                } else {
+            function duplicateItinerary(id) {
+                if (!confirm('Are you sure you want to duplicate this itinerary?')) {
                     return false;
                 }
+
+                $.ajax({
+                    url: "{{ url('itineraries') }}/" + id + "/duplicate",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        if (response.status === true) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert(xhr.responseJSON?.message || 'Something went wrong');
+                    }
+                });
             }
         </script>
     </div>
