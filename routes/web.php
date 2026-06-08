@@ -139,6 +139,9 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         ->name('itineraries.archive');
     Route::post( '/itineraries/{id}/accept', [ItineraryController::class, 'markAccepted'] )->name('itineraries.accept');
 
+    Route::post('/queries/{id}/change-status', [QueryController::class, 'changeStatus'])
+    ->name('queries.change-status');
+
     Route::resource('hotels-rates', HotelRateController::class)
         ->middleware('module.permission:Hotel,edit');
 

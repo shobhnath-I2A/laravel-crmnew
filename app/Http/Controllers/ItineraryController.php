@@ -465,8 +465,8 @@ class ItineraryController extends Controller
             Itinerary::where('queryId', $queryId)
                 ->update([
                     'status' => 0,
-                    'confirmed_by' => null,
-                    'confirm_date' => null,
+                    // 'confirmed_by' => null,
+                    // 'confirm_date' => null,
                 ]);
 
             /*
@@ -476,8 +476,8 @@ class ItineraryController extends Controller
         */
             $itinerary->update([
                 'status' => 1,
-                'confirmed_by' => auth()->id(),
-                'confirm_date' => now(),
+                // 'confirmed_by' => auth()->id(),
+                // 'confirm_date' => now(),
             ]);
 
             /*

@@ -9,21 +9,21 @@
         <div class="overflowautomobiletable">
             <div class="querydetailinsideheading">Proposals
                 <div>
-                   <a class="nav-link {{ request('status', 'active') != 3 ? 'active show' : '' }}"
-                    href="{{ route('queries.show', [
+                    <a class="nav-link {{ request('status', 'active') != 3 ? 'active show' : '' }}"
+                        href="{{ route('queries.show', [
                             'id' => $query->id,
                             'tab' => 'proposals',
-                            'status' => 'active'
-                    ]) }}">
+                            'status' => 'active',
+                        ]) }}">
                         <span class="d-none d-md-block">All Proposals</span>
                     </a>
 
                     <a class="nav-link {{ request('status') == 3 ? 'active show' : '' }}"
-                    href="{{ route('queries.show', [
+                        href="{{ route('queries.show', [
                             'id' => $query->id,
                             'tab' => 'proposals',
-                            'status' => 3
-                    ]) }}">
+                            'status' => 3,
+                        ]) }}">
                         <span class="d-none d-md-block">Archived Proposals</span>
                     </a>
                 </div>
@@ -147,19 +147,18 @@
                                                         Accepted
                                                     </button>
                                                 @else
-                                                    <button type="button" class="btn btn-warning btn-lg"
-                                                        style="width:100%;"
-                                                        onclick="acceptItinerary({{ $itinerary->id }})">
+                                                    <button id="acceptBtn_{{ $itinerary->id }}" type="button"
+                                                        class="btn btn-warning btn-lg"
+                                                        onclick="openAcceptModal({{ $itinerary->id }}, '{{ $itinerary->website_cost ?? 0 }}')">
                                                         Mark as Accepted
                                                     </button>
+                                                    {{-- <button type="button" class="btn btn-warning btn-lg"
+                                                        style="width:100%;"
+                                                        onclick="openAcceptModal({{ $itinerary->id }}, '{{ $itinerary->website_cost ?? 0 }}')">
+                                                        Mark as Accepted
+                                                    </button> --}}
                                                 @endif
-                                                {{-- <button type="button"
-                                                    class="btn btn-warning btn-lg waves-effect waves-light"
-                                                    style="width: 100%; background-color: #f9f9f9 !important; border-color: #cbcbcb !important; color: #464646; font-weight: 600 !important;"
-                                                    onclick="loadpop('Alert',this,'600px')" data-toggle="modal"
-                                                    data-target=".bs-example-modal-center"
-                                                    popaction="action=confirmitineararies&amp;id=109047&amp;queryid=127368">Mark
-                                                    as Accepted</button> --}}
+
                                                 <button type="button"
                                                     class="btn btn-info btn-lg waves-effect waves-light"
                                                     style="width: 100%; background-color: #3574b3 !important; border-color: #246090 !important; color: #ffffff; font-weight: 600 !important; margin-top: 10px;"
@@ -192,6 +191,39 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="acceptItineraryModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Alert</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                &times;
+                            </button>
+                        </div>
+
+                        <div class="modal-body text-center">
+                            <h4>You are about to confirm an itinerary</h4>
+                            <p>This action cannot be undone.</p>
+
+                            <div style="background:#e5ffff;padding:20px;">
+                                <label><strong>Select Hotel Option</strong></label>
+
+                                <select id="acceptOption" class="form-control">
+                                    <option value="">Select</option>
+                                </select>
+
+                                <input type="hidden" id="acceptItineraryId">
+                            </div>
+
+                            <button type="button" class="btn btn-success mt-3" onclick="confirmAcceptItinerary()">
+                                Confirm Itinerary
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
         <script>
             function duplicateItinerary(id) {
@@ -206,15 +238,40 @@
                         _token: "{{ csrf_token() }}"
                     },
                     success: function(response) {
-                        if (response.status === true) {
-                            alert(response.message);
+                        $('#ajaxLoader').hide();
+                        $('#toastMessage').html(
+                            '<div class="toast-box">' + response.message + '</div>'
+                        );
+                        setTimeout(function() {
+                            $('#toastMessage').fadeOut();
+                        }, 3000);
+                        closeSidebar();
+                        setTimeout(function() {
                             location.reload();
-                        } else {
-                            alert(response.message);
-                        }
+                        }, 1500);
                     },
+
+                    // success: function(response) {
+                    //     if (response.status === true) {
+                    //         alert(response.message);
+                    //         location.reload();
+                    //     } else {
+                    //         alert(response.message);
+                    //     }
+                    // },
                     error: function(xhr) {
-                        alert(xhr.responseJSON?.message || 'Something went wrong');
+                        $('#ajaxLoader').hide();
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, value) {
+                                let input = $('[name="' + key + '"]');
+                                input.addClass('is-invalid');
+                                input.after(
+                                    '<div class="validation-error text-danger">' + value[0] +
+                                    '</div>'
+                                );
+                            });
+                        }
                     }
                 });
             }
@@ -231,10 +288,23 @@
                     data: {
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function(res) {
-                        alert(res.message);
-                        location.reload();
-                    }
+                    success: function(response) {
+                        $('#ajaxLoader').hide();
+                        $('#toastMessage').html(
+                            '<div class="toast-box">' + response.message + '</div>'
+                        );
+                        setTimeout(function() {
+                            $('#toastMessage').fadeOut();
+                        }, 3000);
+                        closeSidebar();
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500);
+                    },
+                    // success: function(res) {
+                    //     alert(res.message);
+                    //     location.reload();
+                    // }
                 });
             }
 
@@ -249,13 +319,127 @@
                     data: {
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function(res) {
-                        alert(res.message);
-                        location.reload();
+                    success: function(response) {
+                        $('#ajaxLoader').hide();
+                        $('#toastMessage').html(
+                            '<div class="toast-box">' + response.message + '</div>'
+                        );
+                        setTimeout(function() {
+                            $('#toastMessage').fadeOut();
+                        }, 3000);
+                        closeSidebar();
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500);
+                    },
+                    // success: function(res) {
+                    //     alert(res.message);
+                    //     location.reload();
+                    // }
+                });
+            }
+
+            function openAcceptModal(id, amount) {
+
+                $('#acceptItineraryId').val(id);
+
+                $('#acceptOption').html(`
+        <option value="">Select</option>
+        <option value="1">Option 1 : ₹ ${amount}</option>
+    `);
+
+                $('#acceptItineraryModal').modal('show');
+            }
+
+            function confirmAcceptItinerary() {
+
+                let id = $('#acceptItineraryId').val();
+                let option = $('#acceptOption').val();
+
+                if (!option) {
+
+                    $('#toastMessage').html(
+                        '<div class="toast-box toast-error">Please select hotel option.</div>'
+                    ).show();
+
+                    setTimeout(function() {
+                        $('#toastMessage').fadeOut();
+                    }, 3000);
+
+                    return false;
+                }
+
+                $('#ajaxLoader').show();
+
+                $.ajax({
+                    url: '/itineraries/' + id + '/accept',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        hotel_options: option
+                    },
+
+                    success: function(response) {
+
+                        $('#ajaxLoader').hide();
+
+                        // Close modal
+                        $('#acceptItineraryModal').modal('hide');
+
+                        // Remove backdrop if it remains
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '');
+
+                        // Show toast message
+                        $('#toastMessage').html(
+                            '<div class="toast-box">' + response.message + '</div>'
+                        ).show();
+
+                        setTimeout(function() {
+                            $('#toastMessage').fadeOut();
+                        }, 3000);
+
+                        // Reload page
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    },
+
+                    error: function(xhr) {
+
+                        $('#ajaxLoader').hide();
+
+                        if (xhr.status === 422) {
+
+                            $('.validation-error').remove();
+                            $('.is-invalid').removeClass('is-invalid');
+
+                            let errors = xhr.responseJSON.errors;
+
+                            $.each(errors, function(key, value) {
+
+                                let input = $('[name="' + key + '"]');
+
+                                input.addClass('is-invalid');
+
+                                input.after(
+                                    '<div class="validation-error text-danger">' +
+                                    value[0] +
+                                    '</div>'
+                                );
+                            });
+
+                        } else {
+
+                            alert(
+                                xhr.responseJSON?.message ||
+                                'Something went wrong'
+                            );
+                        }
                     }
                 });
             }
         </script>
-
     </div>
 </div>

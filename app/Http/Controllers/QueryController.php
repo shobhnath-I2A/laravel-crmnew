@@ -185,8 +185,8 @@ class QueryController extends Controller
             }
 
             $query = Query::with([
+                'status',
                 'itineraries' => function ($q) use ($status) {
-
                     if ((string) $status === '3') {
                         $q->where('status', 3);
                     } else {
@@ -196,6 +196,10 @@ class QueryController extends Controller
                     $q->latest();
                 },
             ])->findOrFail($id);
+
+            $statuses = QueryStatus::where('is_active', 1)
+                ->orderBy('sort_order')
+                ->get();
 
             $suppliers = collect();
             $postSaleItems = collect();
@@ -226,7 +230,8 @@ class QueryController extends Controller
                 'tab',
                 'suppliers',
                 'postSaleItems',
-                'status'
+                'status',
+                'statuses'
             ));
         } catch (Exception $e) {
             Log::error('Error fetching query: ' . $e->getMessage());
@@ -236,6 +241,81 @@ class QueryController extends Controller
                 ->with('error', 'Query not found.');
         }
     }
+    // public function show(Request $request, $id)
+    // {
+    //     try {
+    //         $tab = $request->query('tab', 'details');
+    //         $status = $request->query('status', 'active');
+
+    //         $allowedTabs = [
+    //             'details',
+    //             'proposals',
+    //             'mails',
+    //             'followups',
+    //             'suppliers-communication',
+    //             'post-sales-supplier',
+    //             'voucher',
+    //             'billing',
+    //             'guest-documents',
+    //             'history',
+    //         ];
+
+    //         if (! in_array($tab, $allowedTabs)) {
+    //             $tab = 'details';
+    //         }
+
+    //         $query = Query::with([
+    //             'itineraries' => function ($q) use ($status) {
+
+    //                 if ((string) $status === '3') {
+    //                     $q->where('status', 3);
+    //                 } else {
+    //                     $q->whereIn('status', [0, 1, 2]);
+    //                 }
+
+    //                 $q->latest();
+    //             },
+    //         ])->findOrFail($id);
+
+    //         $suppliers = collect();
+    //         $postSaleItems = collect();
+
+    //         if ($tab === 'suppliers-communication') {
+    //             $suppliers = Supplier::with('destination')
+    //                 ->where('status', 1)
+    //                 ->latest()
+    //                 ->get();
+    //         }
+
+    //         if ($tab === 'post-sales-supplier') {
+    //             $postSaleItems = PackageDayItem::with([
+    //                 'package.itinerary',
+    //                 'supplier',
+    //             ])
+    //                 ->whereHas('package.itinerary', function ($q) use ($query) {
+    //                     $q->where('queryId', $query->id);
+    //                 })
+    //                 ->orderBy('type')
+    //                 ->orderBy('day')
+    //                 ->get()
+    //                 ->groupBy('type');
+    //         }
+
+    //         return view('queries.view-query', compact(
+    //             'query',
+    //             'tab',
+    //             'suppliers',
+    //             'postSaleItems',
+    //             'status'
+    //         ));
+    //     } catch (Exception $e) {
+    //         Log::error('Error fetching query: ' . $e->getMessage());
+
+    //         return redirect()
+    //             ->route('queries.index')
+    //             ->with('error', 'Query not found.');
+    //     }
+    // }
     // public function show(Request $request, $id)
     // {
     //     try {
@@ -412,4 +492,29 @@ class QueryController extends Controller
     {
         //
     }
+
+    public function changeStatus(Request $request, $id)
+{
+    $request->validate([
+        'statusId' => 'required|exists:query_statuses,id',
+    ]);
+
+    if ((int) $request->statusId === 5) {
+        return response()->json([
+            'status' => false,
+            'message' => 'You can not mark as confirmed manually.'
+        ], 403);
+    }
+
+    $query = Query::findOrFail($id);
+
+    $query->update([
+        'statusId' => $request->statusId
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Query status updated successfully'
+    ]);
+}
 }

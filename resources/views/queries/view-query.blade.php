@@ -17,7 +17,7 @@
                                     </a>
                                 </div>
                                 <div>
-                                    <a href="{{ route('queries.show',['id'=>$query->id,'tab'=>'followups']) }}">
+                                    <a href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'followups']) }}">
                                         <button type="button"
                                             class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
                                             style="margin-bottom:10px;">
@@ -26,7 +26,7 @@
                                     </a>
                                 </div>
                                 <div>
-                                    <a href="{{ route('queries.show',['id'=>$query->id,'tab'=>'mails']) }}">
+                                    <a href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'mails']) }}">
                                         <button type="button"
                                             class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
                                             style="margin-bottom:10px;">
@@ -35,7 +35,9 @@
                                 </div>
                                 <div>
                                     <a target="_blank" href="https://api.whatsapp.com/send?text=Hi&amp;phone=+918882355788">
-                                        <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray" style="margin-bottom:10px;">
+                                        <button type="button"
+                                            class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
+                                            style="margin-bottom:10px;">
                                             <i class="fa fa-whatsapp" aria-hidden="true" style="color:#009900;"></i>
                                             &nbsp;Whatsapp
                                         </button>
@@ -516,6 +518,28 @@
                                                         {{ $query->updated_at->format('d/m/Y - h:i A') }}</strong>
                                                 </div>
                                                 <div class="querystatustabmain" style="overflow:hidden;">
+                                                    <ul class="breadcrumb">
+                                                        @foreach ($statuses as $item)
+                                                            <li
+                                                                class="{{ $query->statusId == $item->id ? 'stclass5' : '' }}">
+                                                                <a href="javascript:void(0)"
+                                                                    onclick="changeQueryStatus({{ $query->id }}, {{ $item->id }}, {{ $query->statusId }})"
+                                                                    class="{{ $query->statusId == $item->id ? 'active-breadcrumb ' : '' }}"
+                                                                    style="background-color: {{ $query->statusId == $item->id ? $item->color : '#cfd7df' }};
+                                                                        color: {{ $query->statusId == $item->id ? '#fff' : '#000' }};
+                                                                    ">
+
+                                                                    @if ($query->statusId == 5 && $item->id != 5)
+                                                                        <i class="fa fa-lock"></i>
+                                                                    @endif
+
+                                                                    {{ $item->name }}
+                                                                </a>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                                {{-- <div class="querystatustabmain" style="overflow:hidden;">
 
                                                     <ul class="breadcrumb">
                                                         <li class="stclass1">
@@ -564,17 +588,19 @@
                                                                 href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=7">Invalid</a>
                                                         </li>
                                                     </ul>
-                                                </div>
+                                                </div> --}}
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td align="left" valign="top" width="18%" style="background-color:#f5f7f9; border-right: 1px solid #cfd7df;">
+                                            <td align="left" valign="top" width="18%"
+                                                style="background-color:#f5f7f9; border-right: 1px solid #cfd7df;">
                                                 <div class="inquerytabsmain">
                                                     <div class="row" style="margin-right: 0px; margin-left: 0px;">
                                                         <ul class="nav nav-tabs nav-tabs-custom"
                                                             style="border-bottom:0px solid #dee2e6;">
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='details' ? 'active' : '' }}"href="{{ route('queries.show',['id'=>$query->id,'tab'=>'details']) }}">
+                                                                <a
+                                                                    class="nav-link {{ $tab == 'details' ? 'active' : '' }}"href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'details']) }}">
                                                                     <span class="d-none d-md-block">
                                                                         <i class="fa fa-id-card-o" aria-hidden="true"></i>
                                                                         &nbsp;Query Details</span>
@@ -583,7 +609,8 @@
                                                                 </a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='proposals' ? 'active' : '' }}" href="{{ route('queries.show',['id'=>$query->id,'tab'=>'proposals']) }}">
+                                                                <a class="nav-link {{ $tab == 'proposals' ? 'active' : '' }}"
+                                                                    href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'proposals']) }}">
                                                                     <span class="d-none d-md-block">
                                                                         <i class="fa fa-list-alt" aria-hidden="true"></i>
                                                                         &nbsp;Proposals
@@ -594,10 +621,11 @@
                                                                 </a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='mails' ? 'active' : '' }}" href="{{ route('queries.show',['id'=>$query->id,'tab'=>'mails']) }}">
+                                                                <a class="nav-link {{ $tab == 'mails' ? 'active' : '' }}"
+                                                                    href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'mails']) }}">
                                                                     <span class="d-none d-md-block">
-                                                                        <i class="fa fa-envelope-o"
-                                                                            aria-hidden="true"></i> &nbsp;Mails
+                                                                        <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                                                                        &nbsp;Mails
                                                                     </span>
                                                                     <span class="d-block d-md-none">
                                                                         <i class="mdi mdi-settings h5"></i>
@@ -605,9 +633,11 @@
                                                                 </a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='followups' ? 'active' : '' }}" href="{{ route('queries.show',['id'=>$query->id,'tab'=>'followups']) }}">
+                                                                <a class="nav-link {{ $tab == 'followups' ? 'active' : '' }}"
+                                                                    href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'followups']) }}">
                                                                     <span class="d-none d-md-block">
-                                                                        <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                                                                        <i class="fa fa-calendar-check-o"
+                                                                            aria-hidden="true"></i>
                                                                         &nbsp;Followup's
                                                                     </span>
                                                                     <span class="d-block d-md-none">
@@ -616,16 +646,19 @@
                                                                 </a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='suppliers-communication' ? 'active' : '' }}" href="{{ route('queries.show',['id'=>$query->id,'tab'=>'suppliers-communication']) }}">
+                                                                <a class="nav-link {{ $tab == 'suppliers-communication' ? 'active' : '' }}"
+                                                                    href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'suppliers-communication']) }}">
                                                                     <span class="d-none d-md-block">
-                                                                        <i class="fa fa-users" aria-hidden="true"></i> &nbsp;Suppliers Communication
+                                                                        <i class="fa fa-users" aria-hidden="true"></i>
+                                                                        &nbsp;Suppliers Communication
                                                                     </span>
                                                                     <span class="d-block d-md-none">
                                                                         <i class="mdi mdi-settings h5"></i></span>
                                                                 </a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='post-sales-supplier' ? 'active' : '' }}" href="{{ route('queries.show',['id'=>$query->id,'tab'=>'post-sales-supplier']) }}">
+                                                                <a class="nav-link {{ $tab == 'post-sales-supplier' ? 'active' : '' }}"
+                                                                    href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'post-sales-supplier']) }}">
                                                                     <span class="d-none d-md-block">
                                                                         <i class="fa fa-credit-card-alt"
                                                                             aria-hidden="true"></i> &nbsp;Post Sales
@@ -637,9 +670,11 @@
                                                                 </a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='voucher' ? 'active' : '' }}" href="{{ route('queries.show',['id'=>$query->id,'tab'=>'voucher']) }}">
+                                                                <a class="nav-link {{ $tab == 'voucher' ? 'active' : '' }}"
+                                                                    href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'voucher']) }}">
                                                                     <span class="d-none d-md-block">
-                                                                        <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                                                                        <i class="fa fa-check-square-o"
+                                                                            aria-hidden="true"></i>
                                                                         &nbsp;Voucher</span>
                                                                     <span class="d-block d-md-none">
                                                                         <i class="mdi mdi-settings h5"></i>
@@ -647,7 +682,8 @@
                                                                 </a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='billing' ? 'active' : '' }}" href="{{ route('queries.show',['id'=>$query->id,'tab'=>'billing']) }}">
+                                                                <a class="nav-link {{ $tab == 'billing' ? 'active' : '' }}"
+                                                                    href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'billing']) }}">
                                                                     <span class="d-none d-md-block">
                                                                         <i class="fa fa-file-text" aria-hidden="true"></i>
                                                                         &nbsp;Billing
@@ -658,7 +694,8 @@
                                                                 </a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='guest-documents'? 'active' : '' }}" href="{{ route('queries.show',['id'=>$query->id,'tab'=>'guest-documents']) }}">
+                                                                <a class="nav-link {{ $tab == 'guest-documents' ? 'active' : '' }}"
+                                                                    href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'guest-documents']) }}">
                                                                     <span class="d-none d-md-block">
                                                                         <i class="fa fa-user" aria-hidden="true"></i>
                                                                         &nbsp;Guest Documents</span>
@@ -668,7 +705,8 @@
                                                                 </a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link {{ $tab=='history' ? 'active':''}}" href="{{ route('queries.show',['id'=>$query->id,'tab'=>'history']) }}">
+                                                                <a class="nav-link {{ $tab == 'history' ? 'active' : '' }}"
+                                                                    href="{{ route('queries.show', ['id' => $query->id, 'tab' => 'history']) }}">
                                                                     <span class="d-none d-md-block">
                                                                         <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                                         &nbsp;History
@@ -683,8 +721,8 @@
                                                 </div>
                                             </td>
                                             <td align="left" valign="top">
-                                              @if($tab == 'details')
-                                                @include('queries.query-details')
+                                                @if ($tab == 'details')
+                                                    @include('queries.query-details')
                                                 @elseif($tab == 'proposals')
                                                     @include('proposals.proposals')
                                                 @elseif($tab == 'mails')
@@ -714,5 +752,51 @@
                 </div>
             </div>
         </div>
+
     </div>
+    <script>
+        // function changeQueryStatus(queryId, statusId) {
+        //     $.ajax({
+        //         url: "{{ url('queries') }}/" + queryId + "/change-status",
+        //         type: "POST",
+        //         data: {
+        //             _token: "{{ csrf_token() }}",
+        //             statusId: statusId
+        //         },
+        //         success: function(res) {
+        //             location.reload();
+        //         },
+        //         error: function(xhr) {
+        //             alert(xhr.responseJSON?.message || 'Something went wrong');
+        //         }
+        //     });
+        // }
+        function changeQueryStatus(queryId, statusId, currentstatusId) {
+
+            if (currentstatusId == 5) {
+                alert('Locked.');
+                return false;
+            }
+
+            if (statusId == 5) {
+                alert('You can not mark as confirmed manually.');
+                return false;
+            }
+
+            $.ajax({
+                url: "{{ url('queries') }}/" + queryId + "/change-status",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    statusId: statusId
+                },
+                success: function(res) {
+                    location.reload();
+                },
+                error: function(xhr) {
+                    alert(xhr.responseJSON?.message || 'Something went wrong');
+                }
+            });
+        }
+    </script>
 @endsection
