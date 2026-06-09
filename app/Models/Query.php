@@ -60,6 +60,6 @@ class Query extends Model
     }
     public function status()
     {
-        return $this->belongsTo(QueryStatus::class, 'statusid');
+        return $this->belongsTo(QueryStatus::class, 'statusId')->orderBy('sort_order', 'asc');
     }
 }

@@ -486,7 +486,7 @@ class ItineraryController extends Controller
         |--------------------------------------------------------------------------
         */
             Query::where('id', $queryId)->update([
-                'statusid' => 5, // Accepted
+                'statusId' => 5, // Accepted
             ]);
 
             /*

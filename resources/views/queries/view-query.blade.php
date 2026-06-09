@@ -458,79 +458,29 @@
                                                 </div>
                                                 <div class="querystatustabmain" style="overflow:hidden;">
                                                    <ul class="breadcrumb">
-    @foreach ($statuses as $item)
-        @php
-            $isActive = (int) $query->statusId === (int) $item->id;
-            $color = $item->color ?: '#46cd93';
-        @endphp
+                                                        @foreach ($statuses as $item)
+                                                            @php
+                                                                $isActive = (int) $query->statusId === (int) $item->id;
+                                                                $color = $item->color ?: '#46cd93';
+                                                            @endphp
 
-        <li class="{{ $isActive ? 'status-active' : '' }}"
-            style="--status-color: {{ $color }};">
+                                                            <li class="{{ $isActive ? 'status-active' : '' }}"
+                                                                style="--status-color: {{ $color }};">
 
-            <a href="javascript:void(0)"
-               onclick="changeQueryStatus({{ $query->id }}, {{ $item->id }}, {{ $query->statusId }})"
-               class="{{ $isActive ? 'active-breadcrumb' : '' }}">
+                                                                <a href="javascript:void(0)"
+                                                                onclick="changeQueryStatus({{ $query->id }}, {{ $item->id }}, {{ $query->statusId }})"
+                                                                class="{{ $isActive ? 'active-breadcrumb' : '' }}">
 
-                @if ((int) $query->statusId === 5 && (int) $item->id !== 5)
-                    <i class="fa fa-lock"></i>
-                @endif
+                                                                    @if ((int) $query->statusId === 5 && (int) $item->id !== 5)
+                                                                        <i class="fa fa-lock"></i>
+                                                                    @endif
 
-                {{ $item->name }}
-            </a>
-        </li>
-    @endforeach
-</ul>
-                                                </div>
-                                                {{-- <div class="querystatustabmain" style="overflow:hidden;">
-
-                                                    <ul class="breadcrumb">
-                                                        <li class="stclass1">
-                                                            <a
-                                                                href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=1">New</a>
-                                                        </li>
-                                                        <li class="">
-                                                            <a
-                                                                href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=2">Active</a>
-                                                        </li>
-                                                        <li class="">
-                                                            <a
-                                                                href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=3">No
-                                                                Connect</a>
-                                                        </li>
-                                                        <li class="">
-                                                            <a
-                                                                href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=4">Hot
-                                                                Lead</a>
-                                                        </li>
-                                                        <li class="">
-                                                            <a
-                                                                href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=8">Proposal
-                                                                Sent</a>
-                                                        </li>
-                                                        <li class="">
-                                                            <a
-                                                                href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=9">Follow
-                                                                Up</a>
-                                                        </li>
-                                                        <li class="">
-                                                            <a
-                                                                href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=11">No
-                                                                Revert</a>
-                                                        </li>
-                                                        <li class="">
-                                                            <a href="#"
-                                                                onclick="alert('You can not mark as confirmed manually.');">Confirmed</a>
-                                                        </li>
-                                                        <li class="">
-                                                            <a
-                                                                href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=6">Cancelled</a>
-                                                        </li>
-                                                        <li class="">
-                                                            <a
-                                                                href="display.html?ga=query&amp;view=1&amp;id=127504&amp;sts=7">Invalid</a>
-                                                        </li>
+                                                                    {{ $item->name }}
+                                                                </a>
+                                                            </li>
+                                                        @endforeach
                                                     </ul>
-                                                </div> --}}
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr>
@@ -697,22 +647,6 @@
 
     </div>
     <script>
-        // function changeQueryStatus(queryId, statusId) {
-        //     $.ajax({
-        //         url: "{{ url('queries') }}/" + queryId + "/change-status",
-        //         type: "POST",
-        //         data: {
-        //             _token: "{{ csrf_token() }}",
-        //             statusId: statusId
-        //         },
-        //         success: function(res) {
-        //             location.reload();
-        //         },
-        //         error: function(xhr) {
-        //             alert(xhr.responseJSON?.message || 'Something went wrong');
-        //         }
-        //     });
-        // }
         function changeQueryStatus(queryId, statusId, currentstatusId) {
 
             if (currentstatusId == 5) {

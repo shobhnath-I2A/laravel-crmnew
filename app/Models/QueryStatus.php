@@ -16,6 +16,6 @@ class QueryStatus extends Model
 
     public function queries()
     {
-        return $this->hasMany(Query::class, 'statusid');
+        return $this->hasMany(Query::class, 'statusId');
     }
 }

@@ -22,8 +22,8 @@ return new class extends Migration
         });
          Schema::table('queries', function (Blueprint $table) {
 
-            if (!Schema::hasColumn('queries', 'statusid')) {
-                $table->unsignedBigInteger('statusid')
+            if (!Schema::hasColumn('queries', 'statusId')) {
+                $table->unsignedBigInteger('statusId')
                     ->nullable()
                     ->after('id');
             }

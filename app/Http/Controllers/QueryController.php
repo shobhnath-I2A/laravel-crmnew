@@ -25,8 +25,8 @@ class QueryController extends Controller
 
     //         $queryBuilder = Query::query();
 
-    //         if ($request->statusid) {
-    //             $queryBuilder->where('statusId', $request->statusid);
+    //         if ($request->statusId) {
+    //             $queryBuilder->where('statusId', $request->statusId);
     //         }
 
     //         $queries = $queryBuilder->latest()->paginate(10);
@@ -60,8 +60,8 @@ class QueryController extends Controller
 
             $queryBuilder = Query::with('status');
 
-            if ($request->filled('statusid')) {
-                $queryBuilder->where('statusid', $request->statusid);
+            if ($request->filled('statusId')) {
+                $queryBuilder->where('statusId', $request->statusId);
             }
 
             $queries = $queryBuilder
@@ -76,9 +76,9 @@ class QueryController extends Controller
                 ->orderBy('sort_order')
                 ->get();
 
-            $statusCounts = Query::selectRaw('statusid, COUNT(*) as total')
-                ->groupBy('statusid')
-                ->pluck('total', 'statusid');
+            $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
+                ->groupBy('statusId')
+                ->pluck('total', 'statusId');
 
             return view('queries.index', compact(
                 'queries',

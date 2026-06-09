@@ -151,7 +151,7 @@
                                                 @foreach($statuses as $status)
 
                                                 <td width="10%">
-                                                    <a href="{{ route('queries.index',['statusid'=>$status->id]) }}">
+                                                    <a href="{{ route('queries.index',['statusId'=>$status->id]) }}">
                                                         <div class="statusbox"
                                                             style="background-color:{{ $status->color }}">
                                                             <div style="font-size:30px;">
@@ -214,39 +214,12 @@
                                                                     <div style="font-size:15px; font-weight:500;line-height: 16px; margin-bottom:3px; font-weight:600;">
                                                                         <a href="{{ route('queries.show',$query->id) }}">{{ $query->id}}</a>
                                                                     </div>
-                                                                  @if($query->statusId == 1)
-                                                                    <span class="badge badge-primary">New Lead</span>
-
-                                                                    @elseif($query->statusId == 2)
-                                                                    <span class="badge badge-info">Active</span>
-
-                                                                    @elseif($query->statusId == 3)
-                                                                    <span class="badge badge-warning">Follow Up</span>
-
-                                                                    @elseif($query->statusId == 4)
-                                                                    <span class="badge badge-blue">Proposal Sent</span>
-
-                                                                    @elseif($query->statusId == 5)
-                                                                    <span class="badge badge-secondary">Negotiation</span>
-
-                                                                    @elseif($query->statusId == 6)
-                                                                    <span class="badge badge-success">Confirmed</span>
-
-                                                                    @elseif($query->statusId == 7)
-                                                                    <span class="badge badge-danger">Cancelled</span>
-
-                                                                    @elseif($query->statusId == 8)
-                                                                    <span class="badge badge-dark">On Hold</span>
-
-                                                                    @elseif($query->statusId == 9)
-                                                                    <span class="badge badge-success">Completed</span>
-
-                                                                    @elseif($query->statusId == 10)
-                                                                    <span class="badge badge-danger">Lost</span>
-
-                                                                    @elseif($query->statusId == 11)
-                                                                    <span class="badge badge-dark">Closed</span>
-
+                                                                    @if($query->status)
+                                                                        <span class="badge"
+                                                                            style="background-color: {{ $query->status->color ?? '#6c757d' }};
+                                                                                    color:#fff;">
+                                                                            {{ $query->status->name }}
+                                                                        </span>
                                                                     @endif
                                                                 </td>
                                                                 <td width="20%" align="left" valign="top" style="padding-right:20px;">
