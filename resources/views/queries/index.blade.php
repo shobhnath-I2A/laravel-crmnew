@@ -148,13 +148,30 @@
                                         class="querytabslead">
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                             <tr>
+                                                {{-- All Queries --}}
+                                                <td width="5%">
+                                                    <a href="{{ route('queries.index') }}">
+                                                        <div class="statusbox {{ !request('statusId') ? 'active-status' : '' }}"
+                                                            style="background-color:#343a40;">
+                                                            @if(!request('statusId'))
+                                                                <div class="ripple" style="animation-delay:0s"></div>
+                                                            @endif
+                                                            <div style="margin-bottom:0;font-size:30px;line-height:38px;">
+                                                                {{ $totalQueries }}
+                                                            </div>
+                                                            Total
+                                                        </div>
+                                                    </a>
+                                                </td>
                                                 @foreach($statuses as $status)
-
                                                 <td width="10%">
-                                                    <a href="{{ route('queries.index',['statusId'=>$status->id]) }}">
-                                                        <div class="statusbox"
+                                                    <a href="{{ route('queries.index', ['statusId' => $status->id]) }}">
+                                                        <div class="statusbox {{ request('statusId') == $status->id ? 'active-status' : '' }}"
                                                             style="background-color:{{ $status->color }}">
-                                                            <div style="font-size:30px;">
+                                                            @if(request('statusId') == $status->id)
+                                                                <div class="ripple" style="animation-delay:0s"></div>
+                                                            @endif
+                                                            <div style="margin-bottom:0;font-size:30px;line-height:38px;">
                                                                 {{ $statusCounts[$status->id] ?? 0 }}
                                                             </div>
                                                             {{ $status->name }}
