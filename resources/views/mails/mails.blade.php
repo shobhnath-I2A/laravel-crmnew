@@ -37,19 +37,15 @@
             @foreach ($query->emailLogs as $mail)
                 <li onclick="">
                     <div class="col-mail col-mail-1">
-                        <a popaction="action=showquerymail&amp;id=142848&amp;queryId=127504"
-                            onclick="loadpop('Mail',this,'900px')" data-toggle="modal"
-                            data-target=".bs-example-modal-center" class="title mailsent"
+                        <a class="title mailsent"
                             style=" cursor:pointer; left: 0px; padding-left:28px;">
                             <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> {{ $mail->to_email ?? '' }}</a>
                     </div>
                     <div class="col-mail col-mail-2">
-                        <a class="title mailsent" popaction="action=showquerymail&amp;id=142848&amp;queryId=127504"
-                            onclick="loadpop('Mail',this,'900px')" data-toggle="modal"
-                            data-target=".bs-example-modal-center" style="cursor:pointer;">
+                        <a class="title mailsent" style="cursor:pointer;">
                             <span class="badge-warning badge mr-2"></span>{{ $mail->subject ?? '' }} </a>
                         <div class="date" style="padding-left:10px; font-size:12px;">
-                            {{ $mail->created_at ? $mail->created_at->format('d F Y') : '' }}</div>
+                            {{ $mail->created_at ? $mail->created_at->format('d F Y H:i:s') : '' }}</div>
                     </div>
                 </li>
             @endforeach

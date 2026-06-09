@@ -295,86 +295,7 @@
                         }
 
 
-                        .stclass1 a {
-                            background-color: #655be6 !important;
-                            color: #fff !important;
-                        }
 
-                        .stclass1 a::after {
-                            border-left: 30px solid #655be6 !important;
-                        }
-
-                        .stclass2 a {
-                            background-color: #0cb5b5 !important;
-                            color: #fff !important;
-                        }
-
-                        .stclass2 a::after {
-                            border-left: 30px solid #0cb5b5 !important;
-                        }
-
-                        .stclass3 a {
-                            background-color: #0f1f3e !important;
-                            color: #fff !important;
-                        }
-
-                        .stclass3 a::after {
-                            border-left: 30px solid #0f1f3e !important;
-                        }
-
-                        .stclass4 a {
-                            background-color: #e45555 !important;
-                            color: #fff !important;
-                        }
-
-                        .stclass4 a::after {
-                            border-left: 30px solid #e45555 !important;
-                        }
-
-                        .stclass5 a {
-                            background-color: #46cd93 !important;
-                            color: #fff !important;
-                        }
-
-                        .stclass5 a::after {
-                            border-left: 30px solid #46cd93 !important;
-                        }
-
-                        .stclass6 a {
-                            background-color: #6c757d !important;
-                            color: #fff !important;
-                        }
-
-                        .stclass6 a::after {
-                            border-left: 30px solid #6c757d !important;
-                        }
-
-                        .stclass7 a {
-                            background-color: #f9392f !important;
-                            color: #fff !important;
-                        }
-
-                        .stclass7 a::after {
-                            border-left: 30px solid #f9392f !important;
-                        }
-
-                        .stclass8 a {
-                            background-color: #cc00a9 !important;
-                            color: #fff !important;
-                        }
-
-                        .stclass8 a::after {
-                            border-left: 30px solid #cc00a9 !important;
-                        }
-
-                        .stclass9 a {
-                            background-color: #FF6600 !important;
-                            color: #fff !important;
-                        }
-
-                        .stclass9 a::after {
-                            border-left: 30px solid #FF6600 !important;
-                        }
 
                         .header-title {
                             padding: 6px 10px;
@@ -500,6 +421,24 @@
                         .proposalboxouterbox .itibox .imgbox .packname:hover {
                             background-color: #1699dd
                         }
+
+                        .breadcrumb li a {
+                            background-color: #cfd7df !important;
+                            color: #000 !important;
+                        }
+
+                        .breadcrumb li a::after {
+                            border-left: 30px solid #cfd7df !important;
+                        }
+
+                        .breadcrumb li.status-active a {
+                            background-color: var(--status-color) !important;
+                            color: #fff !important;
+                        }
+
+                        .breadcrumb li.status-active a::after {
+                            border-left: 30px solid var(--status-color) !important;
+                        }
                     </style>
                     <!-- start page title -->
                     <div class="row">
@@ -518,26 +457,29 @@
                                                         {{ $query->updated_at->format('d/m/Y - h:i A') }}</strong>
                                                 </div>
                                                 <div class="querystatustabmain" style="overflow:hidden;">
-                                                    <ul class="breadcrumb">
-                                                        @foreach ($statuses as $item)
-                                                            <li
-                                                                class="{{ $query->statusId == $item->id ? 'stclass5' : '' }}">
-                                                                <a href="javascript:void(0)"
-                                                                    onclick="changeQueryStatus({{ $query->id }}, {{ $item->id }}, {{ $query->statusId }})"
-                                                                    class="{{ $query->statusId == $item->id ? 'active-breadcrumb ' : '' }}"
-                                                                    style="background-color: {{ $query->statusId == $item->id ? $item->color : '#cfd7df' }};
-                                                                        color: {{ $query->statusId == $item->id ? '#fff' : '#000' }};
-                                                                    ">
+                                                   <ul class="breadcrumb">
+    @foreach ($statuses as $item)
+        @php
+            $isActive = (int) $query->statusId === (int) $item->id;
+            $color = $item->color ?: '#46cd93';
+        @endphp
 
-                                                                    @if ($query->statusId == 5 && $item->id != 5)
-                                                                        <i class="fa fa-lock"></i>
-                                                                    @endif
+        <li class="{{ $isActive ? 'status-active' : '' }}"
+            style="--status-color: {{ $color }};">
 
-                                                                    {{ $item->name }}
-                                                                </a>
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
+            <a href="javascript:void(0)"
+               onclick="changeQueryStatus({{ $query->id }}, {{ $item->id }}, {{ $query->statusId }})"
+               class="{{ $isActive ? 'active-breadcrumb' : '' }}">
+
+                @if ((int) $query->statusId === 5 && (int) $item->id !== 5)
+                    <i class="fa fa-lock"></i>
+                @endif
+
+                {{ $item->name }}
+            </a>
+        </li>
+    @endforeach
+</ul>
                                                 </div>
                                                 {{-- <div class="querystatustabmain" style="overflow:hidden;">
 

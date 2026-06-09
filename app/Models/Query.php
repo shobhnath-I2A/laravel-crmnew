@@ -35,7 +35,7 @@ class Query extends Model
      public function emailLogs()
     {
         return $this->hasMany(EmailLog::class, 'query_id', 'id')
-            ->latest();
+           ->orderBy('id', 'desc');
     }
 
 
