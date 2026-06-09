@@ -32,6 +32,10 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SmtpSettingController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PackageController;
+use App\Services\MailService;
+use App\Http\Controllers\EmailLogController;
+use App\Http\Controllers\QueryMailController;
 
 function permissionResource($uri, $controller, $module)
 {
@@ -106,6 +110,8 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::resource('query-tasks', QueryTaskController::class)
         ->middleware('module.permission:Task,view');
+
+    Route::resource('itinery-setup', PackageController::class);
 
     Route::get('/check-reminders', [QueryTaskController::class, 'checkReminders'])
         ->middleware('module.permission:Task,view');
@@ -236,6 +242,18 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         return 'sent';
     });
 });
+    Route::get('/test-mail', function () {
+        MailService::sendMail(
+            'shobhnath.s@i2a.co',
+            'Test Mail',
+            '<h2>SMTP working</h2>'
+        );
+
+        return 'sent';
+    });
+
+    Route::resource('email-logs', EmailLogController::class) ->only(['index', 'show', 'destroy']);
+    Route::resource('compose-email', QueryMailController::class);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

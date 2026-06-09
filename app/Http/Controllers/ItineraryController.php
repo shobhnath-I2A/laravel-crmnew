@@ -486,7 +486,7 @@ class ItineraryController extends Controller
         |--------------------------------------------------------------------------
         */
             Query::where('id', $queryId)->update([
-                'statusid' => 9,
+                'statusid' => 5, // Accepted
             ]);
 
             /*
@@ -518,42 +518,6 @@ class ItineraryController extends Controller
             ], 500);
         }
     }
-    // public function markAccepted($id)
-    // {
-    //     DB::beginTransaction();
-
-    //     try {
-
-    //         $itinerary = Itinerary::findOrFail($id);
-
-    //         // Remove accepted status from all itineraries
-    //         // of the same query
-    //         Itinerary::where('queryId', $itinerary->queryId)
-    //             ->update([
-    //                 'status' => 0
-    //             ]);
-
-    //         // Mark selected itinerary accepted
-    //         $itinerary->update([
-    //             'status' => 1
-    //         ]);
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'Itinerary accepted successfully'
-    //         ]);
-    //     } catch (\Exception $e) {
-
-    //         DB::rollBack();
-
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
 
     public function finalItinerary(String $id)
     {

@@ -32,6 +32,11 @@ class Query extends Model
     {
         return $this->hasMany(\App\Models\QueryTask::class, 'queryId', 'id');
     }
+     public function emailLogs()
+    {
+        return $this->hasMany(EmailLog::class, 'query_id', 'id')
+            ->latest();
+    }
 
 
     //  Origin relation

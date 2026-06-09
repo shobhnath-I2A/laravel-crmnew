@@ -101,7 +101,23 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td width="30%">&nbsp;</td>
+                                                            <td width="30%">
+                                                                <div class="col-md-6">
+                                                                    <label>Status</label>
+                                                                    <select name="status" class="form-control reqfield @error('status') is-invalid @enderror">
+                                                                        <option value="">Select</option>
+                                                                        <option value="1" {{ old('status', $smtpSetting->status ?? '') == 1 ? 'selected' : '' }}>
+                                                                            Active
+                                                                        </option>
+                                                                        <option value="0" {{ old('status', $smtpSetting->status ?? '') == 0 ? 'selected' : '' }}>
+                                                                            Inactive
+                                                                        </option>
+                                                                    </select>
+                                                                    @error('status')
+                                                                        <div class="text-danger">{{ $message }}</div>
+                                                                    @enderror
+                                                                </div>
+                                                            </td>
                                                             <td>
                                                                 <button type="submit" class="btn btn-primary px-5 py-2">
                                                                     <i class="fas fa-save"></i>

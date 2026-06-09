@@ -76,11 +76,12 @@
                                                                 class="fa fa-whatsapp" aria-hidden="true"></i>
                                                             &nbsp;WhatsApp</a>
 
-                                                        <a class="dropdown-item" style="cursor:pointer;"
-                                                            onclick="loadpop('Itinerary setup',this,'600px')"
-                                                            data-toggle="modal" data-target=".bs-example-modal-center"
-                                                            popaction="action=addtineraries&amp;id=109047&amp;queryid=127368&amp;fromquery=1">Edit
-                                                            Itinerary</a>
+
+
+                                                       <a class="dropdown-item" style="cursor:pointer;"
+                                                        onclick="openPopup('Itinerary edit', this, '{{ route('itinery-setup.edit', $itinerary->id) }}')">
+                                                            Edit Itinerary
+                                                        </a>
 
                                                         <a href="javascript:void(0)"
                                                             onclick="duplicateItinerary({{ $itinerary->id }})"

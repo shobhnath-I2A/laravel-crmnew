@@ -8,6 +8,9 @@ use App\Models\Package;
 use App\Models\Itinerary;
 use App\Models\PackageDayItem;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Exception;
+
 class PackageController extends Controller
 {
     /**
@@ -23,7 +26,7 @@ class PackageController extends Controller
      */
     public function create()
     {
-        //
+        // return view('itinerary.popups.itinerary-setup');
     }
 
     /**
@@ -47,7 +50,18 @@ class PackageController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        dd($id);
+         try {
+        $package = Itinerary::findOrFail($id);
+        return view('itinerary.popups.itinerary-setup', compact('package'));
+          } catch (Exception $e) {
+
+        Log::error('Error fetching itinerary: ' . $e->getMessage());
+
+        return redirect()
+            ->back()
+            ->with('error', 'Itinerary not found.');
+    }
     }
 
     /**

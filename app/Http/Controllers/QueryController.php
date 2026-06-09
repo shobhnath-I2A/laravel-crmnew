@@ -494,27 +494,27 @@ class QueryController extends Controller
     }
 
     public function changeStatus(Request $request, $id)
-{
-    $request->validate([
-        'statusId' => 'required|exists:query_statuses,id',
-    ]);
+    {
+        $request->validate([
+            'statusId' => 'required|exists:query_statuses,id',
+        ]);
 
-    if ((int) $request->statusId === 5) {
+        if ((int) $request->statusId === 5) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You can not mark as confirmed manually.'
+            ], 403);
+        }
+
+        $query = Query::findOrFail($id);
+
+        $query->update([
+            'statusId' => $request->statusId
+        ]);
+
         return response()->json([
-            'status' => false,
-            'message' => 'You can not mark as confirmed manually.'
-        ], 403);
+            'status' => true,
+            'message' => 'Query status updated successfully'
+        ]);
     }
-
-    $query = Query::findOrFail($id);
-
-    $query->update([
-        'statusId' => $request->statusId
-    ]);
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Query status updated successfully'
-    ]);
-}
 }

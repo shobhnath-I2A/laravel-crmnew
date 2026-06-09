@@ -75,6 +75,7 @@ class SmtpSettingController extends Controller
      */
    public function update(Request $request, SmtpSetting $smtpSetting)
     {
+
         $request->validate([
             'from_name' => 'required|string|max:100',
             'email_account' => 'required|email|max:255',
@@ -91,7 +92,7 @@ class SmtpSettingController extends Controller
             'smtp_server' => $request->smtp_server,
             'email_port' => $request->email_port,
             'security_type' => $request->security_type,
-            'status' => $request->has('status') ? 1 : 0,
+            'status' => (int) $request->status,
         ];
 
         if (!empty($request->email_password)) {
