@@ -26,21 +26,28 @@ class QueryController extends Controller
         try {
 
             $loginUser = Auth::user();
-
             $queryBuilder = Query::with(['status', 'itineraries']);
-            if ($loginUser->role_id != 1) {
-                if ($loginUser->show_query_status == 0) {
-                    // assigned query only
-                    $queryBuilder->where('assignTo', $loginUser->id);
-                }
 
-                if ($loginUser->show_query_status == 1) {
-                    // confirmed/proposal only
-                    // $queryBuilder->whereHas('itineraries');
-                    // OR if confirmed status id is fixed, use:
+            if ($loginUser->role_id == 1 || $loginUser->show_query_status == 2) {
+                // show all query
+                } elseif ($loginUser->show_query_status == 0) {
+                    $queryBuilder->where('assignTo', $loginUser->id);
+                } elseif ($loginUser->show_query_status == 1) {
                     $queryBuilder->where('statusId', 5);
-                }
             }
+            // $queryBuilder = Query::with(['status', 'itineraries']);
+            // if ($loginUser->role_id != 1) {
+            //     if ($loginUser->show_query_status == 0) {
+            //         // assigned query only
+            //         $queryBuilder->where('assignTo', $loginUser->id);
+            //     }
+
+            //     if ($loginUser->show_query_status == 1) {
+            //         // confirmed/proposal only
+            //         // $queryBuilder->whereHas('itineraries');
+            //         $queryBuilder->where('statusId', 5);
+            //     }
+            // }
             if ($request->filled('statusId')) {
                 $queryBuilder->where('statusId', $request->statusId);
             }
@@ -51,16 +58,25 @@ class QueryController extends Controller
 
             $queries->appends($request->all());
 
+            // $countQuery = Query::query();
+            // if ($loginUser->role_id != 1) {
+
+            //     if ($loginUser->show_query_status == 0) {
+            //         $countQuery->where('assignTo', $loginUser->id);
+            //     }
+
+            //     if ($loginUser->show_query_status == 1) {
+            //         $countQuery->where('statusId', 5);
+            //     }
+            // }
             $countQuery = Query::query();
-            if ($loginUser->role_id != 1) {
 
-                if ($loginUser->show_query_status == 0) {
-                    $countQuery->where('assignTo', $loginUser->id);
-                }
-
-                if ($loginUser->show_query_status == 1) {
-                    $countQuery->where('statusId', 5);
-                }
+            if ($loginUser->role_id == 1 || $loginUser->show_query_status == 2) {
+                // show all query
+            } elseif ($loginUser->show_query_status == 0) {
+                $countQuery->where('assignTo', $loginUser->id);
+            } elseif ($loginUser->show_query_status == 1) {
+               $countQuery->where('statusId', 5);
             }
 
             $totalQueries = (clone $countQuery)->count();
