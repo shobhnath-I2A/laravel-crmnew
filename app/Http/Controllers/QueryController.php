@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Query;
 use App\Models\QueryStatus;
 use App\Models\Supplier;
+use App\Models\User;
 use App\Models\Itinerary;
 use App\Models\PackageDayItem;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Exception;
 
@@ -19,72 +21,75 @@ class QueryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // public function index(Request $request)
-    // {
-    //     try {
-
-    //         $queryBuilder = Query::query();
-
-    //         if ($request->statusId) {
-    //             $queryBuilder->where('statusId', $request->statusId);
-    //         }
-
-    //         $queries = $queryBuilder->latest()->paginate(10);
-
-    //         $totalQueries = Query::count();
-
-    //         $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
-    //             ->groupBy('statusId')
-    //             ->pluck('total', 'statusId');
-
-    //         return view('queries.index', compact(
-    //             'queries',
-    //             'statusCounts',
-    //             'totalQueries'
-    //         ));
-    //     } catch (Exception $e) {
-
-    //         Log::error('Error fetching queries: ' . $e->getMessage());
-
-    //         return view('queries.index', [
-    //             'queries' => collect(),
-    //             'statusCounts' => [],
-    //             'totalQueries' => 0,
-    //             'error' => 'Unable to fetch queries at this time.'
-    //         ]);
-    //     }
-    // }
     public function index(Request $request)
     {
         try {
 
-            $queryBuilder = Query::with('status');
+            $loginUser = Auth::user();
 
+            $queryBuilder = Query::with(['status', 'itineraries']);
+            if ($loginUser->role_id != 1) {
+                if ($loginUser->show_query_status == 0) {
+                    // assigned query only
+                    $queryBuilder->where('assignTo', $loginUser->id);
+                }
+
+                if ($loginUser->show_query_status == 1) {
+                    // confirmed/proposal only
+                    // $queryBuilder->whereHas('itineraries');
+                    // OR if confirmed status id is fixed, use:
+                    $queryBuilder->where('statusId', 5);
+                }
+            }
             if ($request->filled('statusId')) {
                 $queryBuilder->where('statusId', $request->statusId);
             }
 
             $queries = $queryBuilder
                 ->latest()
-                ->paginate(10);
+                ->paginate(00);
 
             $queries->appends($request->all());
 
-            $totalQueries = Query::count();
+            $countQuery = Query::query();
+            if ($loginUser->role_id != 1) {
+
+                if ($loginUser->show_query_status == 0) {
+                    $countQuery->where('assignTo', $loginUser->id);
+                }
+
+                if ($loginUser->show_query_status == 1) {
+                    $countQuery->where('statusId', 5);
+                }
+            }
+
+            $totalQueries = (clone $countQuery)->count();
 
             $statuses = QueryStatus::where('is_active', 1)
                 ->orderBy('sort_order')
                 ->get();
 
-            $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
+            $statusCounts = (clone $countQuery)
+                ->selectRaw('statusId, COUNT(*) as total')
                 ->groupBy('statusId')
                 ->pluck('total', 'statusId');
+
+            if ($loginUser->role_id == 3) {
+                $users = User::where('id', $loginUser->id)
+                    ->where('status', 1)
+                    ->get(['id', 'name']);
+            } else {
+                $users = User::where('status', 1)
+                    ->orderBy('name')
+                    ->get(['id', 'name']);
+            }
 
             return view('queries.index', compact(
                 'queries',
                 'statuses',
                 'statusCounts',
-                'totalQueries'
+                'totalQueries',
+                'users'
             ));
         } catch (Exception $e) {
 
@@ -95,10 +100,115 @@ class QueryController extends Controller
                 'statuses' => collect(),
                 'statusCounts' => collect(),
                 'totalQueries' => 0,
+                'users' => collect(),
                 'error' => 'Unable to fetch queries at this time.'
             ]);
         }
     }
+    // public function index(Request $request)
+    // {
+    //     try {
+
+    //         $loginUser = Auth::user();
+
+    //         $queryBuilder = Query::with(['status', 'itineraries']);
+
+    //         if ($request->filled('statusId')) {
+    //             $queryBuilder->where('statusId', $request->statusId);
+    //         }
+
+    //         $queries = $queryBuilder
+    //             ->latest()
+    //             ->paginate(10);
+
+    //         $queries->appends($request->all());
+
+    //         $totalQueries = Query::count();
+
+    //         $statuses = QueryStatus::where('is_active', 1)
+    //             ->orderBy('sort_order')
+    //             ->get();
+
+    //         $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
+    //             ->groupBy('statusId')
+    //             ->pluck('total', 'statusId');
+
+    //         if ($loginUser->role_id == 3) {
+    //             $users = User::where('id', $loginUser->id)
+    //                 ->where('status', 1)
+    //                 ->get(['id', 'name']);
+    //         } else {
+    //             $users = User::where('status', 1)
+    //                 ->orderBy('name')
+    //                 ->get(['id', 'name']);
+    //         }
+
+    //         return view('queries.index', compact(
+    //             'queries',
+    //             'statuses',
+    //             'statusCounts',
+    //             'totalQueries',
+    //             'users'
+    //         ));
+    //     } catch (Exception $e) {
+
+    //         Log::error('Error fetching queries: ' . $e->getMessage());
+
+    //         return view('queries.index', [
+    //             'queries' => collect(),
+    //             'statuses' => collect(),
+    //             'statusCounts' => collect(),
+    //             'totalQueries' => 0,
+    //             'users' => collect(),
+    //             'error' => 'Unable to fetch queries at this time.'
+    //         ]);
+    //     }
+    // }
+    // public function index(Request $request)
+    // {
+    //     try {
+
+    //         $queryBuilder = Query::with('status');
+
+    //         if ($request->filled('statusId')) {
+    //             $queryBuilder->where('statusId', $request->statusId);
+    //         }
+
+    //         $queries = $queryBuilder
+    //             ->latest()
+    //             ->paginate(10);
+
+    //         $queries->appends($request->all());
+
+    //         $totalQueries = Query::count();
+
+    //         $statuses = QueryStatus::where('is_active', 1)
+    //             ->orderBy('sort_order')
+    //             ->get();
+
+    //         $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
+    //             ->groupBy('statusId')
+    //             ->pluck('total', 'statusId');
+
+    //         return view('queries.index', compact(
+    //             'queries',
+    //             'statuses',
+    //             'statusCounts',
+    //             'totalQueries'
+    //         ));
+    //     } catch (Exception $e) {
+
+    //         Log::error('Error fetching queries: ' . $e->getMessage());
+
+    //         return view('queries.index', [
+    //             'queries' => collect(),
+    //             'statuses' => collect(),
+    //             'statusCounts' => collect(),
+    //             'totalQueries' => 0,
+    //             'error' => 'Unable to fetch queries at this time.'
+    //         ]);
+    //     }
+    // }
 
     /**
      * Show the form for creating a new resource.
@@ -516,5 +626,36 @@ class QueryController extends Controller
             'status' => true,
             'message' => 'Query status updated successfully'
         ]);
+    }
+
+    public function assignUser(Request $request)
+    {
+        try {
+            $loginUser = auth()->user();
+
+            if ($loginUser->role_id == 3 && $request->user_id != $loginUser->id) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Sales Executive cannot assign query to other users.'
+                ], 403);
+            }
+
+            $query = Query::findOrFail($request->query_id);
+            // dd($query);
+            $query->assignTo = $request->user_id;
+            $query->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User assigned successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error Assign user: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Update failed'
+            ], 500);
+        }
     }
 }

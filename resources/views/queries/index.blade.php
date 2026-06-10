@@ -343,15 +343,20 @@
                                                                     <div style="color:#303030; font-size:12px; margin-bottom:3px;">
                                                                         Assigned to
                                                                     </div>
-                                                                    <div style="font-size:12px;"><select id="assignTo127368"
-                                                                            name="assignTo127368" class="form-control"
-                                                                            style="padding: 3px; font-size: 12px; height: 25px; line-height: 15px; color: #000; font-weight: 600;"
-                                                                            autocomplete="off"
-                                                                            onchange="changeAssignTo('127368');">
-                                                                            <option value="1">Assign to me</option>
-                                                                            <option value="4074">Adarsh Ojha</option>
-                                                                            <option value="4069">Akash Shrestha</option>
-                                                                            <option value="4021">Zuhair Abbas </option>
+                                                                    <div style="font-size:12px;">
+                                                                        <select id="assignTo{{ $query->id }}"
+                                                                                name="assignTo"
+                                                                                class="form-control"
+                                                                                style="padding:3px;font-size:12px;height:25px;line-height:15px;color:#000;font-weight:600;"
+                                                                                onchange="changeAssignTo('{{ $query->id }}', this.value);">
+
+                                                                            @foreach($users as $user)
+                                                                                <option value="{{ $user->id }}"
+                                                                                    {{ $query->assignTo == $user->id ? 'selected' : '' }}>
+                                                                                    {{ Auth::id() == $user->id ? 'Assign to me' : $user->name }}
+                                                                                </option>
+                                                                            @endforeach
+
                                                                         </select>
                                                                     </div>
                                                                 </td>
@@ -375,17 +380,25 @@
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <div class="viewpackageheader" onclick="$('#pro27368').toggle();">
-                                                    <i class="fa fa-dot-circle-o" aria-hidden="true"></i> &nbsp;View Proposal
-                                                    (2)
+                                                <div class="viewpackageheader" onclick="$('#pro{{ $query->id ?? '' }}').toggle();">
+                                                    <i class="fa fa-dot-circle-o" aria-hidden="true"></i>
+                                                    &nbsp;View Proposal ({{ $query->itineraries->count() }})
                                                 </div>
-                                                <div class="proposallistouter" style="display:none;" id="pro27368">
-                                                    <a href="display.html?ga=itineraries&view=1&id=109047">
-                                                        <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp;{{ $query->submitName}}   {{ $query->name }}
-                                                        Trail's To Malaysia 5N/6D (&#8377; 98,679 ) &nbsp; </a>
-                                                    <a href="display.html?ga=itineraries&view=1&id=109046">
-                                                        <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp;Mr. Ajay
-                                                        Trail's To Malaysia 4N/5D (&#8377; 51,400 ) &nbsp; </a>
+                                                <div class="proposallistouter" style="display:none;" id="pro{{ $query->id ?? '' }}">
+                                                    @forelse($query->itineraries as $itinerary)
+                                                        <a href="{{ route('itineraries.show', $itinerary->id) }}">
+                                                            <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                                            &nbsp;
+                                                            {{ $itinerary->name }}
+                                                            {{ $itinerary->total_days ? $itinerary->total_days . ' Days' : '' }}
+                                                            @if($itinerary->website_cost)
+                                                                (₹ {{ number_format($itinerary->website_cost, 0) }})
+                                                            @endif
+                                                            &nbsp;
+                                                        </a>
+                                                    @empty
+                                                        <span>No proposal found</span>
+                                                    @endforelse
                                                 </div>
                                             </div>
                                         @empty
@@ -404,5 +417,25 @@
                 </div>
             </div>
         </div>
+        <script>
+            function changeAssignTo(queryId, userId)
+            {
+                $.ajax({
+                    url: "{{ route('queries.assign-user') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        query_id: queryId,
+                        user_id: userId
+                    },
+                    success: function(response) {
+                        toastr.success('User assigned successfully');
+                    },
+                    error: function() {
+                        toastr.error('Something went wrong');
+                    }
+                });
+            }
+            </script>
     </div>
 @endsection

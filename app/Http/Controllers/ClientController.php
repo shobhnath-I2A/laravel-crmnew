@@ -24,7 +24,7 @@ class ClientController extends Controller
                     ->orWhere('email', 'like', '%' . $request->keyword . '%')
                     ->orWhere('mobile', 'like', '%' . $request->keyword . '%');
             }
-            $clients = Client::latest()->paginate(5);
+            $clients = Client::latest()->paginate(20);
             $clientCount = Client::count();
             return view('client.index', compact('clients', 'clientCount'));
         } catch (\Exception $e) {

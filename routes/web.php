@@ -107,6 +107,8 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
         ->name('itineraries.final');
 
+    Route::post('/queries/assign-user', [QueryController::class, 'assignUser'])
+    ->name('queries.assign-user');
 
     Route::resource('query-tasks', QueryTaskController::class)
         ->middleware('module.permission:Task,view');

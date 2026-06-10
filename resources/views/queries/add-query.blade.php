@@ -257,7 +257,7 @@
 <script>
     $(function() {
 
-                // ✅ Start Date
+                // Start Date
                 $("#startDate").datepicker({
                     dateFormat: 'dd-mm-yy',
                     minDate: 0, // 🚀 only future dates
@@ -269,10 +269,10 @@
 
                         let start = $(this).datepicker('getDate');
 
-                        // ✅ Set minimum end date = start date
+                        // Set minimum end date = start date
                         $("#endDate").datepicker("option", "minDate", start);
 
-                        // ✅ Auto set end date (start + 1 day)
+                        // Auto set end date (start + 1 day)
                         let end = new Date(start);
                         end.setDate(end.getDate() + 1);
                         $("#endDate").datepicker("setDate", end);
@@ -281,7 +281,7 @@
                     }
                 });
 
-                // ✅ End Date
+                // End Date
                 $("#endDate").datepicker({
                     dateFormat: 'dd-mm-yy',
                     minDate: 0,
@@ -294,7 +294,7 @@
                     }
                 });
 
-                // ✅ Validity Date
+                // Validity Date
                 $("#websiteValidity").datepicker({
                     dateFormat: 'dd-mm-yy',
                     minDate: 0,
@@ -303,7 +303,7 @@
                     yearRange: "0:+5",
                 });
 
-                // ✅ Calculate total days
+                // Calculate total days
                 function calculateDays() {
                     let start = $("#startDate").datepicker('getDate');
                     let end = $("#endDate").datepicker('getDate');
@@ -316,7 +316,7 @@
                     }
                 }
 
-                // ✅ Prevent manual typing
+                // Prevent manual typing
                 $("#startDate, #endDate").attr('readonly', true);
 
             });
