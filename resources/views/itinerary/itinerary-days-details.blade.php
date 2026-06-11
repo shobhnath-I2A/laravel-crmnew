@@ -97,14 +97,23 @@
                                         <div class="eventsectionicon"><i style="" class="fa fa-bed"
                                                 aria-hidden="true"></i></div>
                                         @if($item->source_type == 1)
-    {{ $item->hotelDetail?->hotel?->name ?? 'N/A' }}
-@else
-    {{ $item->name ?? 'N/A' }}
-@endif
-                                        <span style="color:#FF9900; padding-left:10px;"><i class="fa fa-star"
+                                                {{ $item->hotelDetail?->hotel?->name ?? 'N/A' }}
+                                            @else
+                                                {{ $item->name ?? 'N/A' }}
+                                            @endif
+                                            <span style="color:#FF9900; padding-left:10px;">
+                                                @for ($i = 1; $i <= ($item->hotelDetail?->hotel_options ?? 0); $i++)
+                                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                                @endfor
+                                            </span>
+
+                                            <span class="hoteloption1">
+                                                Option {{ $item->hotelDetail?->hotel_options ?? '' }}
+                                            </span>
+                                        {{-- <span style="color:#FF9900; padding-left:10px;"><i class="fa fa-star"
                                                 aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i><i
                                                 class="fa fa-star" aria-hidden="true"></i></span> <span
-                                            class="hoteloption1">Option {{ $item->hotelDetail?->hotel_options ?? '' }}</span>
+                                            class="hoteloption1">Option {{ $item->hotelDetail?->hotel_options ?? '' }}</span> --}}
                                     </div>
 
                                     <div style="margin-bottom:10px;">
