@@ -149,7 +149,7 @@
            <td style="font-weight:700;">
 
     @if($item->type == 'accommodation')
-        @if($item->hotel_type == 1)
+        @if($item->source_type == 1)
             {{ $item->hotel->name ?? '-' }}
         @else
             {{ $item->name ?? '-' }}

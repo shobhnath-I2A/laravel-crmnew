@@ -30,7 +30,8 @@
         },
         "files": [
             "app/Helpers/permission.php",
-            "app/Helpers/helpers.php"
+            "app/Helpers/helpers.php",
+            "app/Helpers/DateHelper.php"
         ]
     },
     "autoload-dev": {

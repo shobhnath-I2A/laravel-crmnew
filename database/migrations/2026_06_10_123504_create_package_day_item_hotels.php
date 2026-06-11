@@ -22,7 +22,7 @@ return new class extends Migration
                 ->constrained('hotels')
                 ->nullOnDelete();
 
-            $table->tinyInteger('hotel_type')->default(0)->comment('0 = Manual, 1 = From Master, 2 = API'); // 0 Manual, 1 From Master
+            // $table->tinyInteger('hotel_type')->default(0)->comment('0 = Manual, 1 = From Master, 2 = API'); // 0 Manual, 1 From Master
 
             $table->string('hotel_category')->nullable();
             $table->string('room_name')->nullable();

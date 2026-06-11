@@ -2,13 +2,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Traits\DateFormatter;
 class PackageDayItemHotel extends Model
 {
+    use DateFormatter;
+
     protected $fillable = [
         'package_day_item_id',
         'hotel_id',
-        'hotel_type',
+        'source_type',
         'hotel_category',
         'room_type',
         'room_name',
@@ -33,6 +35,25 @@ class PackageDayItemHotel extends Model
 
     public function hotel()
     {
-        return $this->belongsTo(Hotel::class);
+        return $this->belongsTo(Hotel::class, 'hotel_id');
+    }
+    public function setCheckInDateAttribute($value)
+    {
+        $this->attributes['check_in_date'] = $this->convertDate($value);
+    }
+
+    public function setCheckOutDateAttribute($value)
+    {
+        $this->attributes['check_out_date'] = $this->convertDate($value);
+    }
+
+    public function getCheckInDateAttribute($value)
+    {
+        return $this->formatDateForDisplay($value);
+    }
+
+    public function getCheckOutDateAttribute($value)
+    {
+        return $this->formatDateForDisplay($value);
     }
 }

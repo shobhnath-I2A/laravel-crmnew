@@ -25,12 +25,12 @@
             <div class="form-group">
                 <label for="validationCustom02">Type</label>
                 @php
-                    $hotelType = old('hotel_type');
+                    $hotelType = old('source_type');
                     if (!$hotelType) {
                         $hotelType = $packageDayItem->hotel_id ? 1 : 0;
                     }
                 @endphp
-                <select name="hotel_type" id="hotel_type" class="form-control" onchange="changepricetype();">
+                <select name="source_type" id="source_type" class="form-control" onchange="changepricetype();">
                     <option value="0" {{ $hotelType == 0 ? 'selected' : '' }}>Manual</option>
                     <option value="1" {{ $hotelType == 1 ? 'selected' : '' }}>From Master</option>
                 </select>

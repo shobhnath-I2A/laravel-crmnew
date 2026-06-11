@@ -82,31 +82,7 @@
     </form>
 </div>
 <script>
-    // function buildPopupUrl(baseUrl, type) {
-    //     const ctx = window.itineraryContext;
 
-    //     const params = new URLSearchParams({
-    //         itinerary_id: ctx.itineraryId || '',
-    //         day: ctx.day || '',
-    //         date: ctx.date || '',
-    //         destination_id: ctx.destinationId || '',
-    //         item_type: type || ''
-    //     });
-
-    //     return baseUrl + '?' + params.toString();
-    // }
-
-    // function changepricetype() {
-    //     let type = $('#hotel_type').val();
-
-    //     if (type == '0') {
-    //         $('.manual').show();
-    //         $('.master').hide();
-    //     } else if (type == '1') {
-    //         $('.manual').hide();
-    //         $('.master').show();
-    //     }
-    // }
 
     $(document).ready(function() {
         changepricetype(); // Initialize the visibility on page load
@@ -255,25 +231,7 @@
     }
 </script>
 <script>
-    // function changepricetype() {
-    //     let hotelType = $('#hotel_type').val();
 
-    //     if (hotelType == '0') {
-    //         $('.manual').show();
-    //         $('.master').hide();
-
-    //         $('#hotel_id').val('');
-    //         $('#hotelRoommaster').html('<option value="">Select Room Type</option>');
-    //     } else {
-    //         $('.manual').hide();
-    //         $('.master').show();
-
-    //         $('#servicename').val('');
-    //         $('input[name="room_name"]').val('');
-
-    //         loadhotel();
-    //     }
-    // }
 
     function loadhotel() {
         let destinationId = $('#destinationName').val();
@@ -347,7 +305,7 @@
     $(document).ready(function() {
         changepricetype();
 
-        $('#hotel_type').on('change', changepricetype);
+        $('#source_type').on('change', changepricetype);
         $('#hotel_id').on('change', loadhoteldata);
     });
 
@@ -377,7 +335,7 @@
     }
 
     function changepricetype() {
-        let hotelType = $('#hotel_type').val();
+        let hotelType = $('#source_type').val();
 
         if (hotelType == '0') {
             $('.manual').show();
@@ -401,7 +359,7 @@
     $(document).ready(function() {
         changepricetype();
 
-        $('#hotel_type').on('change', changepricetype);
+        $('#source_type').on('change', changepricetype);
     });
 
     function buildPopupUrl(baseUrl, type) {

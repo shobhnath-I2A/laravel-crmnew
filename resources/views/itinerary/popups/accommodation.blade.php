@@ -17,7 +17,7 @@
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="validationCustom02">Destination
+                <label for="validationCustom02">Destination ddddd
                 </label>
 
                 <select name="destination_id" id="destination" class="form-control">

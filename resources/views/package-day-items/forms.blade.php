@@ -10,24 +10,36 @@
 </style>
 
 <div class="modal-body">
-    <form method="POST"
-          class="custom-validation ajax-form"
-          action="{{ $isEdit ? route('package-days-items.update', $packageDayItem->id) : route('package-days-items.store') }}">
+    <form method="POST" class="custom-validation ajax-form"
+        action="{{ $isEdit ? route('package-days-items.update', $packageDayItem->id) : route('package-days-items.store') }}">
 
         @csrf
 
         @if ($isEdit)
             @method('PUT')
         @endif
-
+        {{-- {{ $packageDayItem ?? '' }} --}}
         <input type="hidden" name="type" value="{{ old('type', $type) }}">
         <input type="hidden" name="day" value="{{ old('day', $packageDayItem->day ?? '') }}">
-        <input type="hidden" name="day_id" value="{{ old('day_id', $packageDayItem->day_id ?? ($packageDayItem->day ?? '')) }}">
+        <input type="hidden" name="day_id"
+            value="{{ old('day_id', $packageDayItem->day_id ?? ($packageDayItem->day ?? '')) }}">
         <input type="hidden" name="day_order" value="{{ old('day_order', $packageDayItem->day_order ?? 1) }}">
-        <input type="hidden" name="itinerary_id" value="{{ old('itinerary_id', $packageDayItem->itinerary_id ?? '') }}">
+        <input type="hidden" name="itinerary_id"
+            value="{{ old('itinerary_id', $packageDayItem->itinerary_id ?? '') }}">
         <input type="hidden" name="package_id" value="{{ old('package_id', $packageDayItem->package_id ?? '') }}">
-        <input type="hidden" name="destination_id" value="{{ old('destination_id', $packageDayItem->destination_id ?? '') }}">
+        <input type="hidden" name="destination_id"
+            value="{{ old('destination_id', $packageDayItem->destination_id ?? '') }}">
+        @php
+            $hotelDetail = $packageDayItem->hotelDetail ?? null;
 
+            $sourceType = old('source_type', $packageDayItem->source_type ?? 0);
+
+            $selectedHotelId = old('hotel_id', $hotelDetail->hotel_id ?? '');
+            $selectedRoomType = old('room_type', $hotelDetail->room_type ?? '');
+            $selectedRoomName = old('room_name', $hotelDetail->room_name ?? '');
+            $selectedMealPlan = old('meal_plan', $hotelDetail->meal_plan ?? '');
+            $selectedHotelOption = old('hotel_options', $hotelDetail->hotel_options ?? 1);
+        @endphp
         <div class="row">
 
             @if ($type == 'dayitinerary' || $type == 'daydetail')
@@ -74,26 +86,186 @@
 
         <div class="modal-footer" style="position:relative;gap:80%;">
             @if ($isEdit)
-                <button type="button"
-                        class="btn btn-danger"
-                        onclick="deleteItem({{ $packageDayItem->id }})">
+                <button type="button" class="btn btn-danger" onclick="deleteItem({{ $packageDayItem->id }})">
                     <i class="fa fa-trash"></i> Delete
                 </button>
             @endif
 
-            <input name="Save"
-                   type="submit"
-                   value="Save"
-                   class="btn btn-success"
-                   id="savingbutton"
-                   style="float:right;">
+            <input name="Save" type="submit" value="Save" class="btn btn-success" id="savingbutton"
+                style="float:right;">
         </div>
     </form>
 </div>
+  <script>
+    window.selectedHotel = "{{ old('hotel_id', $hotelDetail->hotel_id ?? '') }}";
+    window.selectedRoom = "{{ old('room_type', $hotelDetail->room_type ?? '') }}";
+    window.selectedMealPlan = "{{ old('meal_plan', $hotelDetail->meal_plan ?? '') }}";
 
-<script>
+    function clearManualFields() {
+        $('#servicename').val('');
+        $('input[name="room_name"]').val('');
+        $('#mealPlanManual').val('');
+    }
+
+    function clearMasterFields() {
+        $('#hotel_id').val('');
+        $('#hotelRoommaster').html('<option value="">Select Room Type</option>');
+        $('#mealPlanmaster').html('<option value="">Select Meal Plan</option>');
+    }
+
+
+
     function changepricetype() {
-        let hotelType = $('#hotel_type').val();
+        let sourceType = $('#source_type').val();
+
+        if (sourceType == '0') {
+            $('.manual').show();
+            $('.master').hide();
+
+            $('#hotel_id').val('');
+            $('#hotelRoommaster').html('<option value="">Select Room Type</option>');
+            $('#mealPlanmaster').html('<option value="">Select Meal Plan</option>');
+        } else {
+            $('.manual').hide();
+            $('.master').show();
+
+            $('#servicename').val('');
+            $('input[name="room_name"]').val('');
+            $('#mealPlanManual').val('');
+
+            loadhotel();
+            loadMealPlans();
+        }
+    }
+
+    function loadhotel() {
+        let destinationId = $('#destinationName').val();
+
+        if (!destinationId) {
+            $('#hotel_id').html('<option value="">Select Hotel</option>');
+            return;
+        }
+
+        $('#hotel_id').html('<option value="">Loading...</option>');
+
+        $.ajax({
+            url: "{{ route('load.hotels') }}",
+            type: "GET",
+            data: {
+                destination_id: destinationId
+            },
+            success: function(html) {
+                $('#hotel_id').html(html);
+
+                if (selectedHotel) {
+                    $('#hotel_id').val(selectedHotel);
+                    loadhoteldata();
+                }
+            },
+            error: function() {
+                $('#hotel_id').html('<option value="">Hotel loading failed</option>');
+            }
+        });
+    }
+
+    function loadhoteldata() {
+        let hotelId = $('#hotel_id').val();
+
+        if (!hotelId) {
+            $('#hotelRoommaster').html('<option value="">Select Room Type</option>');
+            return;
+        }
+
+        $('#hotelRoommaster').html('<option value="">Loading...</option>');
+
+        $.ajax({
+            url: "{{ route('load.hotel.data') }}",
+            type: "GET",
+            data: {
+                hotel_id: hotelId
+            },
+            success: function(res) {
+                let html = '<option value="">Select Room Type</option>';
+
+                if (res.roomTypes && res.roomTypes.length > 0) {
+                    res.roomTypes.forEach(function(room) {
+                        html += `<option value="${room.name}">${room.name}</option>`;
+                    });
+                }
+
+                $('#hotelRoommaster').html(html);
+
+                if (selectedRoom) {
+                    $('#hotelRoommaster').val(selectedRoom);
+                }
+            },
+            error: function() {
+                $('#hotelRoommaster').html('<option value="">Room loading failed</option>');
+            }
+        });
+    }
+
+    function loadMealPlans() {
+        $('#mealPlanmaster').html('<option value="">Loading...</option>');
+
+        $.ajax({
+            url: "{{ route('load.meal.plans') }}",
+            type: "GET",
+            success: function(html) {
+                $('#mealPlanmaster').html(html);
+
+                if (selectedMealPlan) {
+                    $('#mealPlanmaster').val(selectedMealPlan);
+                }
+            },
+            error: function() {
+                $('#mealPlanmaster').html('<option value="">Meal plan loading failed</option>');
+            }
+        });
+    }
+
+    function deleteItem(id) {
+        if (!confirm('Are you sure you want to delete?')) {
+            return;
+        }
+
+        $.ajax({
+            url: '/package-days-items/' + id,
+            type: 'DELETE',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(res) {
+                alert(res.message);
+                $('.modal').modal('hide');
+                location.reload();
+            },
+            error: function() {
+                alert('Delete failed');
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        changepricetype();
+
+        $('#source_type').off('change').on('change', function() {
+            selectedHotel = '';
+            selectedRoom = '';
+            selectedMealPlan = '';
+
+            changepricetype();
+        });
+
+        $('#hotel_id').off('change').on('change', function() {
+            selectedRoom = '';
+            loadhoteldata();
+        });
+    });
+</script>
+{{-- <script>
+    function changepricetype() {
+        let hotelType = $('#source_type').val();
 
         if (hotelType == '0') {
             $('.manual').show();
@@ -229,7 +401,7 @@
     $(document).ready(function () {
         changepricetype();
 
-        $('#hotel_type').off('change').on('change', changepricetype);
+        $('#source_type').off('change').on('change', changepricetype);
         $('#hotel_id').off('change').on('change', loadhoteldata);
     });
-</script>
+</script> --}}

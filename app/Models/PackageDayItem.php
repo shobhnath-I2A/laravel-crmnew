@@ -10,39 +10,27 @@ class PackageDayItem extends Model
     protected $guarded = [];
     protected $fillable = [
         'package_id',
-        'hotel_id',
         'destination_id',
-        'type',
         'day',
         'day_order',
+        'type',
+        'source_type',
         'name',
-        'room_type',
-        'hotel_category',
-        'room_name',
-        'meal_plan',
-        'hotel_options',
-        'single_room',
-        'double_room',
-        'triple_room',
-        'quad_room',
-        'cwb_room',
-        'cnb_room',
-        'check_in_date',
-        'check_in_time',
-        'check_out_date',
-        'check_out_time',
         'description',
-        'day_subject',
         'show_time',
-        'hotel_type',
-        'from_destination',
-        'to_destination',
-        'flight_no',
-        'flight_duration'
+        'start_date',
+        'start_time',
+        'end_date',
+        'end_time',
+        'status',
+        'created_by',
+        'updated_by',
     ];
+
     protected $casts = [
-        'check_in_date' => 'date',
-        'check_out_date' => 'date',
+        'start_date' => 'date',
+        'end_date'   => 'date',
+        'show_time'  => 'boolean',
     ];
     // public function package()
     // {
@@ -66,15 +54,33 @@ class PackageDayItem extends Model
         return $this->belongsTo(TransferMaster::class, 'hotel_id');
     }
 
+    // public function getDisplayNameAttribute()
+    // {
+    //     if ($this->type == 'accommodation') {
+    //         return $this->source_type == 1
+    //             ? ($this->hotel->name ?? '')
+    //             : ($this->name ?? '');
+    //     }
+
+    //     return $this->name ?? $this->title ?? $this->item_name ?? '';
+    // }
     public function getDisplayNameAttribute()
     {
-        if ($this->type == 'accommodation') {
-            return $this->hotel_type == 1
-                ? ($this->hotel->name ?? '')
-                : ($this->name ?? '');
+        if ($this->type === 'accommodation') {
+            if ($this->hotelDetail?->source_type == 1) {
+                return $this->hotelDetail?->hotel?->name ?? '';
+            }
+
+            return $this->name ?? '';
         }
 
-        return $this->name ?? $this->title ?? $this->item_name ?? '';
+        if ($this->type === 'flight') {
+            return $this->flightDetail?->flight_no
+                ? 'Flight ' . $this->flightDetail->flight_no
+                : ($this->name ?? 'Flight');
+        }
+
+        return $this->name ?? '';
     }
     public function destination()
     {

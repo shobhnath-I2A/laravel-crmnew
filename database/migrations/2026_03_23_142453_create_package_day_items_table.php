@@ -24,14 +24,15 @@ return new class extends Migration
             ->comment('daydetail, accommodation, activity, flight, transportation, cruise, meal, insurance, visa');
 
         $table->tinyInteger('source_type')->default(0)
-            ->comment('0 manual, 1 from master');
+            ->comment('0 manual, 1 from master, 2 from API');
 
         $table->string('name')->nullable();
         $table->text('description')->nullable();
 
         $table->boolean('show_time')->default(0);
-        $table->date('item_date')->nullable();
+        $table->date('start_date')->nullable();
         $table->time('start_time')->nullable();
+        $table->date('end_date')->nullable();
         $table->time('end_time')->nullable();
 
         $table->tinyInteger('status')->default(1);

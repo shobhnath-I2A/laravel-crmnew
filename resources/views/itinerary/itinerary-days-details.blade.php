@@ -1,11 +1,28 @@
 <div id="load_build_day_details">
+    {{-- @php
+    $destinationName = $packageDayItems
+        ->flatten()
+        ->first()?->destination?->name ?? '';
+    @endphp
+
+    <div style="padding:8px 20px;border-bottom:1px solid #ecf0f2;font-size:18px;">
+        <strong>
+            Day {{ $day ?? '' }}
+            -
+            {{ displayDate($date ?? '') }}
+            @if($destinationName)
+                &nbsp;<i class="fa fa-long-arrow-right"></i>&nbsp;
+                {{ $destinationName }}
+            @endif
+        </strong>
+    </div> --}}
     @php
         $mainItem = $packageDayItems['daydetail'][0] ?? null;
     @endphp
     <div style="padding: 8px 20px; border-bottom: 1px solid #ecf0f2; font-size: 18px;">
         <strong>Day {{ $day ?? '' }} - {{ $date ?? '' }} &nbsp;<i class="fa fa-long-arrow-right"
                 aria-hidden="true"></i>&nbsp;
-            {{ $mainItem->destination->name ?? '' }} ddd ee
+            {{-- {{ $packageDayItems ?? '' }} ddd ee --}}
         </strong>
     </div>
     @forelse($packageDayItems as $type => $items)
@@ -38,7 +55,11 @@
                                         <div class="eventsectioniconOrder">{{ $item->day_order ?? '' }} </div>
                                         <div class="eventsectionicon"> <i style="" class="fa fa-picture-o"
                                                 aria-hidden="true"></i></div>
-                                        {{ $item->hotel_type == 1 ? $item->hotel->name ?? 'N/A' : $item->hotel_name ?? 'N/A' }}<span
+                                        @if($item->source_type == 1)
+    {{ $item->hotelDetail?->hotel?->name ?? 'N/A' }}
+@else
+    {{ $item->name ?? 'N/A' }}
+@endif<span
                                             style="color:#FF9900; padding-left:10px;"></span>
                                     </div>
                                     <div class="eventcontent">{!! $item->description ?? '' !!}</div>
@@ -75,11 +96,15 @@
                                         <div class="eventsectioniconOrder">1 </div>
                                         <div class="eventsectionicon"><i style="" class="fa fa-bed"
                                                 aria-hidden="true"></i></div>
-                                        {{ $item->hotel_type == 1 ? $item->hotel->name ?? 'N/A' : $item->hotel_name ?? 'N/A' }}
+                                        @if($item->source_type == 1)
+    {{ $item->hotelDetail?->hotel?->name ?? 'N/A' }}
+@else
+    {{ $item->name ?? 'N/A' }}
+@endif
                                         <span style="color:#FF9900; padding-left:10px;"><i class="fa fa-star"
                                                 aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i><i
                                                 class="fa fa-star" aria-hidden="true"></i></span> <span
-                                            class="hoteloption1">Option 1</span>
+                                            class="hoteloption1">Option {{ $item->hotelDetail?->hotel_options ?? '' }}</span>
                                     </div>
 
                                     <div style="margin-bottom:10px;">
@@ -115,7 +140,7 @@
                                                                 <div
                                                                     style="margin-bottom:5px;padding-left:20px; font-weight:700;">
                                                                     <i class="fa fa-home" aria-hidden="true"></i>
-                                                                    &nbsp;Deluxe Room
+                                                                    &nbsp;{{ $item->hotelDetail?->room_type ?? '-' }}
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -125,7 +150,7 @@
                                         </div>
                                         <div style="margin-bottom:20px;"><strong>Room: </strong> 1 Double &nbsp;&nbsp;|
                                             &nbsp;&nbsp;<strong><i class="fa fa-cutlery" aria-hidden="true"></i> Meal:
-                                            </strong> Bed &amp; Breakfast</div>
+                                            </strong> {{ $item->hotelDetail?->meal_plan ?? '-' }}</div>
                                     </div>
                                     <div class="eventcontent"></div>
 
@@ -323,13 +348,13 @@
                 {{-- ================== DAY DETAIL ================== --}}
             @elseif($type === 'daydetail')
                 <div class="daydetailsbox">
-                    @if ($mainItem && ($item->day_subject || $item->description))
+                    @if ($mainItem && ($item->name || $item->description))
                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tbody>
                                 <tr>
                                     <td width="94%">
                                         <div class="heading">
-                                            {{ $item->day_subject ?? 'No Subject' }}
+                                            {{ $item->name ?? 'No Subject' }}
                                         </div>
                                         {{ $item->description ?? '' }}
                                     </td>

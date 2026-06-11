@@ -7,7 +7,6 @@
                     value="{{ old('day_order', $packageDayItem->day_order ?? '') }}" aria-required="true">
             </div>
         </div>
-        {{-- {{ $packageDayItem ?? '' }} --}}
         <div class="col-md-6">
             <div class="form-group">
                 <label for="validationCustom02">Destination
@@ -25,15 +24,9 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="validationCustom02">Type</label>
-                @php
-                    $hotelType = old('hotel_type');
-                    if (!$hotelType) {
-                        $hotelType = $packageDayItem->hotel_id ? 1 : 0;
-                    }
-                @endphp
-                <select name="hotel_type" id="hotel_type" class="form-control" onchange="changepricetype();">
-                    <option value="0" {{ $hotelType == 0 ? 'selected' : '' }}>Manual</option>
-                    <option value="1" {{ $hotelType == 1 ? 'selected' : '' }}>From Master</option>
+                <select name="source_type" id="source_type" class="form-control" onchange="changepricetype();">
+                    <option value="0" {{ $sourceType == 0 ? 'selected' : '' }}>Manual</option>
+                    <option value="1" {{ $sourceType == 1 ? 'selected' : '' }}>From Master</option>
                 </select>
             </div>
         </div>
@@ -41,9 +34,7 @@
             <div class="form-group">
                 <label for="validationCustom02">Hotel Name
                 </label>
-                <input name="name" type="text" class="form-control ui-autocomplete-input valid"
-                    id="servicename" value="{{ old('name', $packageDayItem->name ?? '') }}"
-                    autocomplete="off" aria-required="true" aria-invalid="false">
+               <input name="name" type="text" class="form-control" id="servicename" value="{{ old('name', $packageDayItem->name ?? '') }}">
 
             </div>
         </div>
@@ -52,10 +43,13 @@
             <div class="form-group">
                 <label for="validationCustom02">Hotel Name
                 </label>
-                 <select name="hotel_id" id="hotel_id" class="form-control" onchange="loadhoteldata();">
+                <select name="hotel_id" id="hotel_id" class="form-control" onchange="loadhoteldata();">
                     <option value="">Select Hotel</option>
                 </select>
-                <input type="hidden" name="hotelPriceId" id="hotelPriceId" value="0">
+
+                <input type="hidden" id="selected_hotel_id" value="{{ $selectedHotelId }}">
+                <input type="hidden" id="selected_room_type" value="{{ $selectedRoomType }}">
+                <input type="hidden" id="selected_meal_plan" value="{{ $selectedMealPlan }}">
 
             </div>
         </div>
@@ -87,7 +81,7 @@
             <div class="form-group">
                 <label for="validationCustom02">Room Name
                 </label>
-                <input type="text" name="room_name" class="form-control" value="{{ old('room_name', $packageDayItem->room_name ?? '') }}">
+                <input type="text" name="room_name" class="form-control" value="{{ $selectedRoomName }}">
             </div>
         </div>
         <div class="col-md-6 master-section d-none">
@@ -108,11 +102,7 @@
         <div class="col-md-6 manual">
             <div class="form-group">
                 <label>Meal Plan</label>
-                <input name="meal_plan_manual"
-                    id="mealPlanManual"
-                    type="text"
-                    class="form-control"
-                    value="{{ old('meal_plan', $packageDayItem->meal_plan ?? '') }}">
+                <input name="meal_plan" id="mealPlanManual" type="text" class="form-control" value="{{ $selectedMealPlan }}">
             </div>
         </div>
 
@@ -120,9 +110,9 @@
             <div class="form-group">
                 <label for="validationCustom02">Hotel Option</label>
                 <select name="hotel_options" class="form-control">
-                    <option value="1" {{ old('hotel_options', $packageDayItem->hotel_options ?? '') == 1 ? 'selected' : '' }}>Option 1</option>
-                    <option value="2" {{ old('hotel_options', $packageDayItem->hotel_options ?? '') == 2 ? 'selected' : '' }}>Option 2</option>
-                    <option value="3" {{ old('hotel_options', $packageDayItem->hotel_options ?? '') == 3 ? 'selected' : '' }}>Option 3</option>
+                    <option value="1" {{ $selectedHotelOption == 1 ? 'selected' : '' }}>Option 1</option>
+                    <option value="2" {{ $selectedHotelOption == 2 ? 'selected' : '' }}>Option 2</option>
+                    <option value="3" {{ $selectedHotelOption == 3 ? 'selected' : '' }}>Option 3</option>
                 </select>
             </div>
         </div>
@@ -135,7 +125,7 @@
                 <div class="form-group">
                     <label for="validationCustom02">Single
                     </label>
-                    <input name="single_room" type="Number" min="0" class="form-control" value="{{ old('single_room', $packageDayItem->single_room ?? '' ) }}">
+                    <input name="single_room" type="Number" min="0" class="form-control" value="{{ old('single_room', $hotelDetail->single_room ?? 0) }}">
                 </div>
             </div>
 
@@ -143,7 +133,7 @@
                 <div class="form-group">
                     <label for="validationCustom02">Double
                     </label>
-                    <input name="double_room" type="Number" min="0" class="form-control" value="{{ $packageDayItem->double_room ?? '' }}">
+                    <input name="double_room" type="Number" min="0" class="form-control" value="{{ old('double_room', $hotelDetail->double_room ?? 0) }}">
                 </div>
             </div>
 
@@ -151,7 +141,7 @@
                 <div class="form-group">
                     <label for="validationCustom02">Triple
                     </label>
-                    <input name="triple_room" type="Number" min="0" class="form-control" value="{{ old('triple_room', $packageDayItem->triple_room ?? '') }}">
+                    <input name="triple_room" type="Number" min="0" class="form-control" value="{{ old('double_room', $hotelDetail->double_room ?? 0) }}">
                 </div>
             </div>
 
@@ -161,7 +151,7 @@
                 <div class="form-group">
                     <label for="validationCustom02">Quad
                     </label>
-                    <input name="quad_room" type="Number" min="0" class="form-control" value="{{ old('quad_room', $packageDayItem->quad_room ?? '') }}">
+                    <input name="quad_room" type="Number" min="0" class="form-control" value="{{ old('quad_room', $hotelDetail->quad_room ?? 0) }}">
                 </div>
             </div>
 
@@ -169,7 +159,7 @@
                 <div class="form-group">
                     <label for="validationCustom02">CWB
                     </label>
-                    <input name="cwb_room" type="Number" min="0" class="form-control" value="{{ old('cwb_room', $packageDayItem->cwb_room ?? '') }}">
+                    <input name="cwb_room" type="Number" min="0" class="form-control" value="{{ old('cwb_room', $hotelDetail->cwb_room ?? 0) }}">
                 </div>
             </div>
 
@@ -177,7 +167,7 @@
                 <div class="form-group">
                     <label for="validationCustom02">CNB
                     </label>
-                    <input name="cnb_room" type="Number" min="0" class="form-control" value="{{ $packageDayItem->cnb_room ?? '' }}">
+                    <input name="cnb_room" type="Number" min="0" class="form-control" value="{{ old('cnb_room', $hotelDetail->cnb_room ?? 0) }}">
                 </div>
             </div>
         </div>
@@ -186,24 +176,24 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-in date* </label>
-                  <input type="text" class="form-control" name="check_in_date" id="startDate"
-                        value="{{ old('check_in_date', isset($packageDayItem->check_in_date) ? \Carbon\Carbon::parse($packageDayItem->check_in_date)->format('d-m-Y') : '') }}">
-                    @if ($errors->has('check_in_date'))
-                        <span class="text-danger">{{ $errors->first('check_in_date') }}</span>
+                  <input type="text" class="form-control" name="start_date" id="startDate"
+                        value="{{ old('start_date', isset($packageDayItem->start_date) ? \Carbon\Carbon::parse($packageDayItem->start_date)->format('d-m-Y') : '') }}">
+                    @if ($errors->has('start_date'))
+                        <span class="text-danger">{{ $errors->first('start_date') }}</span>
                     @endif
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-in time</label>
-                    <select id="check_in_time" name="check_in_time" autocomplete="off" class="form-control"
+                    <select id="start_time" name="start_time" autocomplete="off" class="form-control"
                         style="width:130px;">
                          @for ($i = 0; $i < 24 * 60; $i += 15)
                             @php
                                 $time = \Carbon\Carbon::createFromTime(0, 0)->addMinutes($i);
                             @endphp
                             <option value="{{ $time->format('H:i:s') }}"
-                                {{ old('check_in_time', isset($packageDayItem->check_in_time) ? \Carbon\Carbon::parse($packageDayItem->check_in_time)->format('H:i:s') : '') == $time->format('H:i:s') ? 'selected' : '' }}>
+                                {{ old('start_time', isset($packageDayItem->start_time) ? \Carbon\Carbon::parse($packageDayItem->start_time)->format('H:i:s') : '') == $time->format('H:i:s') ? 'selected' : '' }}>
 
                                 {{ $time->format('h:i A') }}
                             </option>
@@ -214,24 +204,24 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-out date*</label>
-                    <input type="text" class="form-control" name="check_out_date" id="endDate"
-                        value="{{ old('check_out_date', isset($packageDayItem->check_out_date) ? \Carbon\Carbon::parse($packageDayItem->check_out_date)->format('d-m-Y') : '') }}">
-                    @if ($errors->has('check_out_date'))
-                        <span class="text-danger">{{ $errors->first('check_out_date') }}</span>
+                    <input type="text" class="form-control" name="end_date" id="endDate"
+                        value="{{ old('end_date', isset($packageDayItem->end_date) ? \Carbon\Carbon::parse($packageDayItem->end_date)->format('d-m-Y') : '') }}">
+                    @if ($errors->has('end_date'))
+                        <span class="text-danger">{{ $errors->first('end_date') }}</span>
                     @endif
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-out time</label>
-                    <select id="check_out_time" name="check_out_time" autocomplete="off" class="form-control"
+                    <select id="end_time" name="end_time" autocomplete="off" class="form-control"
                         style="width:130px;">
                          @for ($i = 0; $i < 24 * 60; $i += 15)
                             @php
                                 $time = \Carbon\Carbon::createFromTime(0, 0)->addMinutes($i);
                             @endphp
                             <option value="{{ $time->format('H:i:s') }}"
-                                {{ old('checkOut', isset($packageDayItem->check_out_time) ? \Carbon\Carbon::parse($packageDayItem->check_out_time)->format('H:i:s') : '') == $time->format('H:i:s') ? 'selected' : '' }}>
+                                {{ old('checkOut', isset($packageDayItem->end_time) ? \Carbon\Carbon::parse($packageDayItem->end_time)->format('H:i:s') : '') == $time->format('H:i:s') ? 'selected' : '' }}>
 
                                 {{ $time->format('h:i A') }}
                             </option>
