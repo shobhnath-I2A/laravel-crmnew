@@ -12,9 +12,26 @@ class ItineraryPriceController extends Controller
      */
     public function index($id)
     {
-        $itinerary = Itinerary::findOrFail($id);
+        $itinerary = Itinerary::with([
+            'destinations',
+            'packages.dayItems' => function ($q) {
+                $q->whereNotIn('type', ['daydetail', 'null', ''])
+                    ->orderBy('day')
+                    ->orderBy('id');
+            },
+            'packages.dayItems.hotel'
+        ])->findOrFail($id);
 
-        return view('itinerary.price.itinerary-price', compact('itinerary'));
+        $dayItems = $itinerary->packages
+            ->flatMap(fn($package) => $package->dayItems);
+
+        $dayWiseItems = $dayItems->groupBy('day');
+
+        return view('itinerary.price.itinerary-price', compact(
+            'itinerary',
+            'dayItems',
+            'dayWiseItems'
+        ));
     }
 
     /**

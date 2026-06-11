@@ -9,7 +9,7 @@ class PackageDayItem extends Model
     protected $table = 'package_day_items';
     protected $guarded = [];
     protected $fillable = [
-       'package_id',
+        'package_id',
         'hotel_id',
         'destination_id',
         'type',
@@ -61,9 +61,33 @@ class PackageDayItem extends Model
     {
         return $this->belongsTo(Hotel::class);
     }
+    public function transporationMaster()
+    {
+        return $this->belongsTo(TransferMaster::class, 'hotel_id');
+    }
+
+    public function getDisplayNameAttribute()
+    {
+        if ($this->type == 'accommodation') {
+            return $this->hotel_type == 1
+                ? ($this->hotel->name ?? '')
+                : ($this->name ?? '');
+        }
+
+        return $this->name ?? $this->title ?? $this->item_name ?? '';
+    }
     public function destination()
     {
         return $this->belongsTo(Destination::class);
+    }
+    public function hotelDetail()
+    {
+        return $this->hasOne(PackageDayItemHotel::class);
+    }
+
+    public function flightDetail()
+    {
+        return $this->hasOne(PackageDayItemFlight::class);
     }
     public function prices()
     {

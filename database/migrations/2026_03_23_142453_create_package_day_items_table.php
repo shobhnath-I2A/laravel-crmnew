@@ -13,42 +13,36 @@ return new class extends Migration
 {
     Schema::create('package_day_items', function (Blueprint $table) {
         $table->id();
+
         $table->foreignId('package_id')->constrained('packages')->cascadeOnDelete();
-        $table->foreignId('hotel_id')->nullable()->constrained('hotels')->nullOnDelete();
         $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
-        $table->string('type')->nullable();//daydetail, like hotel, accomodation,activity...
-        $table->string('flight_duration')->nullable();
-        $table->string('flight_no')->nullable();
-        $table->string('transfer_category')->nullable();
 
-        $table->integer('day')->default(0);
-        $table->string('day_order')->default(0);
+        $table->integer('day')->default(1);
+        $table->integer('day_order')->default(0);
+
+        $table->string('type', 50)
+            ->comment('daydetail, accommodation, activity, flight, transportation, cruise, meal, insurance, visa');
+
+        $table->tinyInteger('source_type')->default(0)
+            ->comment('0 manual, 1 from master');
+
         $table->string('name')->nullable();
-        $table->string('room_type')->nullable();
-        $table->string('hotel_category')->nullable();
-        $table->string('room_name')->nullable();
-        $table->string('meal_plan')->nullable();
-        $table->string('hotel_options')->nullable();
-        $table->tinyInteger('hotel_type')->default(0);
-
-        $table->integer('single_room')->default(0);
-        $table->integer('double_room')->default(0);
-        $table->integer('triple_room')->default(0);
-        $table->integer('quad_room')->default(0);
-        $table->integer('cwb_room')->default(0);
-        $table->integer('cnb_room')->default(0);
-
-        $table->date('check_in_date')->nullable();
-        $table->time('check_in_time')->nullable();
-        $table->date('check_out_date')->nullable();
-        $table->time('check_out_time')->nullable();
-        $table->boolean('show_time')->default(0);
-
-        $table->string('day_subject')->nullable();
         $table->text('description')->nullable();
 
+        $table->boolean('show_time')->default(0);
+        $table->date('item_date')->nullable();
+        $table->time('start_time')->nullable();
+        $table->time('end_time')->nullable();
+
+        $table->tinyInteger('status')->default(1);
+        $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+        $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+
         $table->timestamps();
-        $table->softDeletes(); // optional, for safety
+        $table->softDeletes();
+
+        $table->index(['package_id', 'day', 'type']);
+        $table->index(['type', 'status']);
     });
 }
 

@@ -64,27 +64,17 @@
             }
         </style>
 
-        <div style="margin-left: 65px; margin-right: 25px; padding-top: 10px !important; padding-bottom: 10px;">
+        <div style="margin-left: 65px; margin-right: 25px; margin-top: 110px !important; padding-bottom: 10px;">
             <div class="main-content">
                 <div class="page-content">
-
-
-
                     <div class="row">
-
-
                         <div class="col-md-12 col-xl-12">
-                            <h4>Mr. Nandu Sai trail to Langkawi and Kuala Lumpur for 5N / 6D <span
-                                    style="color: #353535; font-size: 14px; margin-top: 2px; float: right;">Langkawi, Kuala
-                                    Lumpur - Adult: 2 | Child: 0</span></h4>
-
+                            <h4>{{ $itinerary->name ?? '' }} <span style="color: #353535; font-size: 14px; margin-top: 2px; float: right;"> {{ $itinerary->destinations->pluck('name')->implode(', ') }} - Adult: {{ $itinerary->adult ?? '' }} | Child: {{ $itinerary->child ??'' }}</span></h4>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
-
         <div class="container-fluid">
             <div class="main-content">
 
@@ -98,7 +88,6 @@
                                     <form class="custom-validation" action="frmaction.html" id="billingformsave"
                                         target="actoinfrm" novalidate="" method="post" enctype="multipart/form-data">
                                         <table class="table table-hover mb-0">
-
                                             <thead>
                                                 <tr>
                                                     <th width="1%">&nbsp;</th>
@@ -120,6 +109,106 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+@forelse($dayWiseItems as $day => $items)
+
+    <tr>
+        <td colspan="8" style="background:#f1f5f9;font-weight:700;color:#111;padding:10px;">
+            Day {{ $day }}
+            @if(!empty($items->first()->item_date))
+                - {{ \Carbon\Carbon::parse($items->first()->item_date)->format('d-m-Y') }}
+            @endif
+        </td>
+    </tr>
+
+    @foreach($items as $item)
+        <tr>
+            <td width="1%">
+                <div class="bulbblue" style="background-color:#343642;margin-right:0;">
+                    @switch($item->type)
+                        @case('transportation')
+                            <i class="fa fa-car"></i>
+                            @break
+                        @case('accommodation')
+                            <i class="fa fa-bed"></i>
+                            @break
+                        @case('activity')
+                            <i class="fa fa-male"></i>
+                            @break
+                        @case('flight')
+                            <i class="fa fa-plane"></i>
+                            @break
+                        @case('meal')
+                            <i class="fa fa-cutlery"></i>
+                            @break
+                        @default
+                            <i class="fa fa-list"></i>
+                    @endswitch
+                </div>
+            </td>
+
+           <td style="font-weight:700;">
+
+    @if($item->type == 'accommodation')
+        @if($item->hotel_type == 1)
+            {{ $item->hotel->name ?? '-' }}
+        @else
+            {{ $item->name ?? '-' }}
+        @endif
+
+    @elseif($item->type == 'activity')
+        {{ $item->day_subject ?? $item->name ?? '-' }}
+
+    @elseif($item->type == 'flight')
+        {{ $item->flight_no ?? $item->name ?? '-' }}
+
+    @else
+        {{ $item->name ?? $item->day_subject ?? '-' }}
+    @endif
+
+    <div style="color:#989898;font-size:11px;padding-top:4px;font-weight:800;text-transform:uppercase;">
+        @if(!empty($item->check_in_date))
+            {{ \Carbon\Carbon::parse($item->check_in_date)->format('d-m-Y') }}
+        @endif
+
+        @if($item->show_time == 1)
+            -
+            {{ !empty($item->check_in_time) ? \Carbon\Carbon::parse($item->check_in_time)->format('g:i A') : '' }}
+            to
+            {{ !empty($item->check_out_time) ? \Carbon\Carbon::parse($item->check_out_time)->format('g:i A') : '' }}
+        @endif
+    </div>
+
+</td>
+
+            <td align="center">   @if($item->type == 'accommodation') <span class="hoteloption1">Option {{ $item->hotel_options ?? '-' }} </span>@else - @endif </td>
+
+            <td>
+                {{ ucfirst($item->type) }}
+                @if(!empty($item->service_type))
+                    - {{ $item->service_type }}
+                @endif
+            </td>
+
+            <td align="right">₹ {{ number_format($item->net_cost ?? 0) }}</td>
+            <td align="center">{{ $item->markup ?? 0 }}%</td>
+            <td align="right">₹ {{ number_format($item->gross_cost ?? 0) }}</td>
+
+            <td>
+                <button type="button" class="optionmenu" data-toggle="dropdown">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </button>
+            </td>
+        </tr>
+    @endforeach
+
+@empty
+    <tr>
+        <td colspan="8" class="text-center">No pricing items found</td>
+    </tr>
+@endforelse
+</tbody>
+
+                                            {{-- <tbody>
 
                                                 <tr>
                                                     <td width="1%">
@@ -1329,7 +1418,7 @@
                                                             value="" placeholder="Early Bird Offer"
                                                             style="text-align:center;"></td>
                                                 </tr>
-                                            </tbody>
+                                            </tbody> --}}
                                         </table>
                                         <div style="text-align:right; margin-top:10px;"><input name="Save"
                                                 type="submit" value="Update Billing" id="savingbutton"
