@@ -21,7 +21,7 @@ class LeadSourceController extends Controller
                 $leadSourceBuilder->where('name', 'like', '%' . $request->keyword . '%');
             }
 
-            $leadSource = $leadSourceBuilder->latest()->paginate(10);
+            $leadSource = $leadSourceBuilder->latest()->paginate(20);
             $leadSource->appends($request->all());
             $leadSourceCount = LeadSource::count();
             // dd($leadSource);

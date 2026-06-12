@@ -25,7 +25,7 @@
                                         <table class="table table-hover mb-0">
                                             <thead>
                                                 <tr>
-                                                    <th width="32%">title</th>
+                                                    <th width="32%">Title</th>
                                                     <th width="1%" align="left">Status</th>
                                                     <th width="15%" align="left">By</th>
                                                     <th width="12%" align="left">Date</th>
@@ -40,9 +40,9 @@
                                                                 class="addbynewbadges">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td colspan="2"style="padding-right:10px !important;">
+                                                                        {{-- <td colspan="2"style="padding-right:10px !important;">
                                                                             <img src="{{ asset('assets/images/profilepic/16942404066793789211693635606.jpg')}}"  width="25" height="25">
-                                                                        </td>
+                                                                        </td> --}}
                                                                         <td>{{ $source->name ?? '' }}</td>
 
                                                                     </tr>
