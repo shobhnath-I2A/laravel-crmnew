@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\RoomType;
+use App\Models\Hotel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
@@ -15,21 +16,37 @@ class HotelRoomTypeController extends Controller
     public function index(Request $request)
     {
         try {
-            $roomTypeBuilder = RoomType::query();
+
+            $roomTypeBuilder = RoomType::with(['hotel', 'addedBy']);
 
             if ($request->filled('keyword')) {
-                $roomTypeBuilder->where('name', 'like', '%' . $request->keyword . '%');
+                $roomTypeBuilder->where(function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->keyword . '%')
+                        ->orWhereHas('hotel', function ($q) use ($request) {
+                            $q->where('name', 'like', '%' . $request->keyword . '%');
+                        })
+                        ->orWhereHas('addedBy', function ($q) use ($request) {
+                            $q->where('name', 'like', '%' . $request->keyword . '%');
+                        });
+                });
             }
 
-            $roomType = $roomTypeBuilder->latest()->paginate(20);
+            $roomTypeCount = (clone $roomTypeBuilder)->count();
+
+            $roomType = $roomTypeBuilder
+                ->latest()
+                ->paginate(20);
+
             $roomType->appends($request->all());
-            $roomTypeCount = RoomType::count();
-            // dd($roomType);
+
             return view('hotel-rooms-type.index', compact('roomType', 'roomTypeCount'));
         } catch (\Exception $e) {
+
             Log::error('Fetch to show the Room Type', [
                 'error' => $e->getMessage(),
             ]);
+
+            return back()->with('error', 'Something went wrong.');
         }
     }
 
@@ -38,7 +55,11 @@ class HotelRoomTypeController extends Controller
      */
     public function create()
     {
-        return view('hotel-rooms-type.add-room');
+        $hotels = Hotel::where('status', 1)
+            ->orderBy('name')
+            ->get();
+
+        return view('hotel-rooms-type.add-room', compact('hotels'));
     }
 
     /**
@@ -47,20 +68,24 @@ class HotelRoomTypeController extends Controller
     public function store(Request $request)
     {
         try {
-            // ✅ Validation
+            // Validation
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'status' => 'nullable|boolean',
+                'hotel_id' => 'required|exists:hotels,id',
+                'name'      => 'required|string|max:255',
+                'status'    => 'required|in:0,1',
+
             ]);
             // dd($validated);
-            // ✅ Save data
+            // Save data
+            $validated['created_by'] = auth()->id();
+
             $roomType = RoomType::create($validated);
 
             return response()->json([
                 'status' => true,
                 'message' => "Room created successfully",
                 'data' => $roomType
-            ],201);
+            ], 201);
         } catch (ValidationException $ve) {
             return response()->json([
                 'status' => false,
@@ -78,11 +103,28 @@ class HotelRoomTypeController extends Controller
     /**
      * Display the specified resource.
      */
+    // public function show(string $id)
+    // {
+    //     try {
+    //         $roomType = RoomType::findOrFail($id);
+    //         return view('hotel-rooms-type.edit-rooms', compact('roomType'));
+    //     } catch (\Exception $e) {
+    //         Log::error('Show Room Type Error: ' . $e->getMessage());
+    //         return back()->with('error', 'Room type not found.');
+    //     }
+    // }
     public function show(string $id)
     {
         try {
             $roomType = RoomType::findOrFail($id);
-            return view('hotel-rooms-type.edit-rooms', compact('roomType'));
+            $hotels = Hotel::where('status', 1)
+                ->orderBy('name')
+                ->get();
+
+            return view(
+                'hotel-rooms-type.edit-rooms',
+                compact('roomType', 'hotels')
+            );
         } catch (\Exception $e) {
             Log::error('Show Room Type Error: ' . $e->getMessage());
             return back()->with('error', 'Room type not found.');
@@ -94,13 +136,13 @@ class HotelRoomTypeController extends Controller
      */
     public function edit(string $id)
     {
-        try {
-            $roomType = RoomType::findOrFail($id);
-            return view('hotel-rooms-type.edit-rooms', compact('roomType'));
-        } catch (\Exception $e) {
-            Log::error('Error fetch to room type', $e->getMessage());
-            return back()->with('error', 'Room type not found.');
-        }
+        $roomType = RoomType::findOrFail($id);
+
+        $hotels = Hotel::where('status', 1)
+            ->orderBy('name')
+            ->get();
+
+        return view('hotel-rooms-type.edit-rooms', compact('roomType', 'hotels'));
     }
 
     /**
@@ -111,9 +153,12 @@ class HotelRoomTypeController extends Controller
         try {
             //  Validation
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'status' => 'required|in:0,1',
+                'hotel_id' => 'required|exists:hotels,id',
+                'name'      => 'required|string|max:255',
+                'status'    => 'required|in:0,1',
             ]);
+
+            $validated['created_by'] = auth()->id();
 
             $roomType = RoomType::findOrFail($id);
 

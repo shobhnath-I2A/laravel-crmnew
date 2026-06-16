@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('room_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('hotel_id')->nullable()->constrained()->nullOnDelete();            $table->string('name'); // Deluxe, Suite, Standard
+            $table->foreignId('hotel_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('name'); // Deluxe, Suite, Standard
             $table->integer('capacity')->nullable();
             $table->boolean('status')->default(1); // 1=Active, 0=Inactive
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

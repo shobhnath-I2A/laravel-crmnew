@@ -1,28 +1,11 @@
 <div id="load_build_day_details">
-    {{-- @php
-    $destinationName = $packageDayItems
-        ->flatten()
-        ->first()?->destination?->name ?? '';
-    @endphp
-
-    <div style="padding:8px 20px;border-bottom:1px solid #ecf0f2;font-size:18px;">
-        <strong>
-            Day {{ $day ?? '' }}
-            -
-            {{ displayDate($date ?? '') }}
-            @if($destinationName)
-                &nbsp;<i class="fa fa-long-arrow-right"></i>&nbsp;
-                {{ $destinationName }}
-            @endif
-        </strong>
-    </div> --}}
-    @php
+     <?php
         $mainItem = $packageDayItems['daydetail'][0] ?? null;
-    @endphp
+    ?>
     <div style="padding: 8px 20px; border-bottom: 1px solid #ecf0f2; font-size: 18px;">
-        <strong>Day {{ $day ?? '' }} - {{ $date ?? '' }} &nbsp;<i class="fa fa-long-arrow-right"
+        <strong>Day <?php echo e($day ?? ''); ?> - <?php echo e($date ?? ''); ?> &nbsp;<i class="fa fa-long-arrow-right"
                 aria-hidden="true"></i>&nbsp;
-            {{-- {{ $packageDayItems ?? '' }} ddd ee --}}
+        {{  $mainItem ->destination->name?? ''}}
         </strong>
     </div>
     @forelse($packageDayItems as $type => $items)

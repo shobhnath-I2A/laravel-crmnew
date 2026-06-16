@@ -40,9 +40,6 @@
                                                                 class="addbynewbadges">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td colspan="2"style="padding-right:10px !important;">
-                                                                            <img src="{{ asset('assets/images/profilepic/16942404066793789211693635606.jpg')}}"  width="25" height="25">
-                                                                        </td>
                                                                         <td>{{ $room->name ?? '' }}</td>
                                                                     </tr>
                                                                 </tbody>
@@ -52,14 +49,15 @@
                                                           <span class="badge {{ $room->status == 1 ? 'badge-success' : 'badge-danger' }}"> {{ $room->status == 1 ? 'Active' : 'Inactive' }} </span>
                                                         </td>
                                                         <td width="15%" align="left">
-                                                            <table border="0" cellpadding="0" cellspacing="0"
-                                                                class="addbynewbadges">
+                                                            <table border="0" cellpadding="0" cellspacing="0" class="addbynewbadges">
                                                                 <tbody>
                                                                     <tr>
                                                                         <td colspan="2">
-                                                                            <div class="listnameicon">i</div>
+                                                                            <div class="listnameicon">
+                                                                                {{ strtoupper(substr($room->addedBy->first_name ?? $room->addedBy->name ?? '', 0, 1)) }}
+                                                                            </div>
                                                                         </td>
-                                                                        <td>i2a</td>
+                                                                        <td>{{ $room->addedBy->submit_name??'' }} {{ $room->addedBy->name??'' }} {{ $room->addedBy->last_name??'' }}</td>
                                                                     </tr>
 
                                                                 </tbody>

@@ -146,7 +146,7 @@
                                         </div>
 
                                         <div style="margin-bottom:15px;color:#000;font-size:12px;font-weight:600;">
-                                            Suggested Accommodation in
+                                            Suggested Accommodation in ddd
                                             <span id="suggestedDestinationName" style="font-weight:600;color:#0066CC;">
                                                 {{ $itinerary->destinations->first()->name ?? '' }}
                                             </span>

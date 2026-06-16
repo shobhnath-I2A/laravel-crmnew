@@ -13,9 +13,19 @@
             @method('PUT')
         @endif
         <div class="container-fluid">
-
             <div class="card-body">
                 <div class="row">
+                    <div class="col-md-12">
+                        <select name="hotel_id" class="form-control">
+                            <option value="">Select Hotel</option>
+                            @foreach ($hotels as $hotel)
+                                <option value="{{ $hotel->id }}"
+                                    {{ $roomType->hotel_id == $hotel->id ? 'selected' : '' }}>
+                                    {{ $hotel->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="col-md-12">
                         <label>Name <span class="redmtext">*</span></label>
                         <input type="text" name="name"
@@ -50,7 +60,6 @@
                     Save
                 </button>
             </div>
-
         </div>
     </form>
 </div>

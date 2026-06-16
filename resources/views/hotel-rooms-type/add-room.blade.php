@@ -12,7 +12,25 @@
 
             <div class="card-body">
                 <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label>Hotel <span class="redmtext">*</span></label>
+                        <select name="hotel_id"
+                            class="form-control reqfield @error('hotel_id') is-invalid @enderror"
+                            required>
+                            <option value="">Select Hotel</option>
 
+                            @foreach($hotels as $hotel)
+                                <option value="{{ $hotel->id }}"
+                                    {{ old('hotel_id') == $hotel->id ? 'selected' : '' }}>
+                                    {{ $hotel->name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('hotel_id')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <div class="col-md-12">
                         <label>Name <span class="redmtext">*</span></label>
                         <input type="text" name="name"
