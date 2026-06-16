@@ -36,7 +36,8 @@ class User extends Authenticatable
         'mobile',
         'website',
         'profile_image',
-        'theme_color'
+        'theme_color',
+        'created_by'
     ];
 
     /**

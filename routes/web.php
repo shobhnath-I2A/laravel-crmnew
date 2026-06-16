@@ -79,6 +79,12 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+Route::get('itineraries/insert', [ItineraryController::class, 'insertItinerary'])
+    ->name('itineraries.insert');
+Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'insertToQuery'])
+    ->name('itineraries.insert.to.query');
+
+
 
     permissionResource('queries', QueryController::class, 'Query');
     permissionResource('clients', ClientController::class, 'Client');
@@ -143,6 +149,9 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::post('/itineraries/{id}/duplicate', [ItineraryController::class, 'duplicate'])
     ->name('itineraries.duplicate');
+
+
+
     Route::post('/itineraries/{id}/archive', [ItineraryController::class, 'archive'])
         ->name('itineraries.archive');
     Route::post( '/itineraries/{id}/accept', [ItineraryController::class, 'markAccepted'] )->name('itineraries.accept');

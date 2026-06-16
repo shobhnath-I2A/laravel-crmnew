@@ -22,7 +22,8 @@ class Itinerary extends Model
         'show_in_special',
         'about_package',
         'total_days',
-        'status'
+        'status',
+        'created_by'
     ];
 
     public function destinations()
@@ -40,5 +41,9 @@ class Itinerary extends Model
     public function queryData()
     {
         return $this->belongsTo(Query::class, 'queryId', 'id');
+    }
+    public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

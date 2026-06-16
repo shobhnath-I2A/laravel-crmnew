@@ -94,6 +94,19 @@
                                                             class="dropdown-item">
                                                             Archive
                                                         </a>
+
+                                                        <form action="{{ route('itineraries.destroy', $itinerary->id) }}"
+                                                            method="POST"
+                                                             class="ajax-form delete-form"
+                                                            onsubmit="return confirm('Are you sure you want to delete this itinerary?');">
+
+                                                            @csrf
+                                                            @method('DELETE')
+
+                                                            <button type="submit" class="dropdown-item">
+                                                                Delete Itinerary
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </td>
@@ -180,14 +193,15 @@
 
                 <div class="itibox">
                     <div class="card addnewcard" style="height:509px;">
-                        <a href="{{ route('itineraries.create', ['queryId' => $query->id]) }}"
+                        <a onclick="openPopup('Create itinerary', '{{ route('itineraries.create',['queryId' => $query->id]) }}')"
                             class="btn btn-info btn-lg"><i class="fa fa-plus" aria-hidden="true"></i> Create
                             itinerary</a>
 
-                        <a href="{{ route('itineraries.index', ['queryId' => $query->id]) }}"
+
+                        <a href="{{ route('itineraries.insert', ['queryId' => $query->id]) }}"
                             class="btn btn-warning btn-lg"
                             style="margin-top:20px; background-color:#005ee2; border:1px solid #005ee2; color:#fff;">
-                            Insert itinerary
+                            Insert itinerary ddd
                         </a>
                     </div>
                 </div>

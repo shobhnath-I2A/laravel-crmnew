@@ -56,9 +56,11 @@ class ItineraryController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('itinerary.add-itinerary');
+        $queryId = $request->query('queryId');
+
+        return view('itinerary.add-itinerary', compact('queryId'));
     }
 
     /**
@@ -67,6 +69,7 @@ class ItineraryController extends Controller
     public function store(Request $request)
     {
         try {
+            // dd($request->all());
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'start_date' => 'required|date',
@@ -83,6 +86,7 @@ class ItineraryController extends Controller
                 'show_in_popular' => 'nullable|integer',
                 'show_in_special' => 'nullable|integer',
                 'about_package' => 'nullable|string',
+                'queryId' => 'nullable|integer|exists:queries,id',
             ]);
 
             // Extract destination IDs
@@ -100,6 +104,9 @@ class ItineraryController extends Controller
             $validated['total_days'] = (int) ceil($start->floatDiffInDays($end)) + 1;
 
             $validated['child'] = $validated['child'] ?? 0;
+            $validated['queryId'] = $request->queryId ?? 0;
+            $validated['created_by'] = auth()->id();
+
             $itinerary = Itinerary::create($validated);
 
             $itinerary->destinations()->sync($destinationIds);
@@ -184,6 +191,8 @@ class ItineraryController extends Controller
                 'show_in_popular' => 'nullable|integer',
                 'show_in_special' => 'nullable|integer',
                 'about_package' => 'nullable|string',
+                'queryId' => 'nullable|integer|exists:queries,id',
+
             ]);
 
             $itinerary = Itinerary::findOrFail($id);
@@ -203,6 +212,8 @@ class ItineraryController extends Controller
             $validated['total_days'] = (int) ceil($start->floatDiffInDays($end)) + 1;
 
             $validated['child'] = $validated['child'] ?? 0;
+            $validated['queryId'] = $request->queryId ?? 0;
+            $validated['created_by'] = auth()->id();
             $itinerary->update($validated);
 
             // VERY IMPORTANT: update pivot table
@@ -237,7 +248,55 @@ class ItineraryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id) {}
+    public function destroy(string $id)
+    {
+        DB::beginTransaction();
+        try {
+            $itinerary = Itinerary::with([
+                'packages.dayItems.hotelDetail',
+                'packages.dayItems.flightDetail',
+                'destinations'
+            ])->findOrFail($id);
+
+            // Remove destination pivot records
+            $itinerary->destinations()->detach();
+            foreach ($itinerary->packages as $package) {
+                foreach ($package->dayItems as $dayItem) {
+                    // Delete hotel detail
+                    if ($dayItem->hotelDetail) {
+                        $dayItem->hotelDetail()->delete();
+                    }
+                    // Delete flight detail
+                    if ($dayItem->flightDetail) {
+                        $dayItem->flightDetail()->delete();
+                    }
+                    // Delete day item
+                    $dayItem->delete();
+                }
+                // Delete package
+                $package->delete();
+            }
+
+            // Delete itinerary
+            $itinerary->delete();
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Itinerary deleted successfully.'
+            ],200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Delete itinerary failed', [
+                'id' => $id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function getDayDetails(Request $request)
     {
@@ -524,5 +583,114 @@ class ItineraryController extends Controller
         $itinerary = Itinerary::findOrFail($id);
 
         return view('itinerary.final-itinerary', compact('itinerary'));
+    }
+
+    public function insertItinerary(Request $request)
+    {
+        $queryId = $request->query('queryId');
+
+        $itineraries = Itinerary::with(['destinations', 'addedBy'])
+            ->where('queryId', 0)
+            ->latest()
+            ->paginate(20);
+
+        return view('itinerary.popups.insert-itinerary', compact('itineraries', 'queryId'));
+    }
+
+    public function insertToQuery(Request $request, Itinerary $itinerary)
+    {
+        try {
+
+            $validated = $request->validate([
+                'queryId' => 'required|exists:queries,id',
+            ]);
+
+            DB::beginTransaction();
+
+            $userId = auth()->id();
+            $queryId = $validated['queryId'];
+
+            $itinerary->load([
+                'destinations',
+                'packages.dayItems.hotelDetail',
+                'packages.dayItems.flightDetail',
+            ]);
+
+            $newItinerary = $itinerary->replicate();
+            $newItinerary->queryId = $queryId;
+            $newItinerary->name = $itinerary->name;
+            $newItinerary->status = 0;
+            $newItinerary->created_by = $userId;
+            $newItinerary->created_at = now();
+            $newItinerary->updated_at = now();
+            $newItinerary->save();
+
+            $destinationIds = $itinerary->destinations->pluck('id')->toArray();
+            $newItinerary->destinations()->sync($destinationIds);
+
+            foreach ($itinerary->packages as $package) {
+
+                $newPackage = $package->replicate();
+                $newPackage->itinerary_id = $newItinerary->id;
+                $newPackage->created_by = $userId;
+                $newPackage->created_at = now();
+                $newPackage->updated_at = now();
+
+                if (isset($newPackage->itinery_id)) {
+                    $newPackage->itinery_id = $newItinerary->id;
+                }
+
+                $newPackage->save();
+
+                foreach ($package->dayItems as $dayItem) {
+
+                    $newItem = $dayItem->replicate();
+                    $newItem->package_id = $newPackage->id;
+                    $newItem->created_by = $userId;
+                    $newItem->created_at = now();
+                    $newItem->updated_at = now();
+                    $newItem->save();
+
+                    if ($dayItem->hotelDetail) {
+                        $newHotelDetail = $dayItem->hotelDetail->replicate();
+                        $newHotelDetail->package_day_item_id = $newItem->id;
+                        $newHotelDetail->created_by = $userId;
+                        $newHotelDetail->created_at = now();
+                        $newHotelDetail->updated_at = now();
+                        $newHotelDetail->save();
+                    }
+
+                    if ($dayItem->flightDetail) {
+                        $newFlightDetail = $dayItem->flightDetail->replicate();
+                        $newFlightDetail->package_day_item_id = $newItem->id;
+                        $newFlightDetail->created_by = $userId;
+                        $newFlightDetail->created_at = now();
+                        $newFlightDetail->updated_at = now();
+                        $newFlightDetail->save();
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Itinerary inserted successfully.',
+                'redirect' => url('queries/' . $queryId . '?tab=proposals')
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            Log::error('Insert itinerary failed', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

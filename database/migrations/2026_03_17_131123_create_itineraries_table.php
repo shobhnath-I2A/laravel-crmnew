@@ -38,6 +38,8 @@ return new class extends Migration
             $table->integer('total_days')->default(0);
             // About
             $table->longText('about_package')->nullable();
+
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

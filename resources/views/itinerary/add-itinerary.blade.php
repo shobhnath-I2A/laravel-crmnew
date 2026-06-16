@@ -1,15 +1,20 @@
+<style>
+    .popup-box {
+        max-width: 40%;
+        margin-top: 5px;
+    }
+</style>
 <div class="wrapper" style="margin-top:0px; padding:15px;">
     <form action="{{ route('itineraries.store') }}"
           method="POST"
           id="itineraryForm"
           class="custom-validation ajax-form">
         @csrf
-
+        <input type="hidden" name="queryId" value="{{ $queryId ?? 0 }}">
         <div class="container-fluid">
-
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
-                    <strong>Itinerary Information</strong>
+                    <strong>Itinerary Information ddd</strong>
                 </div>
 
                 <div class="card-body">
