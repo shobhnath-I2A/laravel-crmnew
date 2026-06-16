@@ -54,6 +54,7 @@ class PackageThemeController extends Controller
             ]);
             // dd($validated);
             // Save data
+            $validated['created_by'] = auth()->id();
             $packageTheme  = PackageTheme::create($validated);
 
             return response()->json([

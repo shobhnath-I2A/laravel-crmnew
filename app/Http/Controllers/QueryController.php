@@ -238,6 +238,7 @@ class QueryController extends Controller
                 'startDate' => 'required|date',
                 'endDate' => 'required|date',
             ]);
+            $validated['created_by'] = auth()->id();
             $validated['startDate'] = Carbon::parse($request->startDate)->format('Y-m-d');
             $validated['endDate'] = Carbon::parse($request->endDate)->format('Y-m-d');
 

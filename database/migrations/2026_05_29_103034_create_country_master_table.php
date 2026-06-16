@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('country_code', 10);
 
             $table->boolean('status')->default(true);
-
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
             $table->index('name');

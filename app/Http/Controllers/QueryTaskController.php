@@ -67,7 +67,7 @@ class QueryTaskController extends Controller
                 'reminderDate' => $reminderDateTime,
                 'assignTo'     => $request->assignTo,
                 'status'       => $request->status ?? 0,
-                // 'addedBy'      => auth()->id() ?? null,
+                'created_by'      => auth()->id() ?? null,
             ]);
 
             return response()->json([

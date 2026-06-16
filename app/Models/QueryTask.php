@@ -16,7 +16,8 @@ class QueryTask extends Model
         'makeDone',
         'confirmDate',
         'sentMailDate',
-        'notificationType'
+        'notificationType',
+        'created_by'
     ];
 
     protected $casts = [

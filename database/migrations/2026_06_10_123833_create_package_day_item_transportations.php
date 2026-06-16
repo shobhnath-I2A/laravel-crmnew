@@ -16,6 +16,7 @@ return new class extends Migration
              $table->foreignId('package_day_item_id')
                 ->constrained('package_day_items')
                 ->cascadeOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->string('transfer_category')->nullable();
             $table->timestamps();

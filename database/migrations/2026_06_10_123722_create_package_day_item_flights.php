@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('from_destination')->nullable();
             $table->string('to_destination')->nullable();
             $table->string('flight_duration')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->timestamps();
         });
     }

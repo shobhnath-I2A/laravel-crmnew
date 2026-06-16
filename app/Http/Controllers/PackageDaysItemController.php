@@ -133,6 +133,7 @@ class PackageDaysItemController extends Controller
                     'quad_room'     => $validated['quad_room'] ?? 0,
                     'cwb_room'      => $validated['cwb_room'] ?? 0,
                     'cnb_room'      => $validated['cnb_room'] ?? 0,
+                    'created_by'     => auth()->id(),
                 ]);
             }
 
@@ -142,6 +143,7 @@ class PackageDaysItemController extends Controller
                     'from_destination' => $validated['from_destination'] ?? null,
                     'to_destination'   => $validated['to_destination'] ?? null,
                     'flight_duration'  => $validated['flight_duration'] ?? null,
+                    'created_by'     => auth()->id(),
                 ]);
             }
 

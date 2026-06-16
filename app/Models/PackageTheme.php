@@ -13,5 +13,6 @@ class PackageTheme extends Model
         'name',
         'image',
         'status',
+        'created_by'
     ];
 }

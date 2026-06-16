@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('color', 20)->default('#6c757d');
             $table->integer('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->timestamps();
         });
          Schema::table('queries', function (Blueprint $table) {

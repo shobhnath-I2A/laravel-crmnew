@@ -25,7 +25,8 @@ class Query extends Model
         'assignTo',
         'serviceId',
         'statusId',
-        'details'
+        'details',
+        'created_by'
     ];
 
     public function tasks()

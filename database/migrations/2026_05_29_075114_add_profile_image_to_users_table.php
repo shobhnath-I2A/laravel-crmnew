@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('mobile', 20)->nullable()->after('mobile_code');
             $table->string('website')->nullable()->after('mobile');
             $table->string('theme_color')->nullable()->after('website');
-            $table->string('profile_image')->nullable()->after('website');
+            $table->string('profile_image')->nullable()->after('theme_color');
+            $table->foreignId('created_by')->nullable()->after('profile_image')->constrained('users')->nullOnDelete();
+
 
         });
     }
@@ -33,7 +35,8 @@ return new class extends Migration
                 'mobile_code',
                 'mobile',
                 'website',
-                'profile_image'
+                'profile_image',
+                'created_by'
             ]);
         });
     }

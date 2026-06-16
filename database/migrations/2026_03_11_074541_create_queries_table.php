@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('serviceId')->nullable();
             $table->text('details')->nullable();
             $table->tinyInteger('statusId')->default(1);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
