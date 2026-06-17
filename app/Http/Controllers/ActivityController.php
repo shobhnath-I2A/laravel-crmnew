@@ -15,7 +15,7 @@ class ActivityController extends Controller
     public function index(Request $request)
     {
         try {
-            $activityBuilder = Activity::query();
+            $activityBuilder = Activity::with('addedBy');
             if ($request->filled('keyword')) {
                 $activityBuilder->where('name', 'like', '%' . $request->keyword . '%');
             }
@@ -54,6 +54,7 @@ class ActivityController extends Controller
             if ($request->hasFile('image')) {
                 $validated['image'] = $request->file('image')->store('activites', 'public');
             }
+            $validated['created_by'] = auth()->id();
             $activity = Activity::create($validated);
             return response()->json([
                 'status' => true,
@@ -122,6 +123,7 @@ class ActivityController extends Controller
                 $validated['image'] = $request->file('image')->store('hotels', 'public');
             }
 
+            $validated['created_by'] = auth()->id();
             $activity->update($validated);
 
             return response()->json([

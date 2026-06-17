@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Destination extends Model
 {
     protected $table = 'destinations';
-    protected $fillable = ['name', 'status', 'added_by'];
+    protected $fillable = ['name', 'status', 'created_by'];
 
     public function itineraries()
     {
@@ -17,5 +17,9 @@ class Destination extends Model
     public function queries()
     {
         return $this->belongsToMany(Query::class);
+    }
+    public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

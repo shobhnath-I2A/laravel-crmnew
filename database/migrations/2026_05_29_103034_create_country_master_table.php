@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
 
             $table->unsignedBigInteger('modify_by')->nullable();
-            $table->unsignedBigInteger('added_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
 
             $table->unsignedBigInteger('date_added')->nullable();
             $table->unsignedBigInteger('modify_date')->nullable();

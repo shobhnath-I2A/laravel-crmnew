@@ -79,8 +79,10 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
 Route::get('itineraries/insert', [ItineraryController::class, 'insertItinerary'])
     ->name('itineraries.insert');
+
 Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'insertToQuery'])
     ->name('itineraries.insert.to.query');
 

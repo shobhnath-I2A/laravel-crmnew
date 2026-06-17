@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('destination')->nullable();
             $table->text('details')->nullable();
             $table->boolean('status')->default(1); // 1=Active, 0=Inactive
-            $table->foreignId('added_by')
+            $table->foreignId('created_by')
                   ->nullable()
                   ->constrained('users')
                   ->nullOnDelete();

@@ -21,7 +21,7 @@ class TransferMasterRateList extends Model
         'vehicle_cost',
         'transfer_type',
         'status',
-        'added_by',
+        'created_by',
         'transfer_id'
     ];
 
@@ -47,4 +47,8 @@ class TransferMasterRateList extends Model
     //     return $this->belongsTo(Supplier::class, 'supplierId');
     // }
 
+    public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

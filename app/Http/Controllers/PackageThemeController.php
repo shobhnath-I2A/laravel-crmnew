@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PackageTheme;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 class PackageThemeController extends Controller
 {
     /**
@@ -14,7 +15,7 @@ class PackageThemeController extends Controller
     public function index(Request $request)
     {
         try {
-            $packageThemeBuilder = PackageTheme::query();
+            $packageThemeBuilder = PackageTheme::with('addedBy');
 
             if ($request->filled('keyword')) {
                 $packageThemeBuilder->where('name', 'like', '%' . $request->keyword . '%');
@@ -108,36 +109,62 @@ class PackageThemeController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        try {
-            //  Validation
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:package_themes,name',
-                'image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
-                'status' => 'required|in:0,1',
-            ]);
+{
+    try {
 
-            $packageTheme = PackageTheme::findOrFail($id);
+        $packageTheme = PackageTheme::findOrFail($id);
 
-            $packageTheme->update($validated);
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('package_themes', 'name')->ignore($packageTheme->id),
+            ],
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'status' => 'required|in:0,1',
+        ]);
 
-            return response()->json([
-                'status' => true,
-                'message' => "Package Theme Update successfully",
-                'data' => $packageTheme
-            ]);
-        } catch (ValidationException $ve) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation Failed',
-                'errors' => $ve->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], 500);
+        // Upload image if provided
+        if ($request->hasFile('image')) {
+
+            // Delete old image
+            if ($packageTheme->image && file_exists(public_path($packageTheme->image))) {
+                @unlink(public_path($packageTheme->image));
+            }
+
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            $file->move(public_path('uploads/package-themes'), $filename);
+
+            $validated['image'] = 'uploads/package-themes/' . $filename;
         }
+
+        $validated['created_by'] = auth()->id();
+        $packageTheme->update($validated);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Package Theme updated successfully',
+            'data' => $packageTheme->fresh(),
+        ]);
+
+    } catch (ValidationException $ve) {
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Validation Failed',
+            'errors' => $ve->errors(),
+        ], 422);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage(),
+        ], 500);
     }
+}
 
 }

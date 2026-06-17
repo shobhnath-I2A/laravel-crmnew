@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('destinations')->nullable();
             $table->tinyInteger('status')->default(1);
-            $table->unsignedBigInteger('addedBy')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
         });
     }

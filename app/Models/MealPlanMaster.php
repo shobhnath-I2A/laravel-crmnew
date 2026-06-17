@@ -11,6 +11,11 @@ class MealPlanMaster extends Model
     protected $fillable = [
         'name',
         'status',
-        'added_by',
+        'created_by',
     ];
+
+    public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

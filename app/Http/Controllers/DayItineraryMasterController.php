@@ -15,7 +15,7 @@ class DayItineraryMasterController extends Controller
     public function index(Request $request)
     {
         try {
-            $dayItineraryBuilder = DayItineraryMaster::query();
+            $dayItineraryBuilder = DayItineraryMaster::with('addedBy');
 
             if ($request->filled('keyword')) {
                 $dayItineraryBuilder->where('name', 'like', '%' . $request->keyword . '%');
@@ -56,6 +56,7 @@ class DayItineraryMasterController extends Controller
             ]);
             // dd($validated);
             // Save data
+            $validated['created_by'] = auth()->id();
             $dayItinerary  = DayItineraryMaster::create($validated);
 
             return response()->json([
@@ -121,6 +122,7 @@ class DayItineraryMasterController extends Controller
 
             $dayItinerary = DayItineraryMaster::findOrFail($id);
 
+            $validated['created_by'] = auth()->id();
             $dayItinerary->update($validated);
 
             return response()->json([

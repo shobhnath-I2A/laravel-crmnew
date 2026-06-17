@@ -18,7 +18,7 @@ class Automation extends Model
         'start_date',
         'end_date',
         'status',
-        'added_by',
+        'created_by',
     ];
     public function destination()
     {
@@ -37,6 +37,6 @@ class Automation extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'added_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

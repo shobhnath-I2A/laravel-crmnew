@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             // Status
             $table->boolean('status')->default(1); // 1 = Active, 0 = Inactive
+            $table->foreign('created_by') ->references('id') ->on('users') ->onDelete('set null');
             $table->timestamps();
             // Optional Foreign Key (if destinations table exists)
             // $table->foreign('destination')->references('id')->on('destinations')->onDelete('cascade');

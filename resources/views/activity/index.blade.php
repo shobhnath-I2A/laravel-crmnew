@@ -81,9 +81,11 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td colspan="2">
-                                                                            <div class="listnameicon">i</div>
+                                                                            <div class="listnameicon">
+                                                                                {{ strtoupper(substr($activity->addedBy->name ?? '', 0,1)) }}
+                                                                            </div>
                                                                         </td>
-                                                                        <td>i2a</td>
+                                                                        <td>{{ $activity->addedBy->submit_name ?? '' }} {{ $activity->addedBy->name ?? '' }} {{ $activity->addedBy->last_name ?? '' }}</td>
                                                                     </tr>
 
                                                                 </tbody>

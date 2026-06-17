@@ -15,7 +15,7 @@ class TransferMasterController extends Controller
     public function index(Request $request)
     {
         try {
-            $transferMasterBuilder = TransferMaster::query();
+            $transferMasterBuilder = TransferMaster::with('addedBy');
 
             if ($request->filled('keyword')) {
                 $transferMasterBuilder->where('name', 'like', '%' . $request->keyword . '%');
@@ -57,6 +57,7 @@ class TransferMasterController extends Controller
                 'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             ]);
 
+            $validated['created_by'] = auth()->id();
             $transfer = TransferMaster::create($validated);
 
             return response()->json([
@@ -91,8 +92,12 @@ class TransferMasterController extends Controller
      */
     public function edit(string $id)
     {
-        $transferMaster = TransferMaster::findOrFail($id);
-        return view('transfer.edit-transfer', compact('transferMaster'));
+        try {
+            $transferMaster = TransferMaster::findOrFail($id);
+            return view('transfer.edit-transfer', compact('transferMaster'));
+        } catch (\Exception $e) {
+            Log::error('Error to fetch the transfer master', $e->getMessage());
+        }
     }
 
     /**
@@ -112,6 +117,7 @@ class TransferMasterController extends Controller
                 'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             ]);
 
+            $validated['created_by'] = auth()->id();
             $transfer->update($validated);
 
             return response()->json([

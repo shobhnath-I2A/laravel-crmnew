@@ -52,6 +52,7 @@ class DestinationController extends Controller
                 'name' => 'required|string|max:225|unique:destinations,name'
             ]);
             $validated['status'] = (int) $request->input('status', 1);
+            $validated['created_by'] = auth()->id();
             $data = Destination::create($validated);
 
             return response()->json([
@@ -119,7 +120,7 @@ class DestinationController extends Controller
 
             $validated['name'] = ucwords(strtolower($request->name));
             $validated['status'] = $request->has('status') ? 1 : 0;
-
+            $validated['created_by'] = auth()->id();
             $destination->update($validated);
 
             return response()->json([

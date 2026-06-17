@@ -13,6 +13,7 @@ class Activity extends Model
         'details',
         'image',
         'status',
+        'created_by'
     ];
     public function rates()
     {
@@ -21,5 +22,9 @@ class Activity extends Model
     public function destination()
     {
         return $this->belongsTo(Destination::class, 'destination_id');
+    }
+    public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

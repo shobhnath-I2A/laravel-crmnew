@@ -96,9 +96,9 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td colspan="2">
-                                                                            <div class="listnameicon">i</div>
+                                                                            <div class="listnameicon">{{ strtoupper(substr($hotel->createdBy->first_name ?? $hotel->createdBy->name ?? '', 0,1)) }}</div>
                                                                         </td>
-                                                                        <td>i2a</td>
+                                                                        <td>{{ $hotel->createdBy->submit_name ?? ''}} {{ $hotel->createdBy->name ?? '' }} {{  $hotel->createdBy->last_name ?? '' }}</td>
                                                                     </tr>
 
                                                                 </tbody>

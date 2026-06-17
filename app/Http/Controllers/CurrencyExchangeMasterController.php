@@ -14,7 +14,7 @@ class CurrencyExchangeMasterController extends Controller
     public function index(Request $request)
     {
         try {
-            $currencyExchangeBuilder = CurrencyExchangeMaster::query();
+            $currencyExchangeBuilder = CurrencyExchangeMaster::with('addedBy');
 
             if ($request->filled('keyword')) {
                 $currencyExchangeBuilder->where('name', 'like', '%' . $request->keyword . '%');
@@ -53,6 +53,7 @@ class CurrencyExchangeMasterController extends Controller
             ]);
             // dd($validated);
             // Save data
+            $validated['created_by'] = auth()->id();
             $currencyExchange  = CurrencyExchangeMaster::create($validated);
 
             return response()->json([
@@ -108,14 +109,17 @@ class CurrencyExchangeMasterController extends Controller
     public function update(Request $request, string $id)
     {
         try {
+
+            $currencyExchange = CurrencyExchangeMaster::findOrFail($id);
             //  Validation
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'status' => 'required|in:0,1',
             ]);
 
-            $currencyExchange = CurrencyExchangeMaster::findOrFail($id);
 
+            $validated['created_by'] = auth()->id();
+            // dd($validated);
             $currencyExchange->update($validated);
 
             return response()->json([

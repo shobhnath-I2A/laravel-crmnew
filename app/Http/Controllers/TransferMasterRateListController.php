@@ -48,7 +48,7 @@ class TransferMasterRateListController extends Controller
             $validated['start_date'] = Carbon::parse($request->startDate)->format('Y-m-d');
             $validated['end_date'] = Carbon::parse($request->endDate)->format('Y-m-d');
 
-            // $data['addedBy'] = auth()->id() ?? 1;
+            // $data['created_by'] = auth()->id() ?? 1;
 
             $transferRate = TransferMasterRateList::create($validated);
 

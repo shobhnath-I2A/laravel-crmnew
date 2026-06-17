@@ -50,7 +50,7 @@ class BranchMasterController extends Controller
 
             $validated['status'] = $request->has('status') ? 1 : 0;
 
-            $validated['addedBy'] = auth()->id();
+            $validated['created_by'] = auth()->id();
 
             $validated['dateAdded'] = now();
 

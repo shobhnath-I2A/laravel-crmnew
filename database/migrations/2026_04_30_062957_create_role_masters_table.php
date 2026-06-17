@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('parent_id')->default(0);
             $table->boolean('status')->default(1);
-            $table->unsignedBigInteger('added_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
         });
     }

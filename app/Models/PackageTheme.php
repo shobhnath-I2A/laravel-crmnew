@@ -15,4 +15,8 @@ class PackageTheme extends Model
         'status',
         'created_by'
     ];
+
+    public function addedBy(){
+        return $this->belongsTo(user::class, 'created_by');
+    }
 }

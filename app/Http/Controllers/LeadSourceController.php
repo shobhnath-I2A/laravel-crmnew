@@ -15,7 +15,7 @@ class LeadSourceController extends Controller
     public function index(Request $request)
     {
         try {
-            $leadSourceBuilder = LeadSource::query();
+            $leadSourceBuilder = LeadSource::with('addedBy');
 
             if ($request->filled('keyword')) {
                 $leadSourceBuilder->where('name', 'like', '%' . $request->keyword . '%');
@@ -54,6 +54,7 @@ class LeadSourceController extends Controller
             ]);
             // dd($validated);
             // Save data
+            $validated['created_by'] = auth()->id();
             $leadSource  = LeadSource::create($validated);
 
             return response()->json([
@@ -115,6 +116,7 @@ class LeadSourceController extends Controller
                 'status' => 'required|in:0,1',
             ]);
 
+            $validated['created_by'] = auth()->id();
             $leadSource = LeadSource::findOrFail($id);
 
             $leadSource->update($validated);

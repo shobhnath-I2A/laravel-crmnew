@@ -50,7 +50,7 @@ class AutomationController extends Controller
         ]);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
-        $validated['added_by'] = auth()->id();
+        $validated['created_by'] = auth()->id();
 
         Automation::create($validated);
 
@@ -104,7 +104,7 @@ class AutomationController extends Controller
         ]);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
-        $validated['added_by'] = auth()->id();
+        $validated['created_by'] = auth()->id();
 
         $automation->update($validated);
 

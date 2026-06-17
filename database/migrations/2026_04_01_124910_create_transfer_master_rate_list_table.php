@@ -34,7 +34,7 @@ return new class extends Migration
             $table->boolean('status')->default(1);
 
             // Meta
-            $table->unsignedBigInteger('added_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
         });
     }

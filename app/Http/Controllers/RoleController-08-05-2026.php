@@ -70,7 +70,7 @@ public function store(Request $request)
                 'branch_id' => 1,
                 'parent_id' => $request->parent_id ?? 0,
                 'status'    => $request->has('status') ? 1 : 0,
-                'added_by'  => auth()->id(),
+                'created_by'  => auth()->id(),
             ]);
 
             foreach (config('crm_permissions') as $item) {

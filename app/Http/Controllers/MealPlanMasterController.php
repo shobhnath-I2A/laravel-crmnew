@@ -14,7 +14,7 @@ class MealPlanMasterController extends Controller
     public function index(Request $request)
     {
         try {
-            $mealPlanBuilder = MealPlanMaster::query();
+            $mealPlanBuilder = MealPlanMaster::with('addedBy');
 
             if ($request->filled('keyword')) {
                 $mealPlanBuilder->where('name', 'like', '%' . $request->keyword . '%');
@@ -53,6 +53,7 @@ class MealPlanMasterController extends Controller
             ]);
             // dd($validated);
             // Save data
+            $validated['created_by'] = auth()->id();
             $mealPlan  = MealPlanMaster::create($validated);
 
             return response()->json([
@@ -115,7 +116,7 @@ class MealPlanMasterController extends Controller
             ]);
 
             $roomType = MealPlanMaster::findOrFail($id);
-
+            $validated['created_by'] = auth()->id();
             $roomType->update($validated);
 
             return response()->json([

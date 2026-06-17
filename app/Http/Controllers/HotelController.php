@@ -19,7 +19,7 @@ class HotelController extends Controller
     public function index(Request $request)
     {
         try {
-            $hotelBuilder = Hotel::query();
+            $hotelBuilder = Hotel::with('createdBy');
 
             if ($request->filled('keyword')) {
                 $hotelBuilder->where('name', 'like', '%' . $request->keyword . '%');
@@ -66,6 +66,7 @@ class HotelController extends Controller
                 $validated['image'] = $request->file('image')->store('hotels', 'public');
             }
 
+            $validated['created_by'] = auth()->id();
             $hotel = Hotel::create($validated);
 
             return response()->json([
@@ -90,13 +91,13 @@ class HotelController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id) {
-        try{
+    public function show(string $id)
+    {
+        try {
             $hotel = Hotel::findOrFail($id);
             return view('hotel.view-hotel', compact('hotel'));
-
-        }catch(\Exception $e){
-            Log::error('Error Fetching Hotel: ' .$e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Error Fetching Hotel: ' . $e->getMessage());
             return redirect()->json('hotel->index')->with('error', 'Hotel not found');
         }
     }
@@ -135,6 +136,7 @@ class HotelController extends Controller
                 'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
+            $validated['created_by'] = auth()->id();
             $hotel = Hotel::findOrFail($id);
 
             // ✅ Upload image
@@ -178,23 +180,24 @@ class HotelController extends Controller
         $html = '<option value="">Select Hotel</option>';
 
         foreach ($hotels as $hotel) {
-            $html .= '<option value="'.$hotel->id.'">'.$hotel->name.'</option>';
+            $html .= '<option value="' . $hotel->id . '">' . $hotel->name . '</option>';
         }
 
         return $html;
     }
+
     public function loadMealPlans(Request $request)
-{
-    $mealPlans = MealPlanMaster::where('status', 1)
-        ->orderBy('name')
-        ->get();
+    {
+        $mealPlans = MealPlanMaster::where('status', 1)
+            ->orderBy('name')
+            ->get();
 
-    $html = '<option value="">Select Meal Plan</option>';
+        $html = '<option value="">Select Meal Plan</option>';
 
-    foreach ($mealPlans as $mealPlan) {
-        $html .= '<option value="'.$mealPlan->name.'">'.$mealPlan->name.'</option>';
+        foreach ($mealPlans as $mealPlan) {
+            $html .= '<option value="' . $mealPlan->name . '">' . $mealPlan->name . '</option>';
+        }
+
+        return response($html);
     }
-
-    return response($html);
-}
 }

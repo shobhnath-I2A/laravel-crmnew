@@ -54,10 +54,10 @@
                                                                     <tr>
                                                                         <td colspan="2">
                                                                             <div class="listnameicon">
-                                                                                {{ strtoupper(substr($room->addedBy->first_name ?? $room->addedBy->name ?? '', 0, 1)) }}
+                                                                                {{ strtoupper(substr($room->createdBy->first_name ?? $room->createdBy->name ?? '', 0, 1)) }}
                                                                             </div>
                                                                         </td>
-                                                                        <td>{{ $room->addedBy->submit_name??'' }} {{ $room->addedBy->name??'' }} {{ $room->addedBy->last_name??'' }}</td>
+                                                                        <td>{{ $room->createdBy->submit_name??'' }} {{ $room->createdBy->name??'' }} {{ $room->createdBy->last_name??'' }}</td>
                                                                     </tr>
 
                                                                 </tbody>

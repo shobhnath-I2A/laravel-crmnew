@@ -65,7 +65,7 @@
 
                                                                         <div class="listnameicon">{{ strtoupper(substr($supplier->user->name ?? '', 0, 1)) }}</div>
                                                                     </td>
-                                                                    <td>{{ $supplier->user->name ?? '' }}</td>
+                                                                    <td>{{ $supplier->user->submit_name ?? '' }} {{ $supplier->user->name ?? '' }} {{ $supplier->user->last_name ?? '' }}</td>
                                                                 </tr>
 
                                                             </tbody>

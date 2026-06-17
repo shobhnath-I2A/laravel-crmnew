@@ -57,9 +57,11 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td colspan="2">
-                                                                            <div class="listnameicon">i</div>
+                                                                            <div class="listnameicon">
+                                                                                {{ strtoupper(substr($mplan->addedBy->name ?? '', 0, 1)) }}
+                                                                            </div>
                                                                         </td>
-                                                                        <td>i2a</td>
+                                                                        <td>{{ $mplan->addedBy->submit_name ?? '' }} {{ $mplan->addedBy->name ?? '' }} {{ $mplan->addedBy->last_name ?? '' }}</td>
                                                                     </tr>
 
                                                                 </tbody>

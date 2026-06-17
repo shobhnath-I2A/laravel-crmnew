@@ -13,11 +13,16 @@ class TransferMaster extends Model
         'details',
         'image',
         'status',
+        'created_by'
     ];
 
     // 🔗 Relationship (if using destination ID)
     public function destinationCity()
     {
         return $this->belongsTo(Destination::class, 'destination_id');
+    }
+    public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

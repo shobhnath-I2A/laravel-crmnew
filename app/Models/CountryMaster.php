@@ -10,7 +10,7 @@ class CountryMaster extends Model
 
     protected $fillable = [
         'modify_by',
-        'added_by',
+        'created_by',
         'date_added',
         'modify_date',
         'delete_status',
@@ -19,4 +19,9 @@ class CountryMaster extends Model
         'country_code',
         'status',
     ];
+
+     public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name', 20);
             $table->decimal('rate', 10, 2)->default(1.00);
             $table->boolean('status')->default(true);
-            $table->unsignedBigInteger('added_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
 
             $table->timestamps();
         });

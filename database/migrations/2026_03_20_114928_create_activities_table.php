@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('details')->nullable();
             $table->string('image')->nullable();
             $table->boolean('status')->default(1);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

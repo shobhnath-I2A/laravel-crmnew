@@ -27,7 +27,7 @@ class ItineraryController extends Controller
     {
         try {
 
-            $itineraryBuilder = Itinerary::where('queryId', 0);
+            $itineraryBuilder = Itinerary::with('addedBy')->where('queryId', 0);
 
             if ($request->filled('keyword')) {
                 $itineraryBuilder->where('name', 'like', '%' . $request->keyword . '%');

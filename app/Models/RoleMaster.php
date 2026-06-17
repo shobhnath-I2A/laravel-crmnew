@@ -6,32 +6,36 @@ use Illuminate\Database\Eloquent\Model;
 
 class RoleMaster extends Model
 {
- protected $fillable = [
+    protected $fillable = [
         'name',
         'branch_id',
         'parent_id',
         'status',
-        'added_by',
+        'created_by',
     ];
 
     public function permissions()
     {
         return $this->hasMany(RolePermission::class, 'role_id');
     }
-   public function children()
-{
-    return $this->hasMany(RoleMaster::class, 'parent_id', 'id')
-        ->where('status', 1)
-        ->orderBy('id', 'asc');
-}
+    public function children()
+    {
+        return $this->hasMany(RoleMaster::class, 'parent_id', 'id')
+            ->where('status', 1)
+            ->orderBy('id', 'asc');
+    }
 
-public function childrenRecursive()
-{
-    return $this->children()->with('childrenRecursive');
-}
+    public function childrenRecursive()
+    {
+        return $this->children()->with('childrenRecursive');
+    }
 
-public function branch()
-{
-    return $this->belongsTo(BranchMaster::class, 'branch_id', 'id');
-}
+    public function branch()
+    {
+        return $this->belongsTo(BranchMaster::class, 'branch_id', 'id');
+    }
+    public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

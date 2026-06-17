@@ -15,14 +15,14 @@ class DayItineraryMaster extends Model
         'destination',
         'details',
         'status',
-        'added_by',
+        'created_by',
     ];
 
     /**
      * Relationship: Creator of itinerary
      */
-    public function addedByUser()
+    public function addedBy()
     {
-        return $this->belongsTo(User::class, 'added_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

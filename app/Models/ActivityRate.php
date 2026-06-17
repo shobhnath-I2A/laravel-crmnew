@@ -11,10 +11,14 @@ class ActivityRate extends Model
         'start_date',
         'end_date',
         'adult',
-        'child'
+        'child',
+        'created_by'
     ];
     public function activity()
     {
         return $this->belongsTo(Activity::class);
+    }
+    public function addedBy(){
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

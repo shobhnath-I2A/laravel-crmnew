@@ -16,7 +16,8 @@ class Hotel extends Model
         'contact_person_phone',
         'image',
         'img_link',
-        'status'
+        'status',
+        'created_by'
     ];
 
     public function rates()
@@ -30,5 +31,10 @@ class Hotel extends Model
     public function roomTypes()
     {
         return $this->hasMany(RoomType::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

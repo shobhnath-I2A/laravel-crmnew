@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('hotel_link')->nullable();
             // Status
             $table->boolean('status')->default(1); // 1=Active, 0=Inactive
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

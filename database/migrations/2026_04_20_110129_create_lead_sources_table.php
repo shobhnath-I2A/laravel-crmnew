@@ -17,7 +17,7 @@ return new class extends Migration
             $table->boolean('status')->default(1);
 
             // user who added
-            $table->foreignId('added_by')
+            $table->foreignId('created_by')
                 ->nullable()
                 ->constrained('users')
                 ->nullOnDelete();

@@ -25,7 +25,7 @@
                                         <table class="table table-hover mb-0">
                                             <thead>
                                                 <tr>
-                                                    <th width="32%">title</th>
+                                                    <th width="32%">Title</th>
                                                     <th width="32%">Detail</th>
                                                     <th width="1%" align="left">Status</th>
                                                     <th width="15%" align="left">By</th>
@@ -60,9 +60,11 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td colspan="2">
-                                                                            <div class="listnameicon">i</div>
+                                                                            <div class="listnameicon">
+                                                                            {{ strtoupper(substr($dinerary->addedBy->name ?? '', 0, 1)) }}
+                                                                            </div>
                                                                         </td>
-                                                                        <td>i2a</td>
+                                                                        <td>{{ $dinerary->addedBy->submit_name ?? '' }} {{  $dinerary->addedBy->name ?? '' }} {{  $dinerary->addedBy->last_name ?? '' }}</td>
                                                                     </tr>
 
                                                                 </tbody>

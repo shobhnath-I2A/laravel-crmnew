@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('meal_plan_masters', function (Blueprint $table) {
             $table->id();
             $table->string('name');//APAI,MAPAI,CPAI
-            $table->foreignId('added_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->boolean('status')->default(1); // 1=Active, 0=Inactive
             $table->timestamps();
         });

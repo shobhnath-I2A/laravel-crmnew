@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->decimal('adult', 12, 2)->nullable();
             $table->decimal('child', 12, 2)->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

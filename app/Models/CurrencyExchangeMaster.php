@@ -10,7 +10,11 @@ class CurrencyExchangeMaster extends Model
         'name',
         'rate',
         'status',
-        'addedBy',
+        'created_by',
         'dateAdded',
     ];
+
+    public function addedBy(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

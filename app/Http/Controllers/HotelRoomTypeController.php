@@ -17,7 +17,7 @@ class HotelRoomTypeController extends Controller
     {
         try {
 
-            $roomTypeBuilder = RoomType::with(['hotel', 'addedBy']);
+            $roomTypeBuilder = RoomType::with(['hotel', 'createdBy']);
 
             if ($request->filled('keyword')) {
                 $roomTypeBuilder->where(function ($query) use ($request) {
@@ -25,7 +25,7 @@ class HotelRoomTypeController extends Controller
                         ->orWhereHas('hotel', function ($q) use ($request) {
                             $q->where('name', 'like', '%' . $request->keyword . '%');
                         })
-                        ->orWhereHas('addedBy', function ($q) use ($request) {
+                        ->orWhereHas('createdBy', function ($q) use ($request) {
                             $q->where('name', 'like', '%' . $request->keyword . '%');
                         });
                 });

@@ -16,7 +16,7 @@ class RoomType extends Model
     {
         return $this->belongsTo(Hotel::class, 'hotel_id');
     }
-    public function addedBy()
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }

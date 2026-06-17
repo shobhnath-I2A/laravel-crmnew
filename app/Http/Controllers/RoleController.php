@@ -87,7 +87,7 @@ class RoleController extends Controller
                 'parent_id' => $request->parent_id ?? 0,
                 'name' => $request->name,
                 'status' => $request->status,
-                'added_by' => auth()->id(),
+                'created_by' => auth()->id(),
             ]);
 
 
@@ -158,7 +158,7 @@ class RoleController extends Controller
                 'parent_id' => $request->parent_id ?? 0,
                 'name' => $request->name,
                 'status' => $request->status,
-                'added_by' => auth()->id(),
+                'created_by' => auth()->id(),
             ]);
 
 

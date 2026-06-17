@@ -12,11 +12,11 @@ class BranchMaster extends Model
         'name',
         'destinations',
         'status',
-        'addedBy',
+        'created_by',
     ];
      public function user()
     {
-        return $this->belongsTo(User::class, 'addedBy');
+        return $this->belongsTo(User::class, 'created_by');
     }
     public function roles()
     {

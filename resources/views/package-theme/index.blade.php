@@ -58,9 +58,11 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td colspan="2">
-                                                                            <div class="listnameicon">i</div>
+                                                                            <div class="listnameicon">
+                                                                                {{ strtoupper(substr($ptheme->addedBy->name ?? '' , 0, 1)) }}
+                                                                            </div>
                                                                         </td>
-                                                                        <td>i2a</td>
+                                                                        <td>{{ $ptheme->addedBy->submit_name ?? '' }} {{ $ptheme->addedBy->name ?? '' }} {{ $ptheme->addedBy->last_name ?? '' }}</td>
                                                                     </tr>
 
                                                                 </tbody>
