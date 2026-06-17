@@ -45,9 +45,18 @@ class PackageDayItem extends Model
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
     }
-    public function hotel()
+    // public function hotel()
+    // {
+    //     return $this->belongsTo(Hotel::class);
+    // }
+    public function hotels()
     {
-        return $this->belongsTo(Hotel::class);
+        return $this->belongsToMany(
+            Hotel::class,
+            'package_day_item_hotels',
+            'package_day_item_id',
+            'hotel_id'
+        )->withPivot('hotel_options');
     }
     public function transporationMaster()
     {
@@ -84,7 +93,8 @@ class PackageDayItem extends Model
     }
     public function destination()
     {
-        return $this->belongsTo(Destination::class);
+            return $this->belongsTo(Destination::class, 'destination_id');
+        // return $this->belongsTo(Destination::class);
     }
     public function hotelDetail()
     {

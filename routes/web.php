@@ -151,9 +151,15 @@ Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'inse
     ->name('itineraries.duplicate');
 
 
+    Route::get('/itineraries/{itinerary}/share', [ItineraryController::class, 'share'])
+        ->name('itineraries.share');
 
     Route::post('/itineraries/{id}/archive', [ItineraryController::class, 'archive'])
         ->name('itineraries.archive');
+
+    Route::post('/itineraries/{itinerary}/unarchive', [ItineraryController::class, 'unarchive'])
+    ->name('itineraries.unarchive');
+
     Route::post( '/itineraries/{id}/accept', [ItineraryController::class, 'markAccepted'] )->name('itineraries.accept');
 
     Route::post('/queries/{id}/change-status', [QueryController::class, 'changeStatus'])

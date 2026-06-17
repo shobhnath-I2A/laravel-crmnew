@@ -86,7 +86,7 @@ class ItineraryController extends Controller
                 'show_in_popular' => 'nullable|integer',
                 'show_in_special' => 'nullable|integer',
                 'about_package' => 'nullable|string',
-                'queryId' => 'nullable|integer|exists:queries,id',
+                'queryId' => 'nullable|integer',
             ]);
 
             // Extract destination IDs
@@ -133,27 +133,40 @@ class ItineraryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, string $id)
-    {
-        try {
-            $itinerary = Itinerary::findOrFail($id);
-            // create package
-            $package = app(PackageService::class)->createFromItinerary($id);
-            $dayItems = PackageDayItem::where('package_id', $package->id)
-                ->get()
-                ->keyBy('day');
-            $tab = $request->query('tab', 'proposals');
-            $startDate = Carbon::parse($itinerary->start_date);
-            $endDate   = Carbon::parse($itinerary->end_date);
+   public function show(Request $request, string $id)
+{
+    try {
+        $itinerary = Itinerary::with('destinations')->findOrFail($id);
 
-            return view('itinerary.view-itinerary', compact('itinerary', 'startDate', 'endDate', 'tab', 'package', 'dayItems'));
-        } catch (\Exception $e) {
-            Log::error('Error fetching itinerary: ' . $e->getMessage());
+        // create package
+        $package = app(PackageService::class)->createFromItinerary($id);
 
-            return redirect()->route('itineraries.index')
-                ->with('error', 'Itinerary not found.');
-        }
+        $dayItems = PackageDayItem::with('destination')
+            ->where('package_id', $package->id)
+            ->get()
+            ->keyBy('day');
+
+        $tab = $request->query('tab', 'proposals');
+
+        $startDate = Carbon::parse($itinerary->start_date);
+        $endDate   = Carbon::parse($itinerary->end_date);
+
+        return view('itinerary.view-itinerary', compact(
+            'itinerary',
+            'startDate',
+            'endDate',
+            'tab',
+            'package',
+            'dayItems'
+        ));
+
+    } catch (\Exception $e) {
+        Log::error('Error fetching itinerary: ' . $e->getMessage());
+
+        return redirect()->route('itineraries.index')
+            ->with('error', 'Itinerary not found.');
     }
+}
     /**
      * Show the form for editing the specified resource.
      */
@@ -191,7 +204,7 @@ class ItineraryController extends Controller
                 'show_in_popular' => 'nullable|integer',
                 'show_in_special' => 'nullable|integer',
                 'about_package' => 'nullable|string',
-                'queryId' => 'nullable|integer|exists:queries,id',
+                'queryId' => 'nullable|integer',
 
             ]);
 
@@ -283,7 +296,7 @@ class ItineraryController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Itinerary deleted successfully.'
-            ],200);
+            ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Delete itinerary failed', [
@@ -508,13 +521,25 @@ class ItineraryController extends Controller
 
             /*
         |--------------------------------------------------------------------------
-        | Delete other hotel options from accommodation
+        | Delete other hotel options from accommodation using pivot table
         |--------------------------------------------------------------------------
         */
-            PackageDayItem::where('package_id', $package->id)
+            $deleteOptions = array_diff([1, 2, 3], [$confirmedOption]);
+
+            $itemsToDelete = PackageDayItem::where('package_id', $package->id)
                 ->where('type', 'Accommodation')
-                ->whereIn('hotel_options', array_diff([1, 2, 3], [$confirmedOption]))
-                ->delete();
+                ->whereHas('hotels', function ($q) use ($deleteOptions) {
+                    $q->whereIn('package_day_item_hotels.hotel_options', $deleteOptions);
+                })
+                ->pluck('id');
+
+            if ($itemsToDelete->isNotEmpty()) {
+                DB::table('package_day_item_hotels')
+                    ->whereIn('package_day_item_id', $itemsToDelete)
+                    ->delete();
+
+                PackageDayItem::whereIn('id', $itemsToDelete)->delete();
+            }
 
             /*
         |--------------------------------------------------------------------------
@@ -524,8 +549,6 @@ class ItineraryController extends Controller
             Itinerary::where('queryId', $queryId)
                 ->update([
                     'status' => 0,
-                    // 'confirmed_by' => null,
-                    // 'confirm_date' => null,
                 ]);
 
             /*
@@ -535,8 +558,6 @@ class ItineraryController extends Controller
         */
             $itinerary->update([
                 'status' => 1,
-                // 'confirmed_by' => auth()->id(),
-                // 'confirm_date' => now(),
             ]);
 
             /*
@@ -545,21 +566,8 @@ class ItineraryController extends Controller
         |--------------------------------------------------------------------------
         */
             Query::where('id', $queryId)->update([
-                'statusId' => 5, // Accepted
+                'statusId' => 5,
             ]);
-
-            /*
-        |--------------------------------------------------------------------------
-        | Optional: update invoice/payment tables if models exist
-        |--------------------------------------------------------------------------
-        */
-            // InvoiceMaster::where('queryId', $queryId)->update([
-            //     'package_id' => $package->id,
-            // ]);
-            //
-            // PackagePayment::where('queryId', $queryId)->update([
-            //     'package_id' => $package->id,
-            // ]);
 
             DB::commit();
 
@@ -577,6 +585,93 @@ class ItineraryController extends Controller
             ], 500);
         }
     }
+    // public function markAccepted(Request $request, $id)
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $request->validate([
+    //             'hotel_options' => 'required|in:1,2,3',
+    //         ]);
+
+    //         $itinerary = Itinerary::findOrFail($id);
+
+    //         $package = Package::where('itinerary_id', $itinerary->id)->firstOrFail();
+
+    //         $queryId = $itinerary->queryId;
+    //         $confirmedOption = (int) $request->hotel_options;
+
+    //         /*
+    //     |--------------------------------------------------------------------------
+    //     | Delete other hotel options from accommodation
+    //     |--------------------------------------------------------------------------
+    //     */
+    //         PackageDayItem::where('package_id', $package->id)
+    //             ->where('type', 'Accommodation')
+    //             ->whereIn('hotel_options', array_diff([1, 2, 3], [$confirmedOption]))
+    //             ->delete();
+
+    //         /*
+    //     |--------------------------------------------------------------------------
+    //     | Reset all itineraries of this query
+    //     |--------------------------------------------------------------------------
+    //     */
+    //         Itinerary::where('queryId', $queryId)
+    //             ->update([
+    //                 'status' => 0,
+    //                 // 'confirmed_by' => null,
+    //                 // 'confirm_date' => null,
+    //             ]);
+
+    //         /*
+    //     |--------------------------------------------------------------------------
+    //     | Mark selected itinerary accepted
+    //     |--------------------------------------------------------------------------
+    //     */
+    //         $itinerary->update([
+    //             'status' => 1,
+    //             // 'confirmed_by' => auth()->id(),
+    //             // 'confirm_date' => now(),
+    //         ]);
+
+    //         /*
+    //     |--------------------------------------------------------------------------
+    //     | Update query status
+    //     |--------------------------------------------------------------------------
+    //     */
+    //         Query::where('id', $queryId)->update([
+    //             'statusId' => 5, // Accepted
+    //         ]);
+
+    //         /*
+    //     |--------------------------------------------------------------------------
+    //     | Optional: update invoice/payment tables if models exist
+    //     |--------------------------------------------------------------------------
+    //     */
+    //         // InvoiceMaster::where('queryId', $queryId)->update([
+    //         //     'package_id' => $package->id,
+    //         // ]);
+    //         //
+    //         // PackagePayment::where('queryId', $queryId)->update([
+    //         //     'package_id' => $package->id,
+    //         // ]);
+
+    //         DB::commit();
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Itinerary confirmed successfully',
+    //             'redirect_url' => route('itineraries.show', $itinerary->id),
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
 
     public function finalItinerary(String $id)
     {
@@ -609,7 +704,7 @@ class ItineraryController extends Controller
 
             $userId = auth()->id();
             $queryId = $validated['queryId'];
-
+// dd($itinerary);
             $itinerary->load([
                 'destinations',
                 'packages.dayItems.hotelDetail',
@@ -654,7 +749,7 @@ class ItineraryController extends Controller
                     if ($dayItem->hotelDetail) {
                         $newHotelDetail = $dayItem->hotelDetail->replicate();
                         $newHotelDetail->package_day_item_id = $newItem->id;
-                        $newHotelDetail->created_by = $userId;
+                        // $newHotelDetail->created_by = $userId;
                         $newHotelDetail->created_at = now();
                         $newHotelDetail->updated_at = now();
                         $newHotelDetail->save();
@@ -663,7 +758,7 @@ class ItineraryController extends Controller
                     if ($dayItem->flightDetail) {
                         $newFlightDetail = $dayItem->flightDetail->replicate();
                         $newFlightDetail->package_day_item_id = $newItem->id;
-                        $newFlightDetail->created_by = $userId;
+                        // $newFlightDetail->created_by = $userId;
                         $newFlightDetail->created_at = now();
                         $newFlightDetail->updated_at = now();
                         $newFlightDetail->save();

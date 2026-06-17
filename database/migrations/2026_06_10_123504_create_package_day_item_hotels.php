@@ -41,7 +41,7 @@ return new class extends Migration
             $table->time('check_in_time')->nullable();
             $table->date('check_out_date')->nullable();
             $table->time('check_out_time')->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            // $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->timestamps();
         });

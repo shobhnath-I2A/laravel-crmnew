@@ -38,7 +38,7 @@
                                         style="width:100%; height:auto; min-height:100%;">
                                     <div class="packname">{{ $itinerary->name ?? '' }}
                                         <div style="color:#fff; font-size:11px; margin-top:2px;">
-                                            {{ $query->destination ?? '' }}</div>
+                                            {{ $itinerary->destinations->pluck('name')->join(', ') }}</div>
                                     </div>
                                 </div>
                             </a>
@@ -88,25 +88,34 @@
                                                             class="dropdown-item">
                                                             Duplicate
                                                         </a>
-
-                                                        <a href="javascript:void(0)"
+                                                        @if($status==3)
+                                                            <a href="javascript:void(0)"
+                                                            onclick="unarchiveItinerary({{ $itinerary->id }})"
+                                                            class="dropdown-item">
+                                                                Unarchive
+                                                            </a>
+                                                        @else
+                                                            <a href="javascript:void(0)"
                                                             onclick="archiveItinerary({{ $itinerary->id }})"
                                                             class="dropdown-item">
-                                                            Archive
-                                                        </a>
+                                                                Archive
+                                                            </a>
+                                                        @endif
 
-                                                        <form action="{{ route('itineraries.destroy', $itinerary->id) }}"
-                                                            method="POST"
-                                                             class="ajax-form delete-form"
-                                                            onsubmit="return confirm('Are you sure you want to delete this itinerary?');">
+                                                        @if($itinerary->status != 1)
+                                                            <form action="{{ route('itineraries.destroy', $itinerary->id) }}"
+                                                                method="POST"
+                                                                class="ajax-form delete-form"
+                                                                onsubmit="return confirm('Are you sure you want to delete this itinerary?');">
 
-                                                            @csrf
-                                                            @method('DELETE')
+                                                                @csrf
+                                                                @method('DELETE')
 
-                                                            <button type="submit" class="dropdown-item">
-                                                                Delete Itinerary
-                                                            </button>
-                                                        </form>
+                                                                <button type="submit" class="dropdown-item">
+                                                                    Delete Itinerary
+                                                                </button>
+                                                            </form>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </td>
@@ -166,11 +175,6 @@
                                                         onclick="openAcceptModal({{ $itinerary->id }}, '{{ $itinerary->website_cost ?? 0 }}')">
                                                         Mark as Accepted
                                                     </button>
-                                                    {{-- <button type="button" class="btn btn-warning btn-lg"
-                                                        style="width:100%;"
-                                                        onclick="openAcceptModal({{ $itinerary->id }}, '{{ $itinerary->website_cost ?? 0 }}')">
-                                                        Mark as Accepted
-                                                    </button> --}}
                                                 @endif
 
                                                 <button type="button"
@@ -322,6 +326,44 @@
                     // }
                 });
             }
+            function unarchiveItinerary(id) {
+
+                if (!confirm('Are you sure you want to unarchive this itinerary?')) {
+                    return;
+                }
+
+                $('#ajaxLoader').show();
+
+                $.ajax({
+                    url: '/itineraries/' + id + '/unarchive',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+
+                        $('#ajaxLoader').hide();
+
+                        $('#toastMessage').html(
+                            '<div class="toast-box">' + response.message + '</div>'
+                        ).show();
+
+                        setTimeout(function () {
+                            $('#toastMessage').fadeOut();
+                        }, 3000);
+
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    },
+                    error: function(xhr) {
+
+                        $('#ajaxLoader').hide();
+
+                        alert(xhr.responseJSON?.message || 'Something went wrong.');
+                    }
+                });
+            }
 
             function acceptItinerary(id) {
                 if (!confirm('Mark this itinerary as accepted?')) {
@@ -359,9 +401,9 @@
                 $('#acceptItineraryId').val(id);
 
                 $('#acceptOption').html(`
-        <option value="">Select</option>
-        <option value="1">Option 1 : ₹ ${amount}</option>
-    `);
+                    <option value="">Select</option>
+                    <option value="1">Option 1 : ₹ ${amount}</option>
+                `);
 
                 $('#acceptItineraryModal').modal('show');
             }
