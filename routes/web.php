@@ -105,6 +105,8 @@ Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'inse
     // Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
     //     ->name('itineraries.final')
     //     ->middleware('module.permission:itineraries-final,view');
+    Route::get('/get-activities-by-destination/{destination_id}', [ActivityController::class, 'getByDestination'])
+        ->name('activities.by.destination');
 
     Route::get('/itineraries/{id}', [ItineraryController::class, 'show'])
     ->name('itineraries.show');
@@ -167,6 +169,8 @@ Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'inse
     Route::post('/queries/{id}/change-status', [QueryController::class, 'changeStatus'])
     ->name('queries.change-status');
 
+    Route::get('/transfers-list', [TransferMasterController::class, 'getalltransfer'])->name('transfers.list');
+
     Route::resource('hotels-rates', HotelRateController::class)
         ->middleware('module.permission:Hotel,edit');
 
@@ -208,6 +212,8 @@ Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'inse
     ->name('weather-setting.refresh');
 
     Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
+
+
 
     Route::middleware(['auth', 'admin.only'])->group(function () {
         Route::resource('settings', SettingController::class);

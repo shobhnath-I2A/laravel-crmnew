@@ -150,7 +150,7 @@
 
     @if($item->type == 'accommodation')
         @if($item->source_type == 1)
-            {{ $item->hotel->name ?? '-' }}
+            {{ $item->hotels->first()?->name ?? '-' }}
         @else
             {{ $item->name ?? '-' }}
         @endif
@@ -180,7 +180,7 @@
 
 </td>
 
-            <td align="center">   @if($item->type == 'accommodation') <span class="hoteloption1">Option {{ $item->hotel_options ?? '-' }} </span>@else - @endif </td>
+            <td align="center">   @if($item->type == 'accommodation') <span class="hoteloption1">Option  {{ $item->hotels->first()?->pivot?->hotel_options ?? '-' }} </span>@else - @endif </td>
 
             <td>
                 {{ ucfirst($item->type) }}

@@ -14,7 +14,7 @@
         <div class="container-fluid">
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
-                    <strong>Itinerary Information ddd</strong>
+                    <strong>Itinerary Information</strong>
                 </div>
 
                 <div class="card-body">

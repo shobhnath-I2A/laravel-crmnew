@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TransferMaster;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
@@ -145,5 +146,19 @@ class TransferMasterController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function getalltransfer()
+    {
+        try {
+            $transfers = TransferMaster::where('status', 1)
+                ->orderBy('name')
+                ->get(['id', 'name','details']);
+
+            return response()->json($transfers);
+        } catch (Exception $e) {
+            Log::error('Error fetching transfer', [
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }

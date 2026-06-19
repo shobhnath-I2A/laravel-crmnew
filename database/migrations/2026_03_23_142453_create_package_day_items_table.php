@@ -9,43 +9,45 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::create('package_day_items', function (Blueprint $table) {
-        $table->id();
+    public function up(): void
+    {
+        Schema::create('package_day_items', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('package_id')->constrained('packages')->cascadeOnDelete();
-        $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
+            $table->foreignId('package_id')->constrained('packages')->cascadeOnDelete();
+            $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
+            $table->foreignId('activity_id')->nullable()->constrained('activities')->nullOnDelete();
+            $table->foreignId('transfer_id')->nullable()->constrained('transfer_masters')->nullOnDelete();
+            $table->foreignId('meal_master_id')->nullable()->constrained('meal_plan_masters')->nullOnDelete();
+            $table->integer('day')->default(1);
+            $table->integer('day_order')->default(0);
 
-        $table->integer('day')->default(1);
-        $table->integer('day_order')->default(0);
+            $table->string('type', 50)
+                ->comment('daydetail, accommodation, activity, flight, transportation, cruise, meal, insurance, visa');
 
-        $table->string('type', 50)
-            ->comment('daydetail, accommodation, activity, flight, transportation, cruise, meal, insurance, visa');
+            $table->tinyInteger('source_type')->default(0)
+                ->comment('0 manual, 1 from master, 2 from API');
 
-        $table->tinyInteger('source_type')->default(0)
-            ->comment('0 manual, 1 from master, 2 from API');
+            $table->string('name')->nullable();
+            $table->text('description')->nullable();
 
-        $table->string('name')->nullable();
-        $table->text('description')->nullable();
+            $table->boolean('show_time')->default(0);
+            $table->date('start_date')->nullable();
+            $table->time('start_time')->nullable();
+            $table->date('end_date')->nullable();
+            $table->time('end_time')->nullable();
 
-        $table->boolean('show_time')->default(0);
-        $table->date('start_date')->nullable();
-        $table->time('start_time')->nullable();
-        $table->date('end_date')->nullable();
-        $table->time('end_time')->nullable();
+            $table->tinyInteger('status')->default(1);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
 
-        $table->tinyInteger('status')->default(1);
-        $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-        $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
 
-        $table->timestamps();
-        $table->softDeletes();
-
-        $table->index(['package_id', 'day', 'type']);
-        $table->index(['type', 'status']);
-    });
-}
+            $table->index(['package_id', 'day', 'type']);
+            $table->index(['type', 'status']);
+        });
+    }
 
     /**
      * Reverse the migrations.

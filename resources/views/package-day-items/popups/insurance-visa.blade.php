@@ -1,61 +1,55 @@
 <div class="modal-body">
     <div class="row">
+
         <div class="col-md-12">
             <div class="form-group">
-                <label for="validationCustom02">Day Itinerary order</label>
-                <input name="day_order" class="form-control" type="text" value="{{ old('day_order', $packageDayItem->day_order ?? '') }}" required=""
-                    aria-required="true">
+                <label>Day Itinerary Order</label>
+                <input name="day_order" class="form-control" type="text"
+                    value="{{ old('day_order', $packageDayItem->day_order ?? '') }}">
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="form-group">
-                <label for="validationCustom02">Destination
-                </label>
-                <select name="destination_id" id="destinationName" class="form-control" onchange="loadhotel();"
-                    style="display: block;" readonly>
+                <label>Destination</label>
+                <select name="destination_id" class="form-control">
                     @foreach ($destinationList as $id => $name)
-                        @if ($packageDayItem->destination_id == $id)
-                            <option value="{{ $id }}" selected>{{ $name }}</option>
-                        @endif
+                        <option value="{{ $id }}"
+                            {{ old('destination_id', $packageDayItem->destination_id ?? '') == $id ? 'selected' : '' }}>
+                            {{ $name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
         </div>
-         <div class="col-md-6">
+
+        <div class="col-md-6">
             <div class="form-group">
-                <label for="validationCustom02">Name
-                </label>
-                <input name="name" type="text" class="form-control ui-autocomplete-input valid" id="servicename"
-                    value="{{ old('name', $packageDayItem->name ?? '') }}" autocomplete="off" aria-required="true"
-                    aria-invalid="false">
+                <label>Name</label>
+                <input type="text" name="name" class="form-control"
+                    value="{{ old('name', $packageDayItem->name ?? '') }}">
             </div>
         </div>
+
         <div class="row"
-            style="background: rgb(254, 250, 235); border-color: #f7d038; padding: 10px; width: 100%; margin: auto; border: 1px solid #ffd17e; margin: 10px 10px; border-radius: 4px;">
+            style="background:#fefaeb;border:1px solid #ffd17e;padding:10px;width:100%;margin:10px;border-radius:4px;">
+
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="validationCustom02">Date* </label>
-                    <input type="text" class="form-control" name="check_in_date" id="startDate"
-                        value="{{ old('check_in_date', isset($packageDayItem->check_in_date) ? \Carbon\Carbon::parse($packageDayItem->check_in_date)->format('d-m-Y') : '') }}">
-                    @if ($errors->has('check_in_date'))
-                        <span class="text-danger">{{ $errors->first('check_in_date') }}</span>
-                    @endif
+                    <label>Date</label>
+                    <input type="text" class="form-control" name="start_date" id="startDate"
+                        value="{{ old('start_date', !empty($packageDayItem->start_date) ? \Carbon\Carbon::parse($packageDayItem->start_date)->format('d-m-Y') : '') }}">
                 </div>
             </div>
 
         </div>
+
         <div class="col-md-12">
             <div class="form-group">
-                <label for="validationCustom02">Description
-                </label>
-                <textarea name="description" rows="5" class="editorclass" id="description" aria-hidden="true">{{ $packageDayItem->description ?? '' }}</textarea>
+                <label>Description</label>
+                <textarea name="description" rows="5" class="editorclass">{{ old('description', $packageDayItem->description ?? '') }}</textarea>
             </div>
         </div>
+
     </div>
 </div>
-
-<input name="action" type="hidden" id="action" value="addFeesInsurance">
-<input name="editId" type="hidden" id="editId" value="">
-<input name="pid" type="hidden" id="editId" value="108998">
-<input name="packageDays" type="hidden" id="packageDays" value="1">

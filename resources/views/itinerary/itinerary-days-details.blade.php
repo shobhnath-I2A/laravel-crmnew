@@ -140,7 +140,42 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div style="margin-bottom:20px;"><strong>Room: </strong> 1 Double &nbsp;&nbsp;|
+                                        <div style="margin-bottom:20px;">
+                                        @php
+                                            $rooms = [];
+
+                                            if (($item->hotelDetail->single_room ?? 0) > 0) {
+                                                $rooms[] = $item->hotelDetail->single_room . ' Single';
+                                            }
+
+                                            if (($item->hotelDetail->double_room ?? 0) > 0) {
+                                                $rooms[] = $item->hotelDetail->double_room . ' Double';
+                                            }
+
+                                            if (($item->hotelDetail->triple_room ?? 0) > 0) {
+                                                $rooms[] = $item->hotelDetail->triple_room . ' Triple';
+                                            }
+
+                                            if (($item->hotelDetail->quad_room ?? 0) > 0) {
+                                                $rooms[] = $item->hotelDetail->quad_room . ' Quad';
+                                            }
+
+                                            if (($item->hotelDetail->cwb_room ?? 0) > 0) {
+                                                $rooms[] = $item->hotelDetail->cwb_room . ' CWB';
+                                            }
+
+                                            if (($item->hotelDetail->cnb_room ?? 0) > 0) {
+                                                $rooms[] = $item->hotelDetail->cnb_room . ' CNB';
+                                            }
+                                        @endphp
+
+
+
+                                            <strong>Room:</strong>
+                                            {{ implode(', ', $rooms) }}
+
+
+                                        |
                                             &nbsp;&nbsp;<strong><i class="fa fa-cutlery" aria-hidden="true"></i> Meal:
                                             </strong> {{ $item->hotelDetail?->meal_plan ?? '-' }}</div>
                                     </div>
@@ -156,8 +191,7 @@
                 {{-- ================== flight DETAIL ================== --}}
             @elseif($type === 'flight')
                 <div class="daydetailsbox">
-                    <i class="fa fa-pencil"
-                        onclick="openPopup('Day {{ $day ?? '' }} Flight - {{ $date ?? '' }}', '{{ route('package-days-items.edit', ['package_days_item' => $item->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')"></i>
+                    <i class="fa fa-pencil" onclick="openPopup('Day {{ $day ?? '' }} Flight - {{ $date ?? '' }}', '{{ route('package-days-items.edit', ['package_days_item' => $item->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')"></i>
 
                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                         <tbody>
@@ -176,13 +210,10 @@
                                     </div>
                                 </td>
                                 <td width="99%" align="left" valign="top" style="padding-left:10px;">
-
                                     <div class="eventheading">
                                         <div class="eventsectioniconOrder">{{ $item->day_order ?? '' }} </div>
-                                        <div class="eventsectionicon"><i style="" class="fa fa-plane"
-                                                aria-hidden="true"></i>
-                                        </div>{{ $item->name ?? '' }},<span
-                                            style="color:#FF9900; padding-left:10px;">({{ $item->flight_no ?? '' }})</span>
+                                        <div class="eventsectionicon"><i style="" class="fa fa-plane" aria-hidden="true"></i>
+                                        </div>{{ $item->name ?? '' }},<span  style="color:#FF9900; padding-left:10px;">({{ $item->flight_no ?? '' }})</span>
                                         <span style="color:#FF9900; padding-left:10px;"></span>
                                     </div>
                                     <div style="margin-bottom:10px;">
@@ -190,29 +221,23 @@
                                             <tbody>
                                                 <tr>
                                                     <td align="center" style="font-size:12px;">
-                                                        <div
-                                                            style="font-size: 12px; border: 1px solid #ddd; padding: 6px 10px; background-color: #f9f9f9; border-radius: 4px;">
-                                                            <div
-                                                                style="font-size:14px; font-weight:700; color:#000; margin-bottom:3px;">
+                                                        <div style="font-size: 12px; border: 1px solid #ddd; padding: 6px 10px; background-color: #f9f9f9; border-radius: 4px;">
+                                                            <div style="font-size:14px; font-weight:700; color:#000; margin-bottom:3px;">
                                                                 {{ \Carbon\Carbon::parse($item->check_in_time)->format('h:i A') }}
                                                             </div>{{ $item->from_destination ?? '' }}
                                                         </div>
                                                     </td>
                                                     <td align="center" style="width:100px;">
-                                                        <div
-                                                            style="text-align:center; font-size:11px; color:#666666;padding-bottom: 4px;">
+                                                        <div style="text-align:center; font-size:11px; color:#666666;padding-bottom: 4px;">
                                                             {{ $item->flight_duration ?? '' }}</div>
-                                                        <div
-                                                            style="font-size:0px; border-top:2px solid #ddd; position:relative;">
+                                                        <div style="font-size:0px; border-top:2px solid #ddd; position:relative;">
                                                             <i class="fa fa-plane" aria-hidden="true"
                                                                 style="position: absolute; font-size: 18px; transform: rotate(45deg); top: -9px; left: 40%;"></i>
                                                         </div>
                                                     </td>
                                                     <td align="center">
-                                                        <div
-                                                            style="font-size: 12px; border: 1px solid #ddd; padding: 6px 10px; background-color: #f9f9f9; border-radius: 4px;">
-                                                            <div
-                                                                style="font-size:14px; font-weight:700; color:#000; margin-bottom:3px;">
+                                                        <div style="font-size: 12px; border: 1px solid #ddd; padding: 6px 10px; background-color: #f9f9f9; border-radius: 4px;">
+                                                            <div style="font-size:14px; font-weight:700; color:#000; margin-bottom:3px;">
                                                                 {{ \Carbon\Carbon::parse($item->check_out_time)->format('h:i A') }}
                                                             </div>{{ $item->to_destination ?? '' }}
                                                         </div>
@@ -232,8 +257,7 @@
                 {{-- Insurance --}}
             @elseif($type === 'insurance')
                 <div class="daydetailsbox">
-                    <i class="fa fa-pencil"
-                        onclick="openPopup('Day {{ $day ?? '' }} Insurance / Visa - {{ $date ?? '' }}', '{{ route('package-days-items.edit', ['package_days_item' => $item->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')"></i>
+                    <i class="fa fa-pencil" onclick="openPopup('Day {{ $day ?? '' }} Insurance / Visa - {{ $date ?? '' }}', '{{ route('package-days-items.edit', ['package_days_item' => $item->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')"></i>
                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                         <tbody>
                             <tr>
@@ -243,23 +267,19 @@
                                         popaction="action=medialibrary&amp;afunctin=changeeventimage2333419&amp;pid=108998&amp;destinations=kuala-lumpur"
                                         style="cursor:pointer;">
                                         <img id="eventimage2333419"src="{{ asset('assets/images/dummy-image.png') }}">
-
                                         <i class="fa fa-pencil fa-pencil-blk" aria-hidden="true"
                                             onclick="loadpop('Media library',this,'600px')" data-toggle="modal"
                                             data-target=".bs-example-modal-center"
                                             popaction="action=medialibrary&amp;afunctin=changeeventimage2333419&amp;pid=108998&amp;destinations=kuala-lumpur"></i>
                                     </div>
-
                                 </td>
                                 <td width="99%" align="left" valign="top" style="padding-left:10px;">
                                     <div class="eventheading">
-                                        <div class="eventsectioniconOrder">5 </div>
-                                        <div class="eventsectionicon"><i style="" class="fa fa-credit-card"
-                                                aria-hidden="true"></i></div> {{ $item->name ?? '' }} <span
-                                            style="color:#FF9900; padding-left:10px;"></span>
+                                        <div class="eventsectioniconOrder">{{ $item->day_order ?? '' }} </div>
+                                        <div class="eventsectionicon"><i style="" class="fa fa-credit-card" aria-hidden="true"></i></div> {{ $item->name ?? '' }}
+                                        <span style="color:#FF9900; padding-left:10px;"></span>
                                     </div>
                                     <div class="eventcontent">{!! $item->description ?? '' !!}</div>
-
                                 </td>
                             </tr>
                         </tbody>
@@ -269,7 +289,7 @@
             @elseif($type === 'meal')
                 <div class="daydetailsbox">
                     <i class="fa fa-pencil"
-                        onclick="openPopup('Day {{ $day ?? '' }} Insurance / Visa - {{ $date ?? '' }}', '{{ route('package-days-items.edit', ['package_days_item' => $item->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')"></i>
+                        onclick="openPopup('Day {{ $day ?? '' }} Meal- {{ $date ?? '' }}', '{{ route('package-days-items.edit', ['package_days_item' => $item->id ?? 0, 'itinerary_id' => $itineryId ?? 0]) }}')"></i>
                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                         <tbody>
                             <tr>
@@ -289,14 +309,16 @@
                                 </td>
                                 <td width="99%" align="left" valign="top" style="padding-left:10px;">
                                     <div class="eventheadingtime"><i class="fa fa-clock-o" aria-hidden="true"></i>
-                                        1:00 PM TO 2:00 PM</div>
-                                    <div class="eventheading">
-                                        <div class="eventsectioniconOrder">5 </div>
-                                        <div class="eventsectionicon"><i style="" class="fa fa-cutlery"
-                                                aria-hidden="true"></i></div> test meal <span
-                                            style="color:#FF9900; padding-left:10px;"></span>
+                                        {{ \Carbon\Carbon::parse($item->start_time)->format('g:i A') }}
+                                        to
+                                        {{ \Carbon\Carbon::parse($item->end_time)->format('g:i A') }}
                                     </div>
-                                    <div class="eventcontent">testing</div>
+                                    <div class="eventheading">
+                                        <div class="eventsectioniconOrder">{{ $item->day_order ?? '' }} </div>
+                                        <div class="eventsectionicon"><i style="" class="fa fa-cutlery" aria-hidden="true"></i></div> {{ $item->name??'' }}
+                                        <span style="color:#FF9900; padding-left:10px;"></span>
+                                    </div>
+                                    <div class="eventcontent">{!! $item->description ?? '' !!}</div>
                                 </td>
                             </tr>
                         </tbody>

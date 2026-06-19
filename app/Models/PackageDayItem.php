@@ -23,6 +23,7 @@ class PackageDayItem extends Model
         'end_date',
         'end_time',
         'status',
+        'activity_id',
         'created_by',
         'updated_by',
     ];
@@ -93,7 +94,7 @@ class PackageDayItem extends Model
     }
     public function destination()
     {
-            return $this->belongsTo(Destination::class, 'destination_id');
+        return $this->belongsTo(Destination::class, 'destination_id');
         // return $this->belongsTo(Destination::class);
     }
     public function hotelDetail()
@@ -108,5 +109,13 @@ class PackageDayItem extends Model
     public function prices()
     {
         return $this->hasMany(PackageDayItemPrice::class, 'package_day_item_id');
+    }
+    public function activity()
+    {
+        return $this->belongsTo(Activity::class, 'activity_id');
+    }
+    public function transportation()
+    {
+        return $this->belongsTo(TransferMaster::class, 'transfer_id', 'id');
     }
 }

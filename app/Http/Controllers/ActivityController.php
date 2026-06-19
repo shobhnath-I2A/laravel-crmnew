@@ -7,6 +7,7 @@ use App\Models\Activity;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Exception;
+
 class ActivityController extends Controller
 {
     /**
@@ -151,5 +152,14 @@ class ActivityController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function getByDestination($destination_id)
+    {
+        $activities = Activity::where('destination_id', $destination_id)
+            ->where('status', 1)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json($activities);
     }
 }

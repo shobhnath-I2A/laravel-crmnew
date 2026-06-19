@@ -6,7 +6,8 @@
             <div class="main-content">
                 <div class="page-content">
                     <div class="newboxheading">
-                        <div class="newhead">Insert Itinerary<div class="newoptionmenu">
+                        <div class="newhead">Insert Itinerary
+                            <div class="newoptionmenu">
                                 <div>
                                     <a href="display.html?ga=query&amp;view=1&amp;id=127873&amp;c=2">
                                         <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light"

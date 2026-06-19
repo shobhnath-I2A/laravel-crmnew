@@ -11,28 +11,29 @@ class ItineraryPriceController extends Controller
      * Display a listing of the resource.
      */
     public function index($id)
-    {
-        $itinerary = Itinerary::with([
-            'destinations',
-            'packages.dayItems' => function ($q) {
-                $q->whereNotIn('type', ['daydetail', 'null', ''])
-                    ->orderBy('day')
-                    ->orderBy('id');
-            },
-            'packages.dayItems.hotel'
-        ])->findOrFail($id);
+{
+    $itinerary = Itinerary::with([
+        'destinations',
+        'packages.dayItems' => function ($q) {
+            $q->whereNotIn('type', ['daydetail', 'null', ''])
+                ->whereNotNull('type')
+                ->orderBy('day')
+                ->orderBy('id');
+        },
+        'packages.dayItems.hotels',
+    ])->findOrFail($id);
 
-        $dayItems = $itinerary->packages
-            ->flatMap(fn($package) => $package->dayItems);
+    $dayItems = $itinerary->packages
+        ->flatMap(fn ($package) => $package->dayItems);
 
-        $dayWiseItems = $dayItems->groupBy('day');
+    $dayWiseItems = $dayItems->groupBy('day');
 
-        return view('itinerary.price.itinerary-price', compact(
-            'itinerary',
-            'dayItems',
-            'dayWiseItems'
-        ));
-    }
+    return view('itinerary.price.itinerary-price', compact(
+        'itinerary',
+        'dayItems',
+        'dayWiseItems'
+    ));
+}
 
     /**
      * Show the form for creating a new resource.

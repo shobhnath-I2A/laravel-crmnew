@@ -62,6 +62,9 @@ class PackageDaysItemController extends Controller
                 'day_order'         => 'nullable|integer',
 
                 'source_type' => 'nullable|in:0,1,2',
+                'activity_id'    => 'nullable|integer',
+                'transfer_id'    => 'nullable|integer',
+                'meal_master_id'    => 'nullable|integer',
 
                 'name'              => 'nullable|string|max:255',
                 'description'       => 'nullable|string',
@@ -99,6 +102,15 @@ class PackageDaysItemController extends Controller
             $type = strtolower($validated['type']);
             $sourceType = $validated['source_type'] ?? 0;
 
+             if ($type == 'daydetail') {
+
+                PackageDayItem::create([
+                    'name'        => $validated['name'] ?? null,
+                    'description' => $validated['description'] ?? null,
+                    'updated_by'  => auth()->id(),
+                ]);
+            } else {
+
             $item = PackageDayItem::create([
                 'package_id'     => $validated['package_id'],
                 'destination_id' => $validated['destination_id'] ?? null,
@@ -106,7 +118,11 @@ class PackageDaysItemController extends Controller
                 'source_type'    => $sourceType,
                 'day'            => $validated['day'],
                 'day_order'      => $validated['day_order'] ?? 0,
-                'name'           => $validated['name'] ?? $validated['day_subject'] ?? null,
+                'name'           => $type === 'activity' && $sourceType == 1 ? $activityName : ($validated['name'] ?? null),
+                // 'name'           => $sourceType == 1 ? null : ($validated['name'] ?? null),
+                'activity_id' => ($type == 'activity' && $sourceType == 1) ? ($validated['activity_id'] ?? null) : null,
+                'meal_master_id' => ($type == 'transportation' && $sourceType == 1) ? ($validated['meal_master_id'] ?? null) : null,
+                // 'name'           => $validated['name'] ?? $validated['day_subject'] ?? null,
                 'description'    => $validated['description'] ?? null,
                 'show_time'      => $request->boolean('show_time'),
                 'start_date'     => dbDate($validated['start_date'] ?? null),
@@ -115,7 +131,7 @@ class PackageDaysItemController extends Controller
                 'end_time'       => $validated['end_time'] ?? null,
                 'created_by'     => auth()->id(),
             ]);
-
+            }
             if ($type === 'accommodation') {
 
                 $item->hotelDetail()->create([
@@ -177,18 +193,39 @@ class PackageDaysItemController extends Controller
     {
         //
     }
-
     public function edit(PackageDayItem $packageDaysItem)
     {
         $packageDayItem = $packageDaysItem->load([
             'destination',
             'hotelDetail.hotel',
             'flightDetail',
+            'activity',
+            'transportation',
             'prices',
         ]);
 
-        return view('package-day-items.forms', compact('packageDayItem'));
+        $activities = Activity::where('status', 1)
+            ->where('destination_id', $packageDayItem->destination_id)
+            ->orderBy('name')
+            ->get();
+
+        return view('package-day-items.forms', compact(
+            'packageDayItem',
+            'activities'
+        ));
     }
+
+    // public function edit(PackageDayItem $packageDaysItem)
+    // {
+    //     $packageDayItem = $packageDaysItem->load([
+    //         'destination',
+    //         'hotelDetail.hotel',
+    //         'flightDetail',
+    //         'prices',
+    //     ]);
+
+    //     return view('package-day-items.forms', compact('packageDayItem'));
+    // }
     // public function edit(PackageDayItem $packageDaysItem)
     // {
     //     $packageDayItem = $packageDaysItem;
@@ -212,6 +249,7 @@ class PackageDaysItemController extends Controller
                 'day_order'         => 'nullable|integer',
 
                 'source_type' => 'nullable|in:0,1,2',
+                'activity_id'    => 'nullable|integer',
 
                 'name'              => 'nullable|string|max:255',
                 'description'       => 'nullable|string',
@@ -249,6 +287,11 @@ class PackageDaysItemController extends Controller
             // $type = strtolower($packageDaysItem->type);
             $type = strtolower($validated['type']);
             $sourceType = $validated['source_type'] ?? 0;
+            $activityName = null;
+
+            if ($type === 'activity' && $sourceType == 1 && !empty($validated['activity_id'])) {
+                $activityName = Activity::where('id', $validated['activity_id'])->value('name');
+            }
             if ($type == 'daydetail') {
 
                 $packageDaysItem->update([
@@ -264,7 +307,10 @@ class PackageDaysItemController extends Controller
                     'source_type'    => $sourceType,
                     'day'            => $validated['day'],
                     'day_order'      => $validated['day_order'] ?? 0,
-                    'name'           => $validated['name'] ?? $validated['day_subject'] ?? null,
+                    'activity_id' => ($type == 'activity' && $sourceType == 1) ? ($validated['activity_id'] ?? null) : null,
+                    'name'           => $type === 'activity' && $sourceType == 1 ? $activityName : ($validated['name'] ?? null),
+                    // 'name'        => $sourceType == 0 ? $request->name : null,
+                    // 'name'           => $validated['name'] ?? $validated['day_subject'] ?? null,
                     'description'    => $validated['description'] ?? null,
                     'show_time'      => $request->boolean('show_time'),
                     'start_date'     => dbDate($validated['start_date'] ?? null),

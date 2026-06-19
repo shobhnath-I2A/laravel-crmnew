@@ -41,7 +41,7 @@
             $selectedHotelOption = old('hotel_options', $hotelDetail->hotel_options ?? 1);
         @endphp
         <div class="row">
-
+{{-- {{ $type ?? '' }} --}}
             @if ($type == 'dayitinerary' || $type == 'daydetail')
                 @include('package-day-items.popups.day-details')
             @endif
