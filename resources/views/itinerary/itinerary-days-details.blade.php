@@ -31,7 +31,6 @@
                                             data-target=".bs-example-modal-center"
                                             popaction="action=medialibrary&amp;afunctin=changeeventimage2268713&amp;pid=108998&amp;destinations=langkawi"></i>
                                     </div>
-
                                 </td>
                                 <td width="99%" align="left" valign="top" style="padding-left:10px;">
                                     <div class="eventheading">
@@ -39,14 +38,12 @@
                                         <div class="eventsectionicon"> <i style="" class="fa fa-picture-o"
                                                 aria-hidden="true"></i></div>
                                         @if($item->source_type == 1)
-    {{ $item->hotelDetail?->hotel?->name ?? 'N/A' }}
-@else
-    {{ $item->name ?? 'N/A' }}
-@endif<span
-                                            style="color:#FF9900; padding-left:10px;"></span>
+                                            {{ $item->activity?->name ?? 'N/A' }}
+                                        @else
+                                            {{ $item->name ?? 'N/A' }}
+                                        @endif<span style="color:#FF9900; padding-left:10px;"></span>
                                     </div>
                                     <div class="eventcontent">{!! $item->description ?? '' !!}</div>
-
                                 </td>
                             </tr>
                         </tbody>
@@ -74,11 +71,9 @@
                                     </div>
                                 </td>
                                 <td width="99%" align="left" valign="top" style="padding-left:10px;">
-
                                     <div class="eventheading">
                                         <div class="eventsectioniconOrder">1 </div>
-                                        <div class="eventsectionicon"><i style="" class="fa fa-bed"
-                                                aria-hidden="true"></i></div>
+                                        <div class="eventsectionicon"><i style="" class="fa fa-bed" aria-hidden="true"></i></div>
                                         @if($item->source_type == 1)
                                                 {{ $item->hotelDetail?->hotel?->name ?? 'N/A' }}
                                             @else
@@ -93,10 +88,7 @@
                                             <span class="hoteloption1">
                                                 Option {{ $item->hotelDetail?->hotel_options ?? '' }}
                                             </span>
-                                        {{-- <span style="color:#FF9900; padding-left:10px;"><i class="fa fa-star"
-                                                aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i><i
-                                                class="fa fa-star" aria-hidden="true"></i></span> <span
-                                            class="hoteloption1">Option {{ $item->hotelDetail?->hotel_options ?? '' }}</span> --}}
+
                                     </div>
 
                                     <div style="margin-bottom:10px;">
@@ -168,14 +160,9 @@
                                                 $rooms[] = $item->hotelDetail->cnb_room . ' CNB';
                                             }
                                         @endphp
-
-
-
                                             <strong>Room:</strong>
                                             {{ implode(', ', $rooms) }}
-
-
-                                        |
+                                            |
                                             &nbsp;&nbsp;<strong><i class="fa fa-cutlery" aria-hidden="true"></i> Meal:
                                             </strong> {{ $item->hotelDetail?->meal_plan ?? '-' }}</div>
                                     </div>
@@ -213,7 +200,7 @@
                                     <div class="eventheading">
                                         <div class="eventsectioniconOrder">{{ $item->day_order ?? '' }} </div>
                                         <div class="eventsectionicon"><i style="" class="fa fa-plane" aria-hidden="true"></i>
-                                        </div>{{ $item->name ?? '' }},<span  style="color:#FF9900; padding-left:10px;">({{ $item->flight_no ?? '' }})</span>
+                                        </div>{{ $item->name ?? '' }},<span  style="color:#FF9900; padding-left:10px;">( {{ $item->flightDetail->flight_no ?? '' }})</span>
                                         <span style="color:#FF9900; padding-left:10px;"></span>
                                     </div>
                                     <div style="margin-bottom:10px;">
@@ -223,23 +210,23 @@
                                                     <td align="center" style="font-size:12px;">
                                                         <div style="font-size: 12px; border: 1px solid #ddd; padding: 6px 10px; background-color: #f9f9f9; border-radius: 4px;">
                                                             <div style="font-size:14px; font-weight:700; color:#000; margin-bottom:3px;">
-                                                                {{ \Carbon\Carbon::parse($item->check_in_time)->format('h:i A') }}
-                                                            </div>{{ $item->from_destination ?? '' }}
+                                                                {{ \Carbon\Carbon::parse($item->start_time)->format('h:i A') }}
+                                                            </div> {{ $item->flightDetail->from_destination ?? '' }}
                                                         </div>
                                                     </td>
                                                     <td align="center" style="width:100px;">
                                                         <div style="text-align:center; font-size:11px; color:#666666;padding-bottom: 4px;">
-                                                            {{ $item->flight_duration ?? '' }}</div>
+                                                            {{ $item->flightDetail->flight_duration ?? '' }}
+                                                        </div>
                                                         <div style="font-size:0px; border-top:2px solid #ddd; position:relative;">
-                                                            <i class="fa fa-plane" aria-hidden="true"
-                                                                style="position: absolute; font-size: 18px; transform: rotate(45deg); top: -9px; left: 40%;"></i>
+                                                            <i class="fa fa-plane" aria-hidden="true" style="position: absolute; font-size: 18px; transform: rotate(45deg); top: -9px; left: 40%;"></i>
                                                         </div>
                                                     </td>
                                                     <td align="center">
                                                         <div style="font-size: 12px; border: 1px solid #ddd; padding: 6px 10px; background-color: #f9f9f9; border-radius: 4px;">
                                                             <div style="font-size:14px; font-weight:700; color:#000; margin-bottom:3px;">
-                                                                {{ \Carbon\Carbon::parse($item->check_out_time)->format('h:i A') }}
-                                                            </div>{{ $item->to_destination ?? '' }}
+                                                                {{ \Carbon\Carbon::parse($item->end_time)->format('h:i A') }}
+                                                            </div> {{ $item->flightDetail->to_destination ?? '' }}
                                                         </div>
                                                     </td>
                                                 </tr>

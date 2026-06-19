@@ -133,40 +133,39 @@ class ItineraryController extends Controller
     /**
      * Display the specified resource.
      */
-   public function show(Request $request, string $id)
-{
-    try {
-        $itinerary = Itinerary::with('destinations')->findOrFail($id);
+    public function show(Request $request, string $id)
+    {
+        try {
+            $itinerary = Itinerary::with('destinations')->findOrFail($id);
 
-        // create package
-        $package = app(PackageService::class)->createFromItinerary($id);
+            // create package
+            $package = app(PackageService::class)->createFromItinerary($id);
 
-        $dayItems = PackageDayItem::with('destination')
-            ->where('package_id', $package->id)
-            ->get()
-            ->keyBy('day');
+            $dayItems = PackageDayItem::with('destination')
+                ->where('package_id', $package->id)
+                ->get()
+                ->keyBy('day');
 
-        $tab = $request->query('tab', 'proposals');
+            $tab = $request->query('tab', 'proposals');
 
-        $startDate = Carbon::parse($itinerary->start_date);
-        $endDate   = Carbon::parse($itinerary->end_date);
+            $startDate = Carbon::parse($itinerary->start_date);
+            $endDate   = Carbon::parse($itinerary->end_date);
 
-        return view('itinerary.view-itinerary', compact(
-            'itinerary',
-            'startDate',
-            'endDate',
-            'tab',
-            'package',
-            'dayItems'
-        ));
+            return view('itinerary.view-itinerary', compact(
+                'itinerary',
+                'startDate',
+                'endDate',
+                'tab',
+                'package',
+                'dayItems'
+            ));
+        } catch (\Exception $e) {
+            Log::error('Error fetching itinerary: ' . $e->getMessage());
 
-    } catch (\Exception $e) {
-        Log::error('Error fetching itinerary: ' . $e->getMessage());
-
-        return redirect()->route('itineraries.index')
-            ->with('error', 'Itinerary not found.');
+            return redirect()->route('itineraries.index')
+                ->with('error', 'Itinerary not found.');
+        }
     }
-}
     /**
      * Show the form for editing the specified resource.
      */
@@ -311,11 +310,48 @@ class ItineraryController extends Controller
         }
     }
 
+    // public function getDayDetails(Request $request)
+    // {
+    //     try {
+    //         $package = Package::where('itinerary_id', $request->itinerary_id)->firstOrFail();
+    //         // UPDATE destination if passed
+    //         if ($request->filled('destination_id')) {
+    //             PackageDayItem::where('package_id', $package->id)
+    //                 ->where('day', $request->day)
+    //                 ->update([
+    //                     'destination_id' => $request->destination_id
+    //                 ]);
+    //         }
+
+    //         // $PackageDayItem = PackageDayItem::where('package_id', $package->id)
+    //         //     ->where('day', $request->day)
+    //         //     ->first();
+    //         $packageDayItems = PackageDayItem::with('destination')
+    //             ->where('package_id', $package->id)
+    //             ->where('day', $request->day)
+    //             ->get()
+    //             ->groupBy('type');
+    //         // dd($items);
+    //         $day = $request->day;
+    //         $destinationId = $request->destination_id;
+    //         $itineryId = $request->itinerary_id;
+    //         $date = Carbon::parse($request->date)->format('d M - D');
+
+    //         return view('itinerary.itinerary-days-details', compact('packageDayItems', 'day', 'destinationId', 'date', 'itineryId'));
+    //     } catch (\Exception $e) {
+
+    //         Log::error('Unable to get day detail', [
+    //             'message' => $e->getMessage()
+    //         ]);
+
+    //         return response()->json(['error' => true], 500);
+    //     }
+    // }
     public function getDayDetails(Request $request)
     {
         try {
             $package = Package::where('itinerary_id', $request->itinerary_id)->firstOrFail();
-            // UPDATE destination if passed
+
             if ($request->filled('destination_id')) {
                 PackageDayItem::where('package_id', $package->id)
                     ->where('day', $request->day)
@@ -324,23 +360,30 @@ class ItineraryController extends Controller
                     ]);
             }
 
-            // $PackageDayItem = PackageDayItem::where('package_id', $package->id)
-            //     ->where('day', $request->day)
-            //     ->first();
-            $packageDayItems = PackageDayItem::with('destination')
+            $packageDayItems = PackageDayItem::with([
+                'destination',
+                'flightDetail',
+                'hotelDetail',
+            ])
                 ->where('package_id', $package->id)
                 ->where('day', $request->day)
+                ->orderBy('day_order')
                 ->get()
                 ->groupBy('type');
-            // dd($items);
+
             $day = $request->day;
             $destinationId = $request->destination_id;
             $itineryId = $request->itinerary_id;
             $date = Carbon::parse($request->date)->format('d M - D');
 
-            return view('itinerary.itinerary-days-details', compact('packageDayItems', 'day', 'destinationId', 'date', 'itineryId'));
+            return view('itinerary.itinerary-days-details', compact(
+                'packageDayItems',
+                'day',
+                'destinationId',
+                'date',
+                'itineryId'
+            ));
         } catch (\Exception $e) {
-
             Log::error('Unable to get day detail', [
                 'message' => $e->getMessage()
             ]);
@@ -348,7 +391,6 @@ class ItineraryController extends Controller
             return response()->json(['error' => true], 500);
         }
     }
-
 
     public function createAccomodation()
     {
@@ -704,7 +746,7 @@ class ItineraryController extends Controller
 
             $userId = auth()->id();
             $queryId = $validated['queryId'];
-// dd($itinerary);
+            // dd($itinerary);
             $itinerary->load([
                 'destinations',
                 'packages.dayItems.hotelDetail',

@@ -24,6 +24,7 @@ class PackageDayItem extends Model
         'end_time',
         'status',
         'activity_id',
+        'transfer_id',
         'created_by',
         'updated_by',
     ];
@@ -59,11 +60,14 @@ class PackageDayItem extends Model
             'hotel_id'
         )->withPivot('hotel_options');
     }
-    public function transporationMaster()
-    {
-        return $this->belongsTo(TransferMaster::class, 'hotel_id');
-    }
-
+    // public function transporationMaster()
+    // {
+    //     return $this->belongsTo(TransferMaster::class, 'hotel_id');
+    // }
+        public function transportationMaster()
+        {
+            return $this->belongsTo(TransferMaster::class, 'transfer_id', 'id');
+        }
     // public function getDisplayNameAttribute()
     // {
     //     if ($this->type == 'accommodation') {
@@ -97,15 +101,15 @@ class PackageDayItem extends Model
         return $this->belongsTo(Destination::class, 'destination_id');
         // return $this->belongsTo(Destination::class);
     }
-    public function hotelDetail()
-    {
-        return $this->hasOne(PackageDayItemHotel::class);
-    }
+   public function hotelDetail()
+{
+    return $this->hasOne(PackageDayItemHotel::class, 'package_day_item_id', 'id');
+}
 
     public function flightDetail()
-    {
-        return $this->hasOne(PackageDayItemFlight::class);
-    }
+{
+    return $this->hasOne(PackageDayItemFlight::class, 'package_day_item_id', 'id');
+}
     public function prices()
     {
         return $this->hasMany(PackageDayItemPrice::class, 'package_day_item_id');
