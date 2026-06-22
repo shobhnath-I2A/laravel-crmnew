@@ -66,6 +66,7 @@ class ClientController extends Controller
 
             $validated['dob'] = Carbon::parse($validated['dob'])->format('Y-m-d');
             $validated['marriage_anniversary'] = Carbon::parse($validated['marriage_anniversary'])->format('Y-m-d');
+            $validated['created_by'] = auth()->id();
 
             $client = Client::create($validated);
 

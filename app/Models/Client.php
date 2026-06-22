@@ -20,6 +20,7 @@ class Client extends Model
         'address',
         'dob',
         'status',
+        'created_by',
         'marriage_anniversary',
     ];
 

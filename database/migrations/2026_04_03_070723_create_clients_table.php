@@ -34,6 +34,8 @@ return new class extends Migration
             $table->date('dob')->nullable();
             $table->date('marriage_anniversary')->nullable();
             $table->boolean('status')->default(1); // 1=Active, 0=Inactive
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->timestamps();
 
             // Foreign Key (optional)
