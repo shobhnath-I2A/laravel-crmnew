@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\QueryTask;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class QueryTaskController extends Controller
@@ -109,9 +111,31 @@ class QueryTaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+     public function destroy(string $id)
     {
-        //
+        try {
+            $queryTask = QueryTask::findOrFail($id);
+            $queryTask->delete();
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'QueryTask deleted successfully.',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'QueryTask not found.',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Error deleting QueryTask', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json([
+                'status'  => false,
+                'message' => 'Something went wrong.',
+            ], 500);
+        }
     }
 
     public function checkReminders()

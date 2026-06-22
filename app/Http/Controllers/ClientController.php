@@ -17,20 +17,25 @@ class ClientController extends Controller
     public function index(Request $request)
     {
         try {
-            $clientBuilder = Client::query();
+            $clientBuilder = Client::with('addedBy');
             if ($request->filled('keyword')) {
-                $clientBuilder->where('first_name', 'like', '%' . $request->keyword . '%')
-                    ->orWhere('last_name', 'like', '%' . $request->keyword . '%')
-                    ->orWhere('email', 'like', '%' . $request->keyword . '%')
-                    ->orWhere('mobile', 'like', '%' . $request->keyword . '%');
+                $clientBuilder->where(function ($query) use ($request) {
+                    $query->where('first_name', 'like', '%' . $request->keyword . '%')
+                        ->orWhere('last_name', 'like', '%' . $request->keyword . '%')
+                        ->orWhere('email', 'like', '%' . $request->keyword . '%')
+                        ->orWhere('mobile', 'like', '%' . $request->keyword . '%');
+                });
             }
-            $clients = Client::latest()->paginate(20);
+            $clients = $clientBuilder->latest()->paginate(20)->withQueryString();
             $clientCount = Client::count();
+
             return view('client.index', compact('clients', 'clientCount'));
         } catch (\Exception $e) {
             Log::error('Error fetching Client', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
+            return back()->with('error', 'Something went wrong.');
         }
     }
 
@@ -75,7 +80,6 @@ class ClientController extends Controller
                 'status' => 'success',
                 'data' => $client
             ], 201);
-
         } catch (ValidationException $ve) {
             return response()->json([
                 'message' => 'Validation failed',
@@ -129,7 +133,7 @@ class ClientController extends Controller
     public function update(Request $request, string $id)
     {
         $client = Client::findOrFail($id);
-          try {
+        try {
             $validated = $request->validate([
                 'submit_name' => 'required|string|max:255',
                 'first_name' => 'required|string|max:255',
@@ -148,19 +152,19 @@ class ClientController extends Controller
 
             $validated['dob'] = Carbon::parse($validated['dob'])->format('Y-m-d');
             $validated['marriage_anniversary'] = Carbon::parse($validated['marriage_anniversary'])->format('Y-m-d');
+            $validated['created_by'] = auth()->id();
 
             $client->update($validated);
 
             return response()->json([
+                'status' => true,
                 'message' => 'Client updated successfully',
-                'status' => 'success',
                 'data' => $client
             ], 201);
-
         } catch (ValidationException $ve) {
             return response()->json([
-                'message' => 'Validation failed',
                 'status' => 'error',
+                'message' => 'Validation failed',
                 'errors' => $ve->validator->errors()
             ], 422);
         } catch (Exception $e) {
@@ -179,6 +183,27 @@ class ClientController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $client = Client::findOrFail($id);
+            $client->delete();
+            return response()->json([
+                'status'  => true,
+                'message' => 'Client deleted successfully.',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Client not found.',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Error deleting client', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json([
+                'status'  => false,
+                'message' => 'Something went wrong.',
+            ], 500);
+        }
     }
 }

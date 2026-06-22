@@ -28,4 +28,7 @@ class Client extends Model
     {
         return $this->belongsTo(Destination::class, 'city_id');
     }
+    public function addedBy(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

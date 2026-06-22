@@ -10,7 +10,6 @@ class QueryTask extends Model
         'details',
         'reminderDate',
         'status',
-        'addedBy',
         'taskType',
         'assignTo',
         'makeDone',

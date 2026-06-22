@@ -88,11 +88,12 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <td colspan="2">
-                                                                        <div class="listnameicon">i</div>
+                                                                        <div class="listnameicon">
+                                                                            {{ strtoupper(substr($client->addedBy->name ?? '', 0, 1)) }}
+                                                                        </div>
                                                                     </td>
-                                                                    <td>i2a</td>
+                                                                    <td> {{ $client->addedBy->submit_name ?? '' }} {{ $client->addedBy->name ?? '' }} {{ $client->addedBy->last_name ?? '' }} </td>
                                                                 </tr>
-
                                                             </tbody>
                                                         </table>
                                                     </td>

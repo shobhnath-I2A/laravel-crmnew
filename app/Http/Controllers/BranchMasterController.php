@@ -49,9 +49,7 @@ class BranchMasterController extends Controller
             ]);
 
             $validated['status'] = $request->has('status') ? 1 : 0;
-
             $validated['created_by'] = auth()->id();
-
             $validated['dateAdded'] = now();
 
             $branchMaster = BranchMaster::create($validated);
@@ -86,8 +84,21 @@ class BranchMasterController extends Controller
      */
     public function edit(string $id)
     {
-        $branchMaster = BranchMaster::findOrFail($id);
-        return view('setting.add-branch-master', compact('branchMaster'));
+        try {
+
+            $branchMaster = BranchMaster::findOrFail($id);
+            return view('setting.add-branch-master', compact('branchMaster'));
+        } catch (\Exception $e) {
+
+            Log::error('Error edit Branch Master', [
+                'exception' => $e
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong!'
+            ], 500);
+        }
     }
 
     /**
