@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 use App\Models\PackageDayItem;
 use App\Models\Activity;
+use App\Models\Hotel;
 use App\Models\Package;
+use App\Models\TransferMaster;
 use App\Models\PackageDayItemHotel;
 use App\Models\PackageDayItemFlight;
 use Carbon\Carbon;
@@ -102,7 +104,7 @@ class PackageDaysItemController extends Controller
             $type = strtolower($validated['type']);
             $sourceType = $validated['source_type'] ?? 0;
 
-             if ($type == 'daydetail') {
+            if ($type == 'daydetail') {
 
                 PackageDayItem::create([
                     'name'        => $validated['name'] ?? null,
@@ -111,26 +113,28 @@ class PackageDaysItemController extends Controller
                 ]);
             } else {
 
-            $item = PackageDayItem::create([
-                'package_id'     => $validated['package_id'],
-                'destination_id' => $validated['destination_id'] ?? null,
-                'type'           => $type,
-                'source_type'    => $sourceType,
-                'day'            => $validated['day'],
-                'day_order'      => $validated['day_order'] ?? 0,
-                'name'           => $type === 'activity' && $sourceType == 1 ? $activityName : ($validated['name'] ?? null),
-                // 'name'           => $sourceType == 1 ? null : ($validated['name'] ?? null),
-                'activity_id' => ($type == 'activity' && $sourceType == 1) ? ($validated['activity_id'] ?? null) : null,
-                'meal_master_id' => ($type == 'transportation' && $sourceType == 1) ? ($validated['meal_master_id'] ?? null) : null,
-                // 'name'           => $validated['name'] ?? $validated['day_subject'] ?? null,
-                'description'    => $validated['description'] ?? null,
-                'show_time'      => $request->boolean('show_time'),
-                'start_date'     => dbDate($validated['start_date'] ?? null),
-                'start_time'     => $validated['start_time'] ?? null,
-                'end_date'       => dbDate($validated['end_date'] ?? null),
-                'end_time'       => $validated['end_time'] ?? null,
-                'created_by'     => auth()->id(),
-            ]);
+                $item = PackageDayItem::create([
+                    'package_id'     => $validated['package_id'],
+                    'destination_id' => $validated['destination_id'] ?? null,
+                    'type'           => $type,
+                    'source_type'    => $sourceType,
+                    'day'            => $validated['day'],
+                    'day_order'      => $validated['day_order'] ?? 0,
+                    'name'           => $type === 'activity' && $sourceType == 1 ? $activityName : ($validated['name'] ?? null),
+                    // 'name'           => $sourceType == 1 ? null : ($validated['name'] ?? null),
+                    'activity_id' => ($type == 'activity' && $sourceType == 1) ? ($validated['activity_id'] ?? null) : null,
+                    // 'meal_master_id' => ($type == 'transportation' && $sourceType == 1) ? ($validated['meal_master_id'] ?? null) : null,
+                    'transfer_id' => ($type == 'transportation' && $sourceType == 1) ? ($validated['transfer_id'] ?? null) : null,
+                    'meal_master_id' => ($type == 'meal' && $sourceType == 1) ? ($validated['meal_master_id'] ?? null) : null,
+                    // 'name'           => $validated['name'] ?? $validated['day_subject'] ?? null,
+                    'description'    => $validated['description'] ?? null,
+                    'show_time'      => $request->boolean('show_time'),
+                    'start_date'     => dbDate($validated['start_date'] ?? null),
+                    'start_time'     => $validated['start_time'] ?? null,
+                    'end_date'       => dbDate($validated['end_date'] ?? null),
+                    'end_time'       => $validated['end_time'] ?? null,
+                    'created_by'     => auth()->id(),
+                ]);
             }
             if ($type === 'accommodation') {
 
@@ -162,7 +166,7 @@ class PackageDaysItemController extends Controller
                     // 'created_by'     => auth()->id(),
                 ]);
             }
-
+            $this->createItemPrice($item, $validated);
             DB::commit();
 
             return response()->json([
@@ -201,7 +205,7 @@ class PackageDaysItemController extends Controller
             'flightDetail',
             'activity',
             'transportation',
-            'prices',
+            'price',
         ]);
 
         $activities = Activity::where('status', 1)
@@ -215,23 +219,6 @@ class PackageDaysItemController extends Controller
         ));
     }
 
-    // public function edit(PackageDayItem $packageDaysItem)
-    // {
-    //     $packageDayItem = $packageDaysItem->load([
-    //         'destination',
-    //         'hotelDetail.hotel',
-    //         'flightDetail',
-    //         'prices',
-    //     ]);
-
-    //     return view('package-day-items.forms', compact('packageDayItem'));
-    // }
-    // public function edit(PackageDayItem $packageDaysItem)
-    // {
-    //     $packageDayItem = $packageDaysItem;
-    //     // dd($packageDayItem);
-    //     return view('package-day-items.forms', compact('packageDayItem'));
-    // }
     /**
      * Update the specified resource in storage.
      */
@@ -412,4 +399,66 @@ class PackageDaysItemController extends Controller
 
         return response($html);
     }
+
+    private function createItemPrice(PackageDayItem $item, array $validated): void
+    {
+        try {
+            $priceData = [
+                'adult_cost' => 0,
+                'child_cost' => 0,
+
+                'vehicle' => 0,
+                'vehicle_cost' => 0,
+
+                'single_room_cost' => 0,
+                'double_room_cost' => 0,
+                'triple_room_cost' => 0,
+                'quad_room_cost' => 0,
+                'child_bed_cost' => 0,
+                'extra_adult_cost' => 0,
+
+                'total_price' => 0,
+                'markup' => 0,
+                'markup_amount' => 0,
+                'final_price' => 0,
+            ];
+
+            if ((int)$item->source_type === 1) {
+
+                if ($item->type === 'activity' && !empty($item->activity_id)) {
+                    $master = Activity::find($item->activity_id);
+                } elseif ($item->type === 'transportation' && !empty($item->transfer_id)) {
+                    $master = TransferMaster::find($item->transfer_id);
+                } elseif ($item->type === 'accommodation') {
+                    $hotelId = $validated['hotel_id'] ?? null;
+                    $master = $hotelId ? Hotel::find($hotelId) : null;
+                } else {
+                    $master = null;
+                }
+                if ($master) {
+                    $priceData['adult_cost'] =  $master->adult_cost ?? 0;
+                    $priceData['child_cost'] = $master->child_cost ?? 0;
+                    $priceData['vehicle'] = $master->vehicle ?? 0;
+                    $priceData['vehicle_cost'] = $master->vehicle_cost ?? 0;
+                    $priceData['single_room_cost'] = $master->single_room_cost ?? 0;
+                    $priceData['double_room_cost'] = $master->double_room_cost ?? 0;
+                    $priceData['triple_room_cost'] = $master->triple_room_cost ?? 0;
+                    $priceData['quad_room_cost'] = $master->quad_room_cost ?? 0;
+                }
+            }
+
+            $item->prices()->updateOrCreate(
+                [
+                    'package_day_item_id' => $item->id
+                ],
+                $priceData
+            );
+        } catch (Exception $e) {
+            Log::error('Package day item price update failed', [
+                'message' => $e->getMessage(),
+                'line'    => $e->getLine(),
+            ]);
+        }
+    }
+
 }

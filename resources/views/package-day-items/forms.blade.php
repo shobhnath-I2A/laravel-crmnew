@@ -21,14 +21,11 @@
         {{-- {{ $packageDayItem ?? '' }} --}}
         <input type="hidden" name="type" value="{{ old('type', $type) }}">
         <input type="hidden" name="day" value="{{ old('day', $packageDayItem->day ?? '') }}">
-        <input type="hidden" name="day_id"
-            value="{{ old('day_id', $packageDayItem->day_id ?? ($packageDayItem->day ?? '')) }}">
+        <input type="hidden" name="day_id" value="{{ old('day_id', $packageDayItem->day_id ?? ($packageDayItem->day ?? '')) }}">
         <input type="hidden" name="day_order" value="{{ old('day_order', $packageDayItem->day_order ?? 1) }}">
-        <input type="hidden" name="itinerary_id"
-            value="{{ old('itinerary_id', $packageDayItem->itinerary_id ?? '') }}">
+        <input type="hidden" name="itinerary_id" value="{{ old('itinerary_id', $packageDayItem->itinerary_id ?? '') }}">
         <input type="hidden" name="package_id" value="{{ old('package_id', $packageDayItem->package_id ?? '') }}">
-        <input type="hidden" name="destination_id"
-            value="{{ old('destination_id', $packageDayItem->destination_id ?? '') }}">
+        <input type="hidden" name="destination_id" value="{{ old('destination_id', $packageDayItem->destination_id ?? '') }}">
         @php
             $hotelDetail = $packageDayItem->hotelDetail ?? null;
 
@@ -41,7 +38,7 @@
             $selectedHotelOption = old('hotel_options', $hotelDetail->hotel_options ?? 1);
         @endphp
         <div class="row">
-{{-- {{ $type ?? '' }} --}}
+            {{-- {{ $type ?? '' }} --}}
             @if ($type == 'dayitinerary' || $type == 'daydetail')
                 @include('package-day-items.popups.day-details')
             @endif

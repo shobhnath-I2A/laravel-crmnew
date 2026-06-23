@@ -1589,3 +1589,63 @@ background-color: #CC3300;
 .table th:first-child {
 border: 0px !important;
 }
+
+
+/* Price page css */
+
+.hoteloption1 {
+background-color: #4FBDFF;
+padding: 2px 8px;
+color: #FFFFFF;
+font-weight: 600;
+display: inline-block;
+font-size: 12px;
+border-radius: 3px;
+}
+
+.hoteloption2 {
+background-color: #04BF58;
+padding: 2px 8px;
+color: #FFFFFF;
+font-weight: 600;
+display: inline-block;
+font-size: 12px;
+border-radius: 3px;
+}
+
+.hoteloption3 {
+background-color: #E24B03;
+padding: 2px 8px;
+color: #FFFFFF;
+font-weight: 600;
+display: inline-block;
+font-size: 12px;
+border-radius: 3px;
+}
+
+
+
+.bordertable tr td {
+border: 1px solid #ddd !important;
+background-color: #fff;
+padding: 10px !important;
+}
+
+
+.hoteloption1td {
+background-color: #4FBDFF !important;
+color: #FFFFFF !important;
+font-weight: 600;
+}
+
+.hoteloption2td {
+background-color: #04BF58 !important;
+color: #FFFFFF !important;
+font-weight: 600;
+}
+
+.hoteloption3td {
+background-color: #E24B03 !important;
+color: #FFFFFF !important;
+font-weight: 600;
+}

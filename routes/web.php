@@ -114,6 +114,12 @@ Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'inse
     Route::get('/itineraries-price/{id}', [ItineraryPriceController::class, 'index'])
         ->name('itineraries-price.index');
 
+    Route::get('/pricing/{item}/edit', [ItineraryPriceController::class, 'edit'])
+    ->name('pricing.edit');
+
+    Route::post('/pricing/{item}/update', [ItineraryPriceController::class, 'updatePricing'])
+        ->name('pricing.update');
+
     Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
         ->name('itineraries.final');
 

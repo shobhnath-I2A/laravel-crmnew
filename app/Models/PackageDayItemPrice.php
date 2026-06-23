@@ -8,16 +8,25 @@ class PackageDayItemPrice extends Model
 {
     protected $fillable = [
         'package_day_item_id',
-        'net_cost',
-        'markup_type',
-        'markup_value',
-        'gross_cost',
-        'cgst',
-        'sgst',
-        'igst',
-        'tcs',
-        'discount',
-        'final_amount',
+        'adult_cost',
+        'child_cost',
+        'vehicle',
+        'vehicle_cost',
+        'single_room_cost',
+        'double_room_cost',
+        'triple_room_cost',
+        'quad_room_cost',
+        'child_bed_cost',
+        'extra_adult_cost',
+        'total_price',
+        'markup',
+        'markup_amount',
+        'final_price',
+        'pricing_data',
+    ];
+
+    protected $casts = [
+        'pricing_data' => 'array',
     ];
     public function dayItem()
     {

@@ -64,10 +64,10 @@ class PackageDayItem extends Model
     // {
     //     return $this->belongsTo(TransferMaster::class, 'hotel_id');
     // }
-        public function transportationMaster()
-        {
-            return $this->belongsTo(TransferMaster::class, 'transfer_id', 'id');
-        }
+    public function transportationMaster()
+    {
+        return $this->belongsTo(TransferMaster::class, 'transfer_id', 'id');
+    }
     // public function getDisplayNameAttribute()
     // {
     //     if ($this->type == 'accommodation') {
@@ -101,19 +101,23 @@ class PackageDayItem extends Model
         return $this->belongsTo(Destination::class, 'destination_id');
         // return $this->belongsTo(Destination::class);
     }
-   public function hotelDetail()
-{
-    return $this->hasOne(PackageDayItemHotel::class, 'package_day_item_id', 'id');
-}
+    public function hotelDetail()
+    {
+        return $this->hasOne(PackageDayItemHotel::class, 'package_day_item_id', 'id');
+    }
 
     public function flightDetail()
-{
-    return $this->hasOne(PackageDayItemFlight::class, 'package_day_item_id', 'id');
-}
-    public function prices()
     {
-        return $this->hasMany(PackageDayItemPrice::class, 'package_day_item_id');
+        return $this->hasOne(PackageDayItemFlight::class, 'package_day_item_id', 'id');
     }
+    public function price()
+    {
+        return $this->hasOne(PackageDayItemPrice::class, 'package_day_item_id');
+    }
+    // public function prices()
+    // {
+    //     return $this->hasMany(PackageDayItemPrice::class, 'package_day_item_id');
+    // }
     public function activity()
     {
         return $this->belongsTo(Activity::class, 'activity_id');
