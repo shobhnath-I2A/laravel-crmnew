@@ -366,42 +366,6 @@
                                             <input name="finalcostperperson" id="finalcostperperson" type="hidden" value="">
                                         </form>
                                     </div>
-                                    <div class=" ">
-                                        <form class="custom-validation" action="frmaction.html" target="actoinfrm"  novalidate="" method="post" enctype="multipart/form-data" style="display:none;">
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h4 class="card-title" style=" margin-top:0px;">Deposit information
-                                                        </h4>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="row" style="margin-left: -8px; margin-top: 10px;">
-                                                            <div class="col-md-5">
-                                                                <div class="form-group">
-                                                                    <label for="validationCustom02">Amount</label>
-                                                                    <input name="depositAmount" type="number" min="0" class="form-control" id="depositAmount" value="0">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-5">
-                                                                <div class="form-group">
-                                                                    <label for="validationCustom02">Due date</label>
-                                                                    <input name="depositDueDate" type="text" min="0"  class="form-control datecale hasDatepicker" id="depositDueDate" value="30-11--0001">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <div class="form-group">
-                                                                    <label for="validationCustom02" style="width: 100%;">&nbsp;</label>
-                                                                    <input name="Save" type="submit" value="Save" id="savingbutton" class="btn btn-primary" onclick="this.form.submit(); this.disabled=true; this.value='Saving...';">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <input name="action" type="hidden" id="action" value="savepageduedate">
-                                            <input name="pid" type="hidden" value="108998">
-                                        </form>
-                                    </div>
                                 </div>
                             </div>
                         </div>

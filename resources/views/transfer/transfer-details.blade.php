@@ -17,27 +17,23 @@
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Email</label>
                             {{ $query->email ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-4" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Country</label>
                         </div>
                     </div>
                     <div class="col-lg-3" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">State</label>
                         </div>
                     </div>
                     <div class="col-lg-5" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">City</label>
                         </div>
                     </div>
@@ -47,24 +43,19 @@
 
                 <div class="row" style="padding-left:10px;  ">
                     <div class="col-lg-3" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
-                            <label for="validationCustom02">FROM
-                                CITY</label>
+                        <div class="form-group input-group" style="position:relative;">
+                            <label for="validationCustom02">FROM CITY</label>
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Origin </label>
                             {{ $query->origin ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
-                            <label for="validationCustom02">Destination
-                            </label>
+                        <div class="form-group input-group" style="position:relative;">
+                            <label for="validationCustom02">Destination </label>
                             {{ $query->destination ?? '' }}
                         </div>
                     </div>
@@ -81,24 +72,20 @@
                     <div class="col-lg-3">
                         <div class="form-group input-group"
                             style="position:relative;">
-                            <label for="validationCustom02">Travel Month
-                            </label>
+                            <label for="validationCustom02">Travel Month</label>
                             {{ $query->travelMonth ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Lead Source
                             </label>
                             {{ $query->leadSource ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
-                            <label
-                                for="validationCustom02">Services</label>
+                        <div class="form-group input-group" style="position:relative;">
+                            <label for="validationCustom02">Services</label>
                         </div>
                     </div>
                     <div class="col-lg-3">
@@ -111,8 +98,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Assign
                                 To</label>
                             i2a Technologies
