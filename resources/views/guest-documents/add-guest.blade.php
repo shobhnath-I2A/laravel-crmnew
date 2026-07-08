@@ -1,86 +1,76 @@
-{{-- Task popup from --}}
-<div class="modal fade bs-task-modal-center" tabindex="-1" role="dialog" id="taskModal">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 600px; width: 600px;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title mt-0" id="poptitle">Add Followup / Task</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body" id="popcontent">
-                <form action="{{ route('query-guests.store') }}" method="post" enctype="multipart/form-data" id="task-form" class="custom-validation ajax-form">
-                    <div class="form-group mb-3">
-                        <div style="margin-bottom:2px; font-size:12px;">Type</div>
-                        <select name="taskType" class="form-control reqfield" autocomplete="off"
-                            style="width:100%; margin-bottom:20px;">
-                            <option value="">-- Select Task Type --</option>
-                            <option value="Task">Task</option>
-                            <option value="Call">Call</option>
-                            <option value="Meeting">Meeting</option>
-                        </select>
-                        @error('taskType')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                        <div style="margin-bottom:2px; font-size:12px;">Description</div>
-                        <textarea name="details" rows="4" class="form-control"></textarea>
-                    </div>
-                    <div class="form-group mb-3">
-                        <table border="0" cellpadding="0" cellspacing="0">
-                            <tbody>
-                                <tr>
-                                    <td colspan="2" style=" font-size:12px;">Reminder Date </td>
-                                    <td style=" font-size:12px;">&nbsp;&nbsp;&nbsp;Time</td>
-                                    <td style=" font-size:12px;">&nbsp;&nbsp;&nbsp;Set Reminder </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <input type="text" name="reminderDate" value="{{ old('reminderDate', $query->reminderDate ?? '') }}" id="reminderDate" class="form-control reqfield">
-                                         @error('reminderDate')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </td>
-
-                                    <td style="padding-left:10px;">
-                                        <select id="reminderTime" name="reminderTime" autocomplete="off"
-                                            class="form-control" style="width:130px;">
-                                            @for ($i = 0; $i < 24 * 60; $i += 15)
-                                                @php
-                                                    $time = \Carbon\Carbon::createFromTime(0, 0)->addMinutes($i);
-                                                @endphp
-                                                <option value="1970-01-01 {{ $time->format('H:i:s') }}">
-                                                    {{ $time->format('h:i A') }}
-                                                </option>
-                                            @endfor
-                                        </select>
-                                    </td>
-                                    <td style="padding-left:10px;">
-                                        <select name="status" class="form-control"
-                                            autocomplete="off" style="width:100px;">
-                                            <option value="1">Yes</option>
-                                            <option value="0">No</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="form-group mb-2">
-                        <select id="assignTo" name="assignTo" class="form-control" autocomplete="off" onchange="changeAssignTo('');">
-                            <option value="0">Assign To</option>
-                            <option value="4041">Aaron AK</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="overflow:hidden;">
-                        <div style="margin-top:5px;">
-                            <button type="submit" class="btn btn-primary">
-                                Save
-                            </button>
+{{-- Guest Popup Form --}}
+<style>
+    .popup-box {
+        max-width: 40%;
+    }
+</style>
+<div class="modal-body">
+    <div class="modal-body" id="popcontent">
+        <form class="custom-validation" action="frmaction.html" target="actoinfrm" novalidate="novalidate" method="post"
+            enctype="multipart/form-data">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="validationCustom02">&nbsp;&nbsp; </label>
+                            <select name="submitName" class="form-control">
+                                <option value="Mr.">Mr.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Ms.">Ms.</option>
+                                <option value="Dr.">Dr.</option>
+                                <option value="Prof.">Prof.</option>
+                            </select>
                         </div>
                     </div>
-                    <input type="hidden" name="queryId" id="queryId">
-                </form>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="validationCustom02">First Name<span class="redmtext">*</span> </label>
+                            <input type="text" class="form-control" required="" name="firstName" value=""
+                                aria-required="true">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="validationCustom02">Last Name<span class="redmtext">*</span> </label>
+                            <input type="text" class="form-control" required="" name="lastName" value=""
+                                aria-required="true">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="validationCustom02">Gender<span class="redmtext">*</span> </label>
+                            <select name="gender" class="form-control">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="validationCustom02">Date of Birth* </label>
+                            <input type="text" class="form-control hasDatepicker" required="" name="startDate"
+                                id="startDate" value="16-03-2026" aria-required="true">
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+            <div class="modal-footer">
+                <input name="Save" type="submit" value="Save" id="savingbutton" class="btn btn-primary"
+                    onclick="this.form.submit(); this.disabled=true; this.value='Saving...';">
+            </div>
+            <input name="queryId" type="hidden" id="" value="{{ $queryId??'' }}">
+        </form>
+        <script>
+            $(function() {
+                $("#startDate").datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    maxDate: new Date(),
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-90:+00"
+                });
+            });
+        </script>
     </div>
 </div>

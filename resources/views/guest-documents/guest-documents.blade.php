@@ -4,11 +4,13 @@
             <div>
                 <div>
                     <h4 class="mt-0 header-title" style="border-bottom:0px; overflow:hidden; position:relative;">Guests (0)
-                        <button type="button" onclick="loadpop('Add Guest',this,'700px')" data-toggle="modal"
-                            data-target=".bs-example-modal-center"
-                            popaction="action=addGuest&amp;queryId=127497&amp;packageId="
-                            style="position: absolute; font-size: 12px; font-weight: 600; right: 5px; top:2px; background-color: #005ee2; color: #fff; padding: 2px 10px; border-radius: 3px; border:0px; cursor: pointer;">+Add
-                            Guest</button>
+                        <a onclick="openPopup('Add Guest',
+                        '{{ route('query-guests.index') }}?query_id={{ $query->id }}')"
+                        style="position:absolute;font-size:12px;font-weight:600;
+                        right:5px;top:5px;background:#005ee2;color:#fff;
+                        padding:2px 10px;border-radius:3px;cursor:pointer;">
+                        + Add Guest
+                    </a>
                     </h4>
                     <div class="card" style="padding:10px;">
                         <table width="100%" border="1" cellpadding="5" cellspacing="0" bordercolor="#CCCCCC"
@@ -31,4 +33,4 @@
         </div>
     </div>
 </div>
-@include('guest-documents.add-guest')
+{{-- @include('guest-documents.add-guest') --}}

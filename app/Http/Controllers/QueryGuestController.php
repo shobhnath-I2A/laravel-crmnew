@@ -13,7 +13,8 @@ class QueryGuestController extends Controller
      */
     public function index()
     {
-        //
+        $queryId = request()->query('query_id');
+        return view('guest-documents.add-guest', compact('queryId'));
     }
 
     /**
