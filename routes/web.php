@@ -12,6 +12,7 @@ use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\QueryTaskController;
+use App\Http\Controllers\QueryGuestController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelRateController;
 use App\Http\Controllers\HotelRoomTypeController;
@@ -125,6 +126,9 @@ Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'inse
 
     Route::post('/queries/assign-user', [QueryController::class, 'assignUser'])
     ->name('queries.assign-user');
+
+    Route::resource('query-guests', QueryGuestController::class)
+        ->middleware('module.permission:Guest,view');
 
     Route::resource('query-tasks', QueryTaskController::class)
         ->middleware('module.permission:Task,view');

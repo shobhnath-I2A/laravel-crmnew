@@ -17,7 +17,8 @@ class QueryTaskController extends Controller
      */
     public function index()
     {
-        //
+        $queryId = request()->query('query_id');
+        return view('followups.task', compact('queryId'));
     }
 
     /**

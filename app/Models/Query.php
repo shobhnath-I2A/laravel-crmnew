@@ -63,4 +63,8 @@ class Query extends Model
     {
         return $this->belongsTo(QueryStatus::class, 'statusId')->orderBy('sort_order', 'asc');
     }
+    public function guests()
+{
+    return $this->hasMany(QueryGuest::class);
+}
 }

@@ -3,12 +3,20 @@
         <div class="row" style=" margin-right:1px;">
             <div class="col-lg-12" style="padding-left:15px;">
                 <h4 class="mt-0 header-title" style="margin-bottom:10px;">Followup's / Task
-                    <a data-toggle="modal" data-target="#taskModal" data-queryid="{{ $query->id }}"
+                    <a onclick="openPopup(
+                        'Add Followup / Task',
+                        '{{ route('query-tasks.index') }}?query_id={{ $query->id }}')"
                         style="position:absolute;font-size:12px;font-weight:600;
                         right:5px;top:5px;background:#005ee2;color:#fff;
                         padding:2px 10px;border-radius:3px;cursor:pointer;">
                         + Add Task
                     </a>
+                    {{-- <a data-toggle="modal" data-target="#taskModal" data-queryid="{{ $query->id }}"
+                        style="position:absolute;font-size:12px;font-weight:600;
+                        right:5px;top:5px;background:#005ee2;color:#fff;
+                        padding:2px 10px;border-radius:3px;cursor:pointer;">
+                        + Add Task
+                    </a> --}}
                 </h4>
                 <div class=" ">
                     <div class="">
@@ -61,4 +69,4 @@
         </div>
     </div>
 </div>
-@include('followups.task')
+{{-- @include('followups.task') --}}

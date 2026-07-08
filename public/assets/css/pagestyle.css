@@ -1649,3 +1649,23 @@ background-color: #E24B03 !important;
 color: #FFFFFF !important;
 font-weight: 600;
 }
+
+/* Add Guest */
+.statusbox {
+margin-right: 5px;
+padding: 10px;
+text-align: center;
+background-color: #000000;
+font-size: 13px;
+color: #fff;
+border-radius: 4px;
+text-transform: uppercase;
+}
+
+.conf {
+width: 100px;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 5px;
+text-align: center;
+}
