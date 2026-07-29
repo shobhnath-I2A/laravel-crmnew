@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use App\Models\QueryGuest;
 use Carbon\Carbon;
 
@@ -30,39 +31,36 @@ class QueryGuestController extends Controller
      */
     public function store(Request $request)
     {
+        try {
 
+            $validated = $request->validate([
+                'query_id'   => 'required|integer',
+                'title'      => 'required|string|max:10',
+                'first_name' => 'required|string|max:100',
+                'last_name'  => 'required|string|max:100',
+                'gender'     => 'required|string|in:Male,Female,Other',
+                'dob'        => 'required|date_format:d-m-Y'
+            ]);
 
-        $request->validate([
+            $validated['dob'] = Carbon::createFromFormat('d-m-Y', $validated['dob'])
+                ->format('Y-m-d');
 
-            'query_id' => 'required',
-            'first_name' => 'required',
-            'gender' => 'required'
+            $guest = QueryGuest::updateOrCreate(
+                ['id' => $request->edit_id],
+                $validated
+            );
 
-        ]);
-
-
-
-        QueryGuest::updateOrCreate(
-
-            [
-                'id' => $request->edit_id
-            ],
-
-            [
-                'query_id' => $request->query_id,
-                'title' => $request->title,
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'gender' => $request->gender,
-                'dob' => Carbon::parse($request->dob)
-                    ->format('Y-m-d')
-
-            ]
-        );
-
-
-        return back()
-            ->with('success', 'Guest saved successfully');
+            return response()->json([
+                    'status'  => 'success',
+                    'message' => 'Task added successfully',
+                    'data'=>$guest
+                ],201);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Failed to create task: ' . $e->getMessage()
+                ], 500);
+            }
     }
 
     /**

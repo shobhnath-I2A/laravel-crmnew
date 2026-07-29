@@ -16,8 +16,8 @@ class QueryGuest extends Model
     ];
 
 
-    public function query()
-    {
-        return $this->belongsTo(Query::class);
-    }
+    public function queryRecord()
+{
+    return $this->belongsTo(Query::class, 'query_id');
+}
 }

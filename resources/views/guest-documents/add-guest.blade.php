@@ -6,14 +6,14 @@
 </style>
 <div class="modal-body">
     <div class="modal-body" id="popcontent">
-        <form class="custom-validation" action="frmaction.html" target="actoinfrm" novalidate="novalidate" method="post"
-            enctype="multipart/form-data">
+        <form class="custom-validation" action="{{ route('query-guests.store') }}" method="post" enctype="multipart/form-data" id="task-form" class="custom-validation ajax-form">
+            @csrf
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="validationCustom02">&nbsp;&nbsp; </label>
-                            <select name="submitName" class="form-control">
+                            <select name="title" class="form-control">
                                 <option value="Mr.">Mr.</option>
                                 <option value="Mrs.">Mrs.</option>
                                 <option value="Ms.">Ms.</option>
@@ -25,14 +25,14 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="validationCustom02">First Name<span class="redmtext">*</span> </label>
-                            <input type="text" class="form-control" required="" name="firstName" value=""
+                            <input type="text" class="form-control" required="" name="first_name" value=""
                                 aria-required="true">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="validationCustom02">Last Name<span class="redmtext">*</span> </label>
-                            <input type="text" class="form-control" required="" name="lastName" value=""
+                            <input type="text" class="form-control" required="" name="last_name" value=""
                                 aria-required="true">
                         </div>
                     </div>
@@ -49,8 +49,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="validationCustom02">Date of Birth* </label>
-                            <input type="text" class="form-control hasDatepicker" required="" name="startDate"
-                                id="startDate" value="16-03-2026" aria-required="true">
+                            <input type="text" class="form-control" required="" name="dob" id="dob" value="16-03-2026">
                         </div>
                     </div>
                 </div>
@@ -59,7 +58,7 @@
                 <input name="Save" type="submit" value="Save" id="savingbutton" class="btn btn-primary"
                     onclick="this.form.submit(); this.disabled=true; this.value='Saving...';">
             </div>
-            <input name="queryId" type="hidden" id="" value="{{ $queryId??'' }}">
+            <input name="query_id" type="hidden" id="" value="{{ $queryId??'' }}">
         </form>
         <script>
             $(function() {
