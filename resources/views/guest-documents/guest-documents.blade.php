@@ -23,6 +23,7 @@
                                     <th bgcolor="#f5f7f9">Date of Birth </th>
                                     <th width="1%" bgcolor="#f5f7f9"> </th>
                                 </tr>
+                                {{ $queryGuest??'' }}
                             </thead>
                             <tbody>
                             </tbody>

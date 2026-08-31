@@ -81,10 +81,10 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-Route::get('itineraries/insert', [ItineraryController::class, 'insertItinerary'])
-    ->name('itineraries.insert');
+    Route::get('itineraries/insert', [ItineraryController::class, 'insertItinerary'])
+        ->name('itineraries.insert');
 
-Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'insertToQuery'])
+    Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'insertToQuery'])
     ->name('itineraries.insert.to.query');
 
 
@@ -106,6 +106,9 @@ Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'inse
     // Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
     //     ->name('itineraries.final')
     //     ->middleware('module.permission:itineraries-final,view');
+    Route::get( '/online-users', [StaffController::class, 'onlineUsers'] )->name('online-users');
+
+
     Route::get('/get-activities-by-destination/{destination_id}', [ActivityController::class, 'getByDestination'])
         ->name('activities.by.destination');
 

@@ -1,4 +1,16 @@
 @extends('layouts.app')
+@push('styles')
+<style>
+    .status-toggle-wrapper{display:flex;align-items:center;gap:10px}
+    .status-switch{position:relative;display:inline-block;width:46px;height:24px;margin:0}
+    .status-switch input{opacity:0;width:0;height:0}
+    .status-slider{position:absolute;cursor:pointer;inset:0;background-color:#ccc;border-radius:30px;transition:.3s}
+    .status-slider:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background-color:#fff;border-radius:50%;transition:.3s}
+    .status-switch input:checked+.status-slider{background-color:#28a745}
+    .status-switch input:checked+.status-slider:before{transform:translateX(22px)}
+    .status-text{font-weight:500}
+</style>
+@endpush
 @section('content')
     </div>
     <div class="wrapper">
@@ -101,18 +113,30 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td width="30%">
-                                                                <div class="col-md-6">
-                                                                    <label>Status</label>
-                                                                    <select name="status" class="form-control reqfield @error('status') is-invalid @enderror">
-                                                                        <option value="">Select</option>
-                                                                        <option value="1" {{ old('status', $smtpSetting->status ?? '') == 1 ? 'selected' : '' }}>
-                                                                            Active
-                                                                        </option>
-                                                                        <option value="0" {{ old('status', $smtpSetting->status ?? '') == 0 ? 'selected' : '' }}>
-                                                                            Inactive
-                                                                        </option>
-                                                                    </select>
+                                                           <td width="30%">
+                                                                <div class="col-md-8">
+                                                                    <label class="d-block mb-2">Status</label>
+
+                                                                    <input type="hidden" name="status" value="0">
+
+                                                                    <div class="status-toggle-wrapper">
+                                                                        <label class="status-switch">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                name="status"
+                                                                                id="smtpStatus"
+                                                                                value="1"
+                                                                                {{ old('status', $smtpSetting->status ?? 0) == 1 ? 'checked' : '' }}
+                                                                            >
+
+                                                                            <span class="status-slider"></span>
+                                                                        </label>
+
+                                                                        <span id="smtpStatusText" class="status-text">
+                                                                            {{ old('status', $smtpSetting->status ?? 0) == 1 ? 'Active' : 'Inactive' }}
+                                                                        </span>
+                                                                    </div>
+
                                                                     @error('status')
                                                                         <div class="text-danger">{{ $message }}</div>
                                                                     @enderror
@@ -185,3 +209,22 @@
         </div>
     </div>
 @endsection
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const status = document.getElementById('smtpStatus');
+    const statusText = document.getElementById('smtpStatusText');
+
+    if (status) {
+        status.addEventListener('change', function () {
+            statusText.innerText = this.checked
+                ? 'Active'
+                : 'Inactive';
+        });
+    }
+
+});
+</script>
+
+@endpush

@@ -69,7 +69,7 @@ class StaffController extends Controller
             ->get()
             ->keyBy('module');
         // dd($userPermissions);
-        return view('setting.team.add-edit-team', compact('user', 'roles','userPermissions'));
+        return view('setting.team.add-edit-team', compact('user', 'roles', 'userPermissions'));
     }
 
     public function update(Request $request, $id)
@@ -108,7 +108,58 @@ class StaffController extends Controller
             'message' => 'User updated successfully.',
         ]);
     }
+    public function onlineUsers()
+    {
+        $onlineSince = now()->subMinutes(5);
 
+        $users = User::query()
+            ->select([
+                'id',
+                'name',
+                'last_name',
+                'email',
+                'status',
+                'last_seen_at',
+            ])
+            ->where('status', 1)
+            ->orderByRaw(
+                'CASE WHEN last_seen_at >= ? THEN 0 ELSE 1 END',
+                [$onlineSince]
+            )
+            ->orderBy('name')
+            ->get()
+            ->map(function ($user) use ($onlineSince) {
+
+                $isOnline = $user->last_seen_at
+                    && $user->last_seen_at->gte($onlineSince);
+
+                return [
+                    'id' => $user->id,
+
+                    'name' => trim(
+                        $user->name . ' ' . $user->last_name
+                    ),
+
+                    'email' => $user->email,
+
+                    'is_online' => $isOnline,
+
+                    'last_seen' => $user->last_seen_at
+                        ? $user->last_seen_at->diffForHumans()
+                        : null,
+                ];
+            });
+
+        return response()->json([
+            'status' => true,
+
+            'online_count' => $users
+                ->where('is_online', true)
+                ->count(),
+
+            'users' => $users,
+        ]);
+    }
     private function savePermissions(Request $request, $userId)
     {
         foreach ($request->permissions ?? [] as $module => $permission) {

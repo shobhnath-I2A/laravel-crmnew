@@ -37,7 +37,8 @@ class User extends Authenticatable
         'website',
         'profile_image',
         'theme_color',
-        'created_by'
+        'created_by',
+        'last_seen_at'
     ];
 
     /**
@@ -60,6 +61,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_seen_at' => 'datetime',
         ];
     }
 
