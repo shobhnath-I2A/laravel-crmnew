@@ -7,6 +7,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use App\Models\Destination;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\Event;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,5 +38,24 @@ class AppServiceProvider extends ServiceProvider
                 auth()->user()->loadMissing('permissions', 'role.branch');
             }
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | User Logout - Make User Offline Immediately
+        |--------------------------------------------------------------------------
+        */
+
+        Event::listen(
+            Logout::class,
+            function (Logout $event) {
+                if ($event->user) {
+                    $event->user->updateQuietly([
+                        'last_seen_at' => null,
+                    ]);
+                }
+            }
+        );
+
+
     }
 }
