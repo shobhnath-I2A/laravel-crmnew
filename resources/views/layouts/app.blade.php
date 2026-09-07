@@ -38,21 +38,21 @@
     @stack('styles')
 </head>
 
-<body>
-
+<body class="night-theme">
+</style>
     @include('partials.navigation')
     @include('partials.header')
     @include('partials.sidebar')
     {{-- show ip base message --}}
-    @if(session('warning'))
-    <div id="ipWarning" style="background:#fff3cd; color:#856404; padding:10px; margin:10px;">
-        {{ session('warning') }}
-    </div>
+    @if (session('warning'))
+        <div id="ipWarning" style="background:#fff3cd; color:#856404; padding:10px; margin:10px;">
+            {{ session('warning') }}
+        </div>
 
-    <script>
-        setTimeout(() => {
-            document.getElementById('ipWarning')?.remove();
-        }, 5000);
+        <script>
+            setTimeout(() => {
+                document.getElementById('ipWarning')?.remove();
+            }, 5000);
         </script>
     @endif
     {{-- End show ip base message --}}
@@ -89,7 +89,7 @@
         <div class="crm-popup" style="display:none;">
             <div class="popup-box">
                 <div class="modal-header">
-                    <h5 class="popup-title mt-0" >Popup Title</h5>
+                    <h5 class="popup-title mt-0">Popup Title</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true" onclick="closePopup();">×</span>
                     </button>
@@ -203,7 +203,6 @@
             $('body').css('overflow', 'auto');
         }
         // new form popup  open js
-
     </script>
     <script>
         function openPopup(title, url) {
@@ -212,7 +211,7 @@
             $('.crm-popup').show();
             $('body').css('overflow', 'hidden');
 
-            $('#popup-content').load(url, function () {
+            $('#popup-content').load(url, function() {
                 if (typeof initCRMUI === 'function') {
                     initCRMUI();
                 }
@@ -224,7 +223,7 @@
             $('#popup-content').html('Loading...');
             $('body').css('overflow', 'auto');
         }
-        </script>
+    </script>
     <script type="text/javascript">
         function initCRMUI() {
             tinymce.init({
@@ -303,7 +302,7 @@
 
             });
 
-             //  SELECT2 FIX dropdown
+            //  SELECT2 FIX dropdown
             new TomSelect("#destination", {
                 plugins: ['remove_button'],
                 create: true,
@@ -331,8 +330,6 @@
                 changeYear: true
             });
         });
-
-
     </script>
     {{-- <script>
         const beamsClient = new PusherPushNotifications.Client({
@@ -345,17 +342,78 @@
             .catch(console.error);
         </script> --}}
 
-        <script>
-            tinymce.init({
-                selector: ".editorclass",
-                themes: "modern",
-                plugins: [
-                    "advlist autolink lists link image charmap print preview anchor",
-                    "searchreplace visualblocks code fullscreen"
-                ],
-                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+    <script>
+        tinymce.init({
+            selector: ".editorclass",
+            themes: "modern",
+            plugins: [
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen"
+            ],
+            toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#queryForm').on('submit', function(e) {
+
+                if ($(this).valid && !$(this).valid()) {
+                    return false;
+                }
+
+                var $btn = $(this).find('button[type="submit"]');
+
+                setTimeout(function() {
+                    $btn.prop('disabled', true).html(
+                        '<i class="fa fa-spinner fa-spin"></i> Processing...');
+                }, 1);
             });
-        </script>
+        });
+    </script>
+    {{-- add night mode toggle js --}}
+    <script>
+        function toggleNightTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('night-theme');
+            const isNight = html.classList.contains('night-theme');
+            localStorage.setItem(
+                'nightTheme',
+                isNight ? 'on' : 'off'
+            );
+            updateNightThemeButton(isNight);
+        }
+
+        function updateNightThemeButton(isNight) {
+            const text = document.getElementById('nightThemeText');
+            const icon = document.getElementById('nightThemeIcon');
+            if (!text || !icon) {
+                return;
+            }
+
+            if (isNight) {
+                text.innerText = 'Night Theme On';
+                icon.classList.remove('fa-moon-o');
+                icon.classList.add('fa-sun-o');
+
+            } else {
+                text.innerText = 'Night Theme Off';
+                icon.classList.remove('fa-sun-o');
+                icon.classList.add('fa-moon-o');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedTheme = localStorage.getItem('nightTheme');
+            if (savedTheme === 'on') {
+                document.documentElement.classList.add('night-theme');
+                updateNightThemeButton(true);
+            } else {
+                document.documentElement.classList.remove('night-theme');
+                updateNightThemeButton(false);
+            }
+        });
+    </script>
+    {{-- End night mode toggle js --}}
 </body>
 
 </html>
