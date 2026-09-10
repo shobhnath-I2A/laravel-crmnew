@@ -31,21 +31,38 @@
     </div>
     <script>
         function opensearch() {
-            $('#searchblk').show();
-            $('.headersearchbarouter').addClass('searchstart');
-            $('html').css('overflow', 'hidden');
+            const searchBlk = document.getElementById('searchblk');
+            const header = document.querySelector('.headersearchbarouter');
+            if (searchBlk) searchBlk.style.display = 'block';
+            if (header) header.classList.add('searchstart');
+            document.documentElement.style.overflow = 'hidden';
         }
 
         function topsearchstart() {
-            var topsearchtype = encodeURI($('#topsearchtype').val());
-            var topsearchkeyword = encodeURI($('#topsearchkeyword').val());
-            $('#topsearchresult').load('topsearchresult.php?keyword=' + topsearchkeyword + '&topsearchtype=' +
-                topsearchtype);
+            var topsearchkeyword = document.getElementById('topsearchkeyword')
+                ? document.getElementById('topsearchkeyword').value.trim()
+                : '';
+            var resultBox = document.getElementById('topsearchresult');
+
+            if (!topsearchkeyword || !resultBox) {
+                if (resultBox) resultBox.style.display = 'none';
+                return;
+            }
+
+            resultBox.style.display = 'block';
+            resultBox.innerHTML = '<div style="padding:10px; font-size:12px; color:#666;">Searching...</div>';
         }
-        $("#searchblk").click(function() {
-            $('#searchblk').hide();
-            $('.headersearchbarouter').removeClass('searchstart');
-            $('html').css('overflow', 'visible');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBlk = document.getElementById('searchblk');
+            if (searchBlk) {
+                searchBlk.addEventListener('click', function() {
+                    const header = document.querySelector('.headersearchbarouter');
+                    if (header) header.classList.remove('searchstart');
+                    searchBlk.style.display = 'none';
+                    document.documentElement.style.overflow = 'visible';
+                });
+            }
         });
     </script>
     <div class="navirightlink" id="welcomename">
@@ -85,11 +102,17 @@
                 </div>
                 <script>
                     function openalerttaskremincer() {
-                        $('#loadremindertask').load('loadremindertask.php');
+                        const taskBox = document.getElementById('loadremindertask');
+                        if (taskBox) {
+                            taskBox.innerHTML = 'Loading...';
+                        }
                     }
                     function showcurrentworkinghours() {
                         openalerttaskremincer();
-                        $('#showcurrentworkinghours').load('todaysworkinghours.php');
+                        const workingHours = document.getElementById('showcurrentworkinghours');
+                        if (workingHours) {
+                            workingHours.textContent = '00:00';
+                        }
                     }
                 </script>
                 <div class="content" style="border-bottom:2px solid #2d2f31; text-align:center;">
@@ -128,10 +151,14 @@
     </div>
     <script>
         window.addEventListener('click', function(e) {
-            if (document.getElementById('welcomename').contains(e.target)) {
-                $('#clickbox').show();
+            const welcomeName = document.getElementById('welcomename');
+            const clickBox = document.getElementById('clickbox');
+            if (!welcomeName || !clickBox) return;
+
+            if (welcomeName.contains(e.target)) {
+                clickBox.style.display = 'block';
             } else {
-                $('#clickbox').hide();
+                clickBox.style.display = 'none';
             }
         });
     </script>

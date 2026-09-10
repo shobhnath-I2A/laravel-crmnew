@@ -1,7 +1,6 @@
 
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
-    {{-- <form action="{{ route('queries.store') }}" method="POST" id="queryForm" class="custom-validation ajax-form"> --}}
-        <form action="{{ isset($query) ? route('queries.update',$query->id) : route('queries.store') }}" method="POST" id="queryForm" class="custom-validation ajax-form">
+    <form action="{{ isset($query) ? route('queries.update',$query->id) : route('queries.store') }}" method="POST" id="queryForm" class="custom-validation ajax-form">
         @csrf
         @isset($query)
         @method('PUT')
@@ -63,8 +62,6 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            {{-- <label class="form-label">Travel Type</label> --}}
-
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="querytype" id="domestic"
                                     value="Domestic" {{ old('querytype', $query->querytype ?? '') == 'Domestic' ? 'checked' : '' }}>
@@ -108,10 +105,7 @@
                             @error('origin')
                                 <div class="text-danger">{{ $message }} </div>
                             @enderror
-                            {{-- <input type="text" name="origin" value="{{ old('origin', $query->origin ?? '') }}" class="form-control reqfield" required>
-                            @error('origin')
-                                <div class="text-danger">{{ $message }} </div>
-                            @enderror --}}
+
                         </div>
 
                         <div class="col-md-6">
@@ -129,30 +123,27 @@
                             @error('destination')
                                 <div class="text-danger">{{ $message }} </div>
                             @enderror
-                            {{-- <input type="text" name="destination" value="{{ old('destination', $query->destination ?? '') }}" class="form-control reqfield" required>
-                            @error('destination')
-                                <div class="text-danger">{{ $message }} </div>
-                            @enderror --}}
-                        </div>
 
+                        </div>
                         <div class="col-md-6">
-                            <label class="form-label">From Date <span class="redmtext">*</span></label>
-                            <input type="text" name="startDate" value="{{ old('startDate', $query->startDate ?? '') }}" id="startDate" class="form-control reqfield"
-                                required>
+                           <label class="form-label"> From Date <span class="redmtext">*</span> </label>
+                           <input type="date" name="startDate" id="startDate" value="{{ old('startDate', $query->startDate ?? '') }}" min="{{ date('Y-m-d') }}" class="form-control reqfield" >
                             @error('startDate')
-                                <div class="text-danger">{{ $message }} </div>
+                                <div class="text-danger">
+                                    {{ $message }}
+                                </div>
                             @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">To Date <span class="redmtext">*</span></label>
-                            <input type="text" name="endDate" value="{{ old('endDate', $query->endDate ?? '') }}" id="endDate" class="form-control reqfield"
-                                required>
+                            <label class="form-label"> To Date <span class="redmtext">*</span> </label>
+                            <input type="date" name="endDate" id="endDate" value="{{ old('endDate', $query->endDate ?? '') }}" min="{{ date('Y-m-d') }}" class="form-control reqfield" >
                             @error('endDate')
-                                <div class="text-danger">{{ $message }} </div>
+                                <div class="text-danger">
+                                    {{ $message }}
+                                </div>
                             @enderror
                         </div>
-
                     </div>
                 </div>
             </div>

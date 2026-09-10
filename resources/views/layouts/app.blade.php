@@ -26,7 +26,7 @@
 
     <link href="{{ asset('assets/css/customstyle.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assets/css/pagestyle.css') }}" rel="stylesheet" type="text/css">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
@@ -105,13 +105,61 @@
 
     @include('partials.footer')
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        window.toastr = window.toastr || {
+            success: function() {},
+            error: function() {},
+            info: function() {},
+            warning: function() {}
+        };
+
+        window.selectedfun = function () {
+            var bulkAssign = document.getElementById('bulkassign');
+            if (!bulkAssign) return 0;
+
+            var checked = document.querySelectorAll('.checkBoxClass:checked').length;
+            bulkAssign.style.display = checked > 0 ? 'block' : 'none';
+            return checked;
+        };
+
+        window.loadpop = function (title, obj, width) {
+            if (typeof window.jQuery !== 'undefined') {
+                var $ = window.jQuery;
+                $('#popcontent').html('<div style="padding:10px; text-align:center;"><img src="' + '{{ asset("assets/images/loading.gif") }}' + '" width="32"></div>');
+                var popaction = $(obj).attr('popaction') || '';
+                $('#poptitle').html(title);
+                $('.modal-dialog').css({ 'max-width': width, 'width': width });
+                $('#popcontent').load('{{ url("") }}/loadpopup.php?' + encodeURI(popaction));
+                return;
+            }
+            console.warn('loadpop is unavailable because jQuery is not loaded yet.');
+        };
+
+        window.openusermenu = function () {
+            return true;
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof window.jQuery === 'undefined') return;
+
+            var $ = window.jQuery;
+            $(document).on('change', '.checkBoxClass', function () {
+                window.selectedfun();
+            });
+
+            $(document).on('change', '#ckbCheckAll', function () {
+                $('.checkBoxClass').prop('checked', this.checked);
+                window.selectedfun();
+            });
+        });
+    </script>
+
     <!-- Scripts -->
     @stack('scripts')
-
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/modernizr.min.js') }}"></script>
@@ -238,44 +286,30 @@
 
             $(function() {
 
-                // ✅ Start Date
-                $("#startDate").datepicker({
-                    dateFormat: 'dd-mm-yy',
-                    minDate: 0, // 🚀 only future dates
-                    changeMonth: true,
-                    changeYear: true,
-                    yearRange: "0:+5",
-
-                    onSelect: function(selectedDate) {
-
-                        let start = $(this).datepicker('getDate');
-
-                        // ✅ Set minimum end date = start date
-                        $("#endDate").datepicker("option", "minDate", start);
-
-                        // ✅ Auto set end date (start + 1 day)
-                        let end = new Date(start);
-                        end.setDate(end.getDate() + 1);
-                        $("#endDate").datepicker("setDate", end);
-
-                        calculateDays();
+                    // Native HTML5 date fields 10-09-2026
+                    const startDate = document.getElementById('startDate');
+                    const endDate   = document.getElementById('endDate');
+                    if (startDate && endDate) {
+                        startDate.removeAttribute('readonly');
+                        endDate.removeAttribute('readonly');
+                        startDate.addEventListener('change', function () {
+                            if (!this.value) {
+                                endDate.value = '';
+                                return;
+                            }
+                            // To Date cannot be before From Date
+                            endDate.min = this.value;
+                            // Auto set To Date = From Date + 1 day
+                            const date = new Date(this.value + 'T00:00:00');
+                            date.setDate(date.getDate() + 1);
+                            const year  = date.getFullYear();
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const day   = String(date.getDate()).padStart(2, '0');
+                            endDate.value = `${year}-${month}-${day}`;
+                        });
                     }
-                });
 
-                // ✅ End Date
-                $("#endDate").datepicker({
-                    dateFormat: 'dd-mm-yy',
-                    minDate: 0,
-                    changeMonth: true,
-                    changeYear: true,
-                    yearRange: "0:+5",
-
-                    onSelect: function() {
-                        calculateDays();
-                    }
-                });
-
-                // ✅ Validity Date
+                // Validity Date
                 $("#websiteValidity").datepicker({
                     dateFormat: 'dd-mm-yy',
                     minDate: 0,
@@ -284,7 +318,7 @@
                     yearRange: "0:+5",
                 });
 
-                // ✅ Calculate total days
+                // Calculate total days
                 function calculateDays() {
                     let start = $("#startDate").datepicker('getDate');
                     let end = $("#endDate").datepicker('getDate');
@@ -296,22 +330,20 @@
                         $("#totalDays").val(days + " Days");
                     }
                 }
-
-                // ✅ Prevent manual typing
-                $("#startDate, #endDate").attr('readonly', true);
-
             });
 
             //  SELECT2 FIX dropdown
-            new TomSelect("#destination", {
-                plugins: ['remove_button'],
-                create: true,
-                maxItems: null,
-                sortField: {
-                    field: "text",
-                    direction: "asc"
-                }
-            });
+            if (document.getElementById('destination')) {
+                new TomSelect("#destination", {
+                    plugins: ['remove_button'],
+                    create: true,
+                    maxItems: null,
+                    sortField: {
+                        field: "text",
+                        direction: "asc"
+                    }
+                });
+            }
 
 
         }
@@ -323,26 +355,18 @@
 
         });
         $(document).ready(function() {
-            $("#reminderDate").datepicker({
-                dateFormat: 'dd-mm-yy',
-                minDate: 0,
-                changeMonth: true,
-                changeYear: true
-            });
-        });
-    </script>
-    {{-- <script>
-        const beamsClient = new PusherPushNotifications.Client({
-            instanceId: '880941f1-b368-4845-9e8a-32a3df4fe52d',
+            if ($('#reminderDate').length) {
+                $("#reminderDate").datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    minDate: 0,
+                    changeMonth: true,
+                    changeYear: true
+                });
+            }
         });
 
-        beamsClient.start()
-            .then(() => beamsClient.addDeviceInterest('hello'))
-            .then(() => console.log('Successfully registered and subscribed!'))
-            .catch(console.error);
-        </script> --}}
+        // editorclass
 
-    <script>
         tinymce.init({
             selector: ".editorclass",
             themes: "modern",
@@ -352,8 +376,9 @@
             ],
             toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
         });
-    </script>
-    <script>
+
+        // queryForm submit button disable after click
+
         $(document).ready(function() {
             $('#queryForm').on('submit', function(e) {
 
@@ -369,9 +394,9 @@
                 }, 1);
             });
         });
-    </script>
-    {{-- add night mode toggle js --}}
-    <script>
+
+    // add night mode toggle js
+
         function toggleNightTheme() {
             const html = document.documentElement;
             html.classList.toggle('night-theme');

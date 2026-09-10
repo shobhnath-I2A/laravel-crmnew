@@ -38,35 +38,37 @@ use App\Services\MailService;
 use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\QueryMailController;
 
-function permissionResource($uri, $controller, $module)
-{
-    Route::get($uri, [$controller, 'index'])
-        ->middleware("module.permission:$module,view")
-        ->name("$uri.index");
+if (!function_exists('permissionResource')) {
+    function permissionResource($uri, $controller, $module)
+    {
+        Route::get($uri, [$controller, 'index'])
+            ->middleware("module.permission:$module,view")
+            ->name("$uri.index");
 
-    Route::get("$uri/create", [$controller, 'create'])
-        ->middleware("module.permission:$module,add")
-        ->name("$uri.create");
+        Route::get("$uri/create", [$controller, 'create'])
+            ->middleware("module.permission:$module,add")
+            ->name("$uri.create");
 
-    Route::post($uri, [$controller, 'store'])
-        ->middleware("module.permission:$module,add")
-        ->name("$uri.store");
+        Route::post($uri, [$controller, 'store'])
+            ->middleware("module.permission:$module,add")
+            ->name("$uri.store");
 
-    Route::get("$uri/{id}", [$controller, 'show'])
-        ->middleware("module.permission:$module,view")
-        ->name("$uri.show");
+        Route::get("$uri/{id}", [$controller, 'show'])
+            ->middleware("module.permission:$module,view")
+            ->name("$uri.show");
 
-    Route::get("$uri/{id}/edit", [$controller, 'edit'])
-        ->middleware("module.permission:$module,edit")
-        ->name("$uri.edit");
+        Route::get("$uri/{id}/edit", [$controller, 'edit'])
+            ->middleware("module.permission:$module,edit")
+            ->name("$uri.edit");
 
-    Route::put("$uri/{id}", [$controller, 'update'])
-        ->middleware("module.permission:$module,edit")
-        ->name("$uri.update");
+        Route::put("$uri/{id}", [$controller, 'update'])
+            ->middleware("module.permission:$module,edit")
+            ->name("$uri.update");
 
-    Route::delete("$uri/{id}", [$controller, 'destroy'])
-        ->middleware("module.permission:$module,delete")
-        ->name("$uri.destroy");
+        Route::delete("$uri/{id}", [$controller, 'destroy'])
+            ->middleware("module.permission:$module,delete")
+            ->name("$uri.destroy");
+    }
 }
 
 Route::get('/', function () {

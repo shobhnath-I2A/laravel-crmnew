@@ -33,7 +33,7 @@
 
                         <div class="col-md-6">
                             <label>Start Date <span class="redmtext">*</span></label>
-                            <input type="text"
+                            <input type="date"
                                    name="start_date"
                                    id="startDate"
                                    value="{{ old('start_date') }}"
@@ -46,7 +46,7 @@
 
                         <div class="col-md-6">
                             <label>End Date <span class="redmtext">*</span></label>
-                            <input type="text"
+                            <input type="date"
                                    name="end_date"
                                    id="endDate"
                                    value="{{ old('end_date') }}"

@@ -60,7 +60,6 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             {{-- <label class="form-label">Travel Type</label> --}}
-
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="querytype" id="domestic"
                                     value="Domestic" {{ old('querytype', 'Domestic') == 'Domestic' ? 'checked' : '' }}>
@@ -69,7 +68,6 @@
                                     Domestic
                                 </label>
                             </div>
-
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="querytype" id="international"
                                     value="International" {{ old('querytype') == 'International' ? 'checked' : '' }}>
@@ -78,7 +76,6 @@
                                     International
                                 </label>
                             </div>
-
                             @error('querytype')
                                 <div class="text-danger">
                                     {{ $message }}
@@ -94,7 +91,6 @@
                             {{-- <input type="text" name="origin" value="{{ old('origin') }}" class="form-control reqfield" required> --}}
                               <select name="origin" class="form-control reqfield">
                                 <option value="">Select Destination</option>
-
                                 @foreach($destinationList as $id => $name)
                                     <option value="{{ $id }}">{{ $name }}</option>
                                 @endforeach
@@ -108,7 +104,6 @@
                              <label class="form-label">Destination <span class="redmtext">*</span></label>
                             <select name="destination" class="form-control reqfield">
                                 <option value="">Select Destination</option>
-
                                 @foreach($destinationList as $id => $name)
                                     <option value="{{ $id }}">{{ $name }}</option>
                                 @endforeach
@@ -116,31 +111,27 @@
                             @error('destination')
                                 <div class="text-danger">{{ $message }} </div>
                             @enderror
-                            {{-- <label class="form-label">Destination <span class="redmtext">*</span></label>
-                            <input type="text" name="destination" value="{{ old('destination') }}" class="form-control reqfield" required>
-                            @error('destination')
-                                <div class="text-danger">{{ $message }} </div>
-                            @enderror --}}
-                        </div>
 
+                        </div>
                         <div class="col-md-6">
-                            <label class="form-label">From Date <span class="redmtext">*</span></label>
-                            <input type="text" name="startDate" value="{{ old('startDate', $query->startDate ?? '') }}" id="startDate" class="form-control reqfield"
-                                required>
+                           <label class="form-label"> From Date <span class="redmtext">*</span> </label>
+                           <input type="date" name="startDate" id="startDate" value="{{ old('startDate', $query->startDate ?? '') }}" min="{{ date('Y-m-d') }}" class="form-control reqfield" >
                             @error('startDate')
-                                <div class="text-danger">{{ $message }} </div>
+                                <div class="text-danger">
+                                    {{ $message }}
+                                </div>
                             @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">To Date <span class="redmtext">*</span></label>
-                            <input type="text" name="endDate" value="{{ old('endDate', $query->endDate ?? '') }}" id="endDate" class="form-control reqfield"
-                                required>
+                            <label class="form-label"> To Date <span class="redmtext">*</span> </label>
+                            <input type="date" name="endDate" id="endDate" value="{{ old('endDate', $query->endDate ?? '') }}" min="{{ date('Y-m-d') }}" class="form-control reqfield" >
                             @error('endDate')
-                                <div class="text-danger">{{ $message }} </div>
+                                <div class="text-danger">
+                                    {{ $message }}
+                                </div>
                             @enderror
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -253,72 +244,34 @@
         </div>
     </form>
 </div>
-
 <script>
-    $(function() {
+(function () {
 
-                // Start Date
-                $("#startDate").datepicker({
-                    dateFormat: 'dd-mm-yy',
-                    minDate: 0, // 🚀 only future dates
-                    changeMonth: true,
-                    changeYear: true,
-                    yearRange: "0:+5",
+    const startDate = document.getElementById('startDate');
+    const endDate   = document.getElementById('endDate');
+    if (!startDate || !endDate) {
+        return;
+    }
+    /* Native HTML5 date fields must NOT be readonly. */
+    startDate.removeAttribute('readonly');
+    endDate.removeAttribute('readonly');
+    startDate.readOnly = false;
+    endDate.readOnly   = false;
+    startDate.addEventListener('change', function () {
+        if (!this.value) {
+            endDate.value = '';
+            return;
+        }
+        // To Date cannot be earlier than From Date
+        endDate.min = this.value;
+        // Automatically set To Date = From Date + 1 day
+        const date = new Date(this.value + 'T00:00:00');
+        date.setDate(date.getDate() + 1);
+        const year  = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day   = String(date.getDate()).padStart(2, '0');
+        endDate.value = `${year}-${month}-${day}`;
+    });
 
-                    onSelect: function(selectedDate) {
-
-                        let start = $(this).datepicker('getDate');
-
-                        // Set minimum end date = start date
-                        $("#endDate").datepicker("option", "minDate", start);
-
-                        // Auto set end date (start + 1 day)
-                        let end = new Date(start);
-                        end.setDate(end.getDate() + 1);
-                        $("#endDate").datepicker("setDate", end);
-
-                        calculateDays();
-                    }
-                });
-
-                // End Date
-                $("#endDate").datepicker({
-                    dateFormat: 'dd-mm-yy',
-                    minDate: 0,
-                    changeMonth: true,
-                    changeYear: true,
-                    yearRange: "0:+5",
-
-                    onSelect: function() {
-                        calculateDays();
-                    }
-                });
-
-                // Validity Date
-                $("#websiteValidity").datepicker({
-                    dateFormat: 'dd-mm-yy',
-                    minDate: 0,
-                    changeMonth: true,
-                    changeYear: true,
-                    yearRange: "0:+5",
-                });
-
-                // Calculate total days
-                function calculateDays() {
-                    let start = $("#startDate").datepicker('getDate');
-                    let end = $("#endDate").datepicker('getDate');
-
-                    if (start && end) {
-                        let diff = end - start;
-                        let days = Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
-
-                        $("#totalDays").val(days + " Days");
-                    }
-                }
-
-                // Prevent manual typing
-                $("#startDate, #endDate").attr('readonly', true);
-
-            });
+})();
 </script>
-

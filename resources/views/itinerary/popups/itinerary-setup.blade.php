@@ -7,14 +7,11 @@
     {{-- {{ $package ?? '' }} --}}
     <form action="{{ route('itineraries.store') }}" method="POST" id="itineraryForm" class="custom-validation ajax-form">
         @csrf
-
         <div class="container-fluid">
-
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
                     <strong>Itinerary Information </strong>
                 </div>
-
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
@@ -29,7 +26,7 @@
 
                         <div class="col-md-6">
                             <label>Start Date <span class="redmtext">*</span></label>
-                            <input type="text" name="start_date" id="startDate" value="{{ old('start_date') }}"
+                            <input type="date" name="start_date" id="startDate" value="{{ old('start_date') }}"
                                 class="form-control reqfield" required>
                             @error('start_date')
                                 <div class="text-danger">{{ $message }}</div>
@@ -38,7 +35,7 @@
 
                         <div class="col-md-6">
                             <label>End Date <span class="redmtext">*</span></label>
-                            <input type="text" name="end_date" id="endDate" value="{{ old('end_date') }}"
+                            <input type="date" name="end_date" id="endDate" value="{{ old('end_date') }}"
                                 class="form-control reqfield" required>
                             @error('end_date')
                                 <div class="text-danger">{{ $message }}</div>

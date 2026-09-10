@@ -2,33 +2,9 @@
 @section('content')
     </div>
     <style>
-        .table td,
-        .table th {
-            vertical-align: top;
-        }
-
-        .statusbox {
-            margin-right: 5px;
-            padding: 10px;
-            text-align: center;
-            background-color: #000000;
-            font-size: 13px;
-            color: #fff;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-
-        .notes {
-            font-size: 12px;
-            background-color: #FFFFCC;
-            border: 1px solid #FFCC33;
-            padding: 0px 5px;
-            color: #ff6a00;
-            font-weight: 600;
-            float: left;
-            margin-top: 2px;
-            border-radius: 2px;
-        }
+        .table td, .table th { vertical-align: top; }
+        .statusbox { margin-right: 5px; padding: 10px; text-align: center; background-color: #000000; font-size: 13px; color: #fff; border-radius: 4px; text-transform: uppercase; }
+        .notes { font-size: 12px; background-color: #FFFFCC; border: 1px solid #FFCC33; padding: 0px 5px; color: #ff6a00; font-weight: 600; float: left; margin-top: 2px; border-radius: 2px; }
     </style>
 
     <div class="wrapper">
@@ -77,7 +53,6 @@
                             <div class="card"
                                 style="min-height:500px;    border-radius: 0px; margin-bottom:0px; background-color:transparent;">
                                 <div class="card-body" style="padding:0px;">
-
                                     <div class="hideinmobile searchquerymain"
                                         style="  margin-bottom: 10px; float: left; width: 100%; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6; background-color: #f3f3f3; padding: 8px;">
                                         <div class="row" style="margin-right: 0px; margin-left: 0px;">
@@ -86,19 +61,16 @@
                                                     class="querytabsleadsearch ">
                                                     <table border="0" cellpadding="0" cellspacing="0">
                                                         <tr>
-                                                            <td><input type="text" class="form-control" id="startDate"
-                                                                    name="startDate" readonly="" placeholder="From"
-                                                                    value="" style="width:130px;"></td>
-                                                            <td style="padding-left:5px;"><input type="text"
-                                                                    class="form-control" id="endDate" name="endDate"
-                                                                    readonly="" placeholder="From" value=""
-                                                                    style="width:130px;"></td>
-                                                            <td style="padding-left:5px;"><input type="text"
-                                                                    name="keyword" class="form-control"
-                                                                    placeholder="Search by ID, name, email, mobile"
-                                                                    value="" style=" width:250px;">
-                                                                <input name="page" type="hidden" value="1" /><input
-                                                                    name="ga" type="hidden" value="query" />
+                                                            <td>
+                                                                <input type="text" class="form-control" id="startDate" name="startDate" placeholder="From" value="" style="width:130px;">
+                                                            </td>
+                                                            <td style="padding-left:5px;">
+                                                                <input type="text" class="form-control" id="endDate" name="endDate" placeholder="From" value="" style="width:130px;">
+                                                            </td>
+                                                            <td style="padding-left:5px;">
+                                                                <input type="text" name="keyword" class="form-control" placeholder="Search by ID, name, email, mobile" value="" style=" width:250px;">
+                                                                <input name="page" type="hidden" value="1" />
+                                                                <input name="ga" type="hidden" value="query" />
                                                             </td>
                                                             <td style="padding-left:5px;">
                                                                 <select name="searchcity" class="form-control"
@@ -129,14 +101,14 @@
                                                                     <option value="18">WhatsApp</option>
                                                                 </select>
                                                             </td>
-                                                            <td style="padding-left:5px;"><button type="submit"
-                                                                    class="btn btn-secondary btn-lg waves-effect waves-light"
-                                                                    style="padding: 6px 10px;"><i class="fa fa-search"
-                                                                        aria-hidden="true"></i> Search</button></td>
-                                                            <td style="padding-left:5px;"><a
-                                                                    href="display.html?ga=query"><button type="button"
-                                                                        class="btn btn-secondary btn-lg waves-effect waves-light"
-                                                                        style="padding: 6px 10px;">All</button></a></td>
+                                                            <td style="padding-left:5px;">
+                                                                <button type="submit" class="btn btn-secondary btn-lg waves-effect waves-light"style="padding: 6px 10px;">
+                                                                    <i class="fa fa-search" aria-hidden="true"></i> Search</button>
+                                                            </td>
+                                                            <td style="padding-left:5px;">
+                                                                <a href="display.html?ga=query">
+                                                                    <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="padding: 6px 10px;">All</button></a>
+                                                            </td>
                                                         </tr>
                                                     </table>
                                                 </form>
@@ -182,20 +154,14 @@
                                             </tr>
                                         </table>
                                     </div>
-
                                     <form action="frmaction.html" method="post" enctype="multipart/form-data" name="addeditfrm" target="actoinfrm" id="addeditfrm" style="padding:0px 10px 20px;">
-                                        <div id="bulkassign"
-                                            style="display:none;padding: 5px 2px; background-color: #f0f0f0; border-bottom: 2px solid #ddd; border-radius: 3px; margin-bottom: 10px;">
+                                        <div id="bulkassign" style="display:none;padding: 5px 2px; background-color: #f0f0f0; border-bottom: 2px solid #ddd; border-radius: 3px; margin-bottom: 10px;">
                                             <table border="0" cellspacing="0" cellpadding="5">
                                                 <tr>
-                                                    <td style="font-size:13px;"><input type="checkbox" id="ckbCheckAll"
-                                                            style="width: 16px; height: 16px;" /></td>
+                                                    <td style="font-size:13px;"><input type="checkbox" id="ckbCheckAll" style="width: 16px; height: 16px;" /></td>
                                                     <td style="font-size:13px;">Select All&nbsp;</td>
                                                     <td>
-                                                        <select id="assignToPerson" name="assignToPerson"
-                                                            class="form-control"
-                                                            style="padding: 5px; font-size: 12px; height: 30px; line-height: 20px; color: #000; font-weight: 600;"
-                                                            autocomplete="off">
+                                                        <select id="assignToPerson" name="assignToPerson" class="form-control" style="padding: 5px; font-size: 12px; height: 30px; line-height: 20px; color: #000; font-weight: 600;" autocomplete="off">
                                                             <option value="0">Assign To</option>
                                                             <option value="4041"> Aaron AK</option>
                                                             <option value="4036"> Abby ak</option>
@@ -203,14 +169,13 @@
                                                         </select>
                                                     </td>
                                                     <td>
-                                                        <button type="submit" id="savingbutton" class="btn btn-primary"
-                                                            onclick="this.form.submit(); this.value='Saving...';"
-                                                            style="float:right;padding: 3px 10px;">
+                                                        <button type="submit" id="savingbutton" class="btn btn-primary" onclick="this.form.submit(); this.value='Saving...';" style="float:right;padding: 3px 10px;">
                                                             Save
                                                         </button>
                                                     </td>
-                                                    <td><input autocomplete="false" name="action" type="hidden"
-                                                            id="action" value="bulkassignquery" /></td>
+                                                    <td>
+                                                        <input autocomplete="false" name="action" type="hidden" id="action" value="bulkassignquery" />
+                                                    </td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -220,14 +185,11 @@
                                                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                                         <tbody>
                                                             <tr>
-                                                                <td width="3%" align="left" valign="top"
-                                                                    style="padding-right:10px;"><input type="checkbox"
-                                                                        name="assignall[]" class="checkBoxClass"
-                                                                        id="assignqury" value="127368"
-                                                                        onclick="selectedfun();"
-                                                                        style="width: 16px; height: 16px;"> </td>
-                                                                <td width="14%" align="left" valign="top"
-                                                                    style="padding-right:20px;">
+                                                                <td width="3%" align="left" valign="top" style="padding-right:10px;">
+                                                                    <input type="checkbox" name="assignall[]" class="checkBoxClass" id="assignqury" value="127368"  onclick="selectedfun();"
+                                                                        style="width: 16px; height: 16px;">
+                                                                </td>
+                                                                <td width="14%" align="left" valign="top" style="padding-right:20px;">
                                                                     <div style="font-size:15px; font-weight:500;line-height: 16px; margin-bottom:3px; font-weight:600;">
                                                                         <a href="{{ route('queries.show',$query->id) }}">{{ $query->id}}</a>
                                                                     </div>

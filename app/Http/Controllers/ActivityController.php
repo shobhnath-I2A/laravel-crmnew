@@ -119,7 +119,7 @@ class ActivityController extends Controller
             ]);
 
             $activity = Activity::findOrFail($id);
-            // ✅ Upload image
+            // Upload image
             if ($request->hasFile('image')) {
                 $validated['image'] = $request->file('image')->store('hotels', 'public');
             }

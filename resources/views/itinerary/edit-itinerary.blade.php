@@ -23,7 +23,7 @@
                         </div>
                         <div class="col-md-6">
                             <label>Start Date <span class="redmtext">*</span></label>
-                            <input type="text" name="start_date" id="startDate"
+                            <input type="date" name="start_date" id="startDate"
                                 value="{{ old('start_date', $itinerary->start_date ?? '') }}"
                                 class="form-control reqfield" required>
                             @error('start_date')
@@ -32,7 +32,7 @@
                         </div>
                         <div class="col-md-6">
                             <label>End Date <span class="redmtext">*</span></label>
-                            <input type="text" name="end_date" id="endDate"
+                            <input type="date" name="end_date" id="endDate"
                                 value="{{ old('end_date', $itinerary->end_date ?? '') }}" class="form-control reqfield"
                                 required>
                             @error('end_date')
@@ -80,24 +80,7 @@
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                        {{-- <div class="col-md-6">
-                           <label>Destinations <span class="redmtext">*</span></label>
 
-                            <select name="destination_id" id="destination" class="form-control reqfield">
-                                <option value="">Select Destination</option>
-
-                                @foreach ($destinations as $id => $name)
-                                    <option value="{{ $id }}"
-                                        {{ old('destination_id', $itinerary->destination_id ?? '') == $id ? 'selected' : '' }}>
-                                        {{ $name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('destinations')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-
-                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -160,7 +143,7 @@
                         </div>
                         <div class="col-md-6">
                             <label>Validity <span class="redmtext">*</span></label>
-                            <input type="text" name="website_validity" id="websiteValidity"
+                            <input type="date" name="website_validity" id="websiteValidity"
                                 value="{{ old('website_validity', $itinerary->website_validity) }}"
                                 class="form-control reqfield" required>
                             @error('website_validity')

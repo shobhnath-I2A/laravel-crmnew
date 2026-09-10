@@ -127,34 +127,36 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     });
 
     // auth route setup
-    function permissionResource($uri, $controller, $module)
-    {
-    Route::get($uri, [$controller, 'index'])
-        ->middleware("permission:$module,view")
-        ->name("$uri.index");
+    if (!function_exists('permissionResource')) {
+        function permissionResource($uri, $controller, $module)
+        {
+        Route::get($uri, [$controller, 'index'])
+            ->middleware("permission:$module,view")
+            ->name("$uri.index");
 
-    Route::get("$uri/create", [$controller, 'create'])
-        ->middleware("permission:$module,add_edit")
-        ->name("$uri.create");
+        Route::get("$uri/create", [$controller, 'create'])
+            ->middleware("permission:$module,add_edit")
+            ->name("$uri.create");
 
-    Route::post($uri, [$controller, 'store'])
-        ->middleware("permission:$module,add_edit")
-        ->name("$uri.store");
+        Route::post($uri, [$controller, 'store'])
+            ->middleware("permission:$module,add_edit")
+            ->name("$uri.store");
 
-    Route::get("$uri/{id}", [$controller, 'show'])
-        ->middleware("permission:$module,view")
-        ->name("$uri.show");
+        Route::get("$uri/{id}", [$controller, 'show'])
+            ->middleware("permission:$module,view")
+            ->name("$uri.show");
 
-    Route::get("$uri/{id}/edit", [$controller, 'edit'])
-        ->middleware("permission:$module,add_edit")
-        ->name("$uri.edit");
+        Route::get("$uri/{id}/edit", [$controller, 'edit'])
+            ->middleware("permission:$module,add_edit")
+            ->name("$uri.edit");
 
-    Route::put("$uri/{id}", [$controller, 'update'])
-        ->middleware("permission:$module,add_edit")
-        ->name("$uri.update");
+        Route::put("$uri/{id}", [$controller, 'update'])
+            ->middleware("permission:$module,add_edit")
+            ->name("$uri.update");
 
-    Route::delete("$uri/{id}", [$controller, 'destroy'])
-        ->middleware("permission:$module,add_edit")
-        ->name("$uri.destroy");
+        Route::delete("$uri/{id}", [$controller, 'destroy'])
+            ->middleware("permission:$module,add_edit")
+            ->name("$uri.destroy");
+        }
     }
 require __DIR__.'/auth.php';

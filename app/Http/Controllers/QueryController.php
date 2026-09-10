@@ -40,9 +40,19 @@ class QueryController extends Controller
                 $queryBuilder->where('statusId', $request->statusId);
             }
 
+            if ($request->filled('startDate')) {
+                $startDate = Carbon::createFromFormat('d-m-Y', $request->startDate);
+                $queryBuilder->whereDate('startDate', '>=', $startDate->format('Y-m-d'));
+            }
+
+            if ($request->filled('endDate')) {
+                $endDate = Carbon::createFromFormat('d-m-Y', $request->endDate);
+                $queryBuilder->whereDate('startDate', '<=', $endDate->format('Y-m-d'));
+            }
+
             $queries = $queryBuilder
                 ->latest()
-                ->paginate(00);
+                ->paginate(10);
 
             $queries->appends($request->all());
 
@@ -54,6 +64,16 @@ class QueryController extends Controller
                 $countQuery->where('assignTo', $loginUser->id);
             } elseif ($loginUser->show_query_status == 1) {
                $countQuery->where('statusId', 5);
+            }
+
+            if ($request->filled('startDate')) {
+                $startDate = Carbon::createFromFormat('d-m-Y', $request->startDate);
+                $countQuery->whereDate('startDate', '>=', $startDate->format('Y-m-d'));
+            }
+
+            if ($request->filled('endDate')) {
+                $endDate = Carbon::createFromFormat('d-m-Y', $request->endDate);
+                $countQuery->whereDate('startDate', '<=', $endDate->format('Y-m-d'));
             }
 
             $totalQueries = (clone $countQuery)->count();
