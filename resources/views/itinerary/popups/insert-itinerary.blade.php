@@ -9,9 +9,9 @@
                         <div class="newhead">Insert Itinerary
                             <div class="newoptionmenu">
                                 <div>
-                                    <a href="display.html?ga=query&amp;view=1&amp;id=127873&amp;c=2">
+                                    <a href="{{ route('queries.show', $queryId) }}">
                                         <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
-                                            style="margin-bottom:10px;">Back to query</button>
+                                            style="margin-bottom:10px;">Back to query </button>
                                     </a>
                                 </div>
                                 <div>

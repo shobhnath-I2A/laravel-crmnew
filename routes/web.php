@@ -37,6 +37,7 @@ use App\Http\Controllers\PackageController;
 use App\Services\MailService;
 use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\QueryMailController;
+use App\Http\Controllers\QuotationController;
 
 if (!function_exists('permissionResource')) {
     function permissionResource($uri, $controller, $module)
@@ -186,6 +187,8 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::get('/transfers-list', [TransferMasterController::class, 'getalltransfer'])->name('transfers.list');
 
+    Route::get('/view-quotation/{id}', [QuotationController::class, 'show'])->name('view.quotation');
+
     Route::resource('hotels-rates', HotelRateController::class)
         ->middleware('module.permission:Hotel,edit');
 
@@ -227,6 +230,7 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     ->name('weather-setting.refresh');
 
     Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
+
 
 
 

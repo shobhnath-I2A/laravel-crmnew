@@ -78,8 +78,8 @@
 
 
 
-                                                       <a class="dropdown-item" style="cursor:pointer;"
-                                                        onclick="openPopup('Itinerary edit', this, '{{ route('itinery-setup.edit', $itinerary->id) }}')">
+                                                        <a class="dropdown-item" style="cursor:pointer;"
+                                                            onclick="openPopup('Itinerary edit', this, '{{ route('itinery-setup.edit', $itinerary->id) }}')">
                                                             Edit Itinerary
                                                         </a>
 
@@ -88,24 +88,24 @@
                                                             class="dropdown-item">
                                                             Duplicate
                                                         </a>
-                                                        @if($status==3)
+                                                        @if ($status == 3)
                                                             <a href="javascript:void(0)"
-                                                            onclick="unarchiveItinerary({{ $itinerary->id }})"
-                                                            class="dropdown-item">
+                                                                onclick="unarchiveItinerary({{ $itinerary->id }})"
+                                                                class="dropdown-item">
                                                                 Unarchive
                                                             </a>
                                                         @else
                                                             <a href="javascript:void(0)"
-                                                            onclick="archiveItinerary({{ $itinerary->id }})"
-                                                            class="dropdown-item">
+                                                                onclick="archiveItinerary({{ $itinerary->id }})"
+                                                                class="dropdown-item">
                                                                 Archive
                                                             </a>
                                                         @endif
 
-                                                        @if($itinerary->status != 1)
-                                                            <form action="{{ route('itineraries.destroy', $itinerary->id) }}"
-                                                                method="POST"
-                                                                class="ajax-form delete-form"
+                                                        @if ($itinerary->status != 1)
+                                                            <form
+                                                                action="{{ route('itineraries.destroy', $itinerary->id) }}"
+                                                                method="POST" class="ajax-form delete-form"
                                                                 onsubmit="return confirm('Are you sure you want to delete this itinerary?');">
 
                                                                 @csrf
@@ -177,14 +177,15 @@
                                                     </button>
                                                 @endif
 
-                                                <button type="button"
+                                                <a
                                                     class="btn btn-info btn-lg waves-effect waves-light"
                                                     style="width: 100%; background-color: #3574b3 !important; border-color: #246090 !important; color: #ffffff; font-weight: 600 !important; margin-top: 10px;"
-                                                    onclick="loadpop('View Quotation',this,'1000px')"
-                                                    data-toggle="modal" data-target=".bs-example-modal-center"
-                                                    popaction="action=viewquotation&amp;id=109047">View
-                                                    Quotation</button>
-
+                                                    onclick="openPopup(
+                                                        'View Quotation',
+                                                        '{{ route('view.quotation', ['id' => $query->id]) }}'
+                                                    )">
+                                                    View Quotation
+                                                </a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -197,15 +198,14 @@
 
                 <div class="itibox">
                     <div class="card addnewcard" style="height:509px;">
-                        <a onclick="openPopup('Create itinerary', '{{ route('itineraries.create',['queryId' => $query->id]) }}')"
+                        <a onclick="openPopup('Create itinerary', '{{ route('itineraries.create', ['queryId' => $query->id]) }}')"
                             class="btn btn-info btn-lg"><i class="fa fa-plus" aria-hidden="true"></i> Create
                             itinerary</a>
-
 
                         <a href="{{ route('itineraries.insert', ['queryId' => $query->id]) }}"
                             class="btn btn-warning btn-lg"
                             style="margin-top:20px; background-color:#005ee2; border:1px solid #005ee2; color:#fff;">
-                            Insert itinerary ddd
+                            Insert itinerary
                         </a>
                     </div>
                 </div>
@@ -326,6 +326,7 @@
                     // }
                 });
             }
+
             function unarchiveItinerary(id) {
 
                 if (!confirm('Are you sure you want to unarchive this itinerary?')) {
@@ -348,11 +349,11 @@
                             '<div class="toast-box">' + response.message + '</div>'
                         ).show();
 
-                        setTimeout(function () {
+                        setTimeout(function() {
                             $('#toastMessage').fadeOut();
                         }, 3000);
 
-                        setTimeout(function () {
+                        setTimeout(function() {
                             location.reload();
                         }, 1000);
                     },
