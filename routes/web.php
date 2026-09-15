@@ -38,6 +38,7 @@ use App\Services\MailService;
 use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\QueryMailController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\QueryLogController;
 
 if (!function_exists('permissionResource')) {
     function permissionResource($uri, $controller, $module)
@@ -132,6 +133,14 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::post('/queries/assign-user', [QueryController::class, 'assignUser'])
     ->name('queries.assign-user');
+    Route::post('/query/add-note', [QueryController::class, 'addNote'])
+        ->name('query.addNote');
+
+    Route::post('/query-logs', [QueryLogController::class, 'store'])
+    ->name('query_logs.store');
+
+    Route::get('/leads/create', [LeadController::class, 'create']) ->name('leads.create');
+    Route::post('/leads', [LeadController::class, 'store']) ->name('leads.store');
 
     Route::resource('query-guests', QueryGuestController::class)
         ->middleware('module.permission:Guest,view');

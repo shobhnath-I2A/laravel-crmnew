@@ -9,6 +9,15 @@
                         <div class="newhead">Leads
                             <div class="newoptionmenu">
                                 <div>
+                                    <!-- Create New Button -->
+                                    <a onclick="openSidebar('Create Lead','{{ route('leads.create') }}')">
+                                        <button type="button" class="btn btn-primary btn-lg waves-effect waves-light" style="margin-bottom:10px;">
+                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                            Create New
+                                        </button>
+                                    </a>
+
+
                                     <a onclick="$('.searchquerymain').toggle();"><button type="button"
                                             class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
                                             style="margin-bottom:10px;">

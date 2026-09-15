@@ -12,6 +12,8 @@ use App\Models\Supplier;
 use App\Models\User;
 use App\Models\Itinerary;
 use App\Models\PackageDayItem;
+use App\Models\QueryNote;
+use App\Models\QueryLog;
 use Carbon\Carbon;
 use Exception;
 
@@ -671,5 +673,43 @@ class QueryController extends Controller
                 'message' => 'Update failed'
             ], 500);
         }
+    }
+    public function addNote(Request $request)
+    {
+        $request->validate([
+            'queryid' => 'required',
+            'details' => 'required|string',
+        ]);
+
+        $queryId = $request->queryid;
+        $details = $request->details;
+
+        $userId = Auth::id();
+
+        DB::transaction(function () use ( $queryId, $details,$userId ) {
+
+            // Create note
+            QueryNote::create([
+                'query_id'     => $queryId,
+                'details'     => $details,
+                'added_by'     => $userId,
+                'date_added'   => now(),
+            ]);
+
+            // Create activity log
+            QueryLog::create([
+                'details'       => 'Note Created',
+                'query_id'       => $queryId,
+                'added_by'       => $userId,
+                'date_added'     => now(),
+                'status_comment' => $details,
+                'log_type'       => 'add_note',
+            ]);
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Note added successfully.',
+        ]);
     }
 }

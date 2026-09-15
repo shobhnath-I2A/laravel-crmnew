@@ -141,46 +141,99 @@
              </div>
          </div>
          <div class="row">
-             <div class="col-lg-12" style="padding: 0px 20px; margin-bottom: 0px;">
-                 <h4 class="mt-3 header-title" style="position:relative;">
-                     Notes
-                     <a onclick="$('#notefiledmaintop').show();$('#notedetails').focus();"
-                         style="position: absolute; font-size: 12px; font-weight: 600; right: 5px; top: 5px; background-color: #005ee2; color: #fff; padding: 1px 10px; border-radius: 3px; cursor:pointer;">+
-                         Add Note
-                     </a>
-                 </h4>
-                 <div class="card" style="margin-bottom:5px;">
-                     <div class="col-lg-12" style="padding-left:15px;">
-                         <div class="row" style="padding: 10px 5px 0px 0px;">
-                             <div class="col-lg-12" id="notefiledmaintop"style="display:none;">
-                                 <form action="frmaction.html" method="post"enctype="multipart/form-data"
-                                     name="addeditfrm" target="actoinfrm" id="addeditfrm">
-                                     <div class="form-group" style="overflow:hidden;">
-                                         <textarea name="details" id="notedetails" onkeyup="notedetailsfun();" class="form-control"
-                                             style="height:80px; border: 5px solid #ddd;" placeholder="Type Note Here">
-                                        </textarea>
-                                         <div style="margin-top:5px; display:none;" id="noteaddbutton">
-                                             <button type="submit" id="savingbutton" class="btn btn-secondary"
-                                                 onclick="this.form.submit();$('#noteaddbutton').hide();"
-                                                 style="float:right;">
-                                                 <i class="fa fa-plus" aria-hidden="true"></i>
-                                                 Save Note
-                                             </button>
-                                         </div>
-                                     </div>
-                                     <input name="action" type="hidden" value="addnotes">
-                                     <input name="queryid" type="hidden" value="127504">
-                                 </form>
-                             </div>
-                             <div class="col-lg-12" id="queryNotes" style="max-height:372px; overflow:auto;">
-                                 <div style="text-align:center; color:#999999; padding-bottom:10px;">
-                                     No Notes</div>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
+            <div class="col-lg-12" style="padding: 0 10px;">
+
+                {{-- Notes Header --}}
+                <div class="notes-header">
+                    <span>Notes</span>
+
+                    <a href="javascript:void(0);"
+                    onclick="$('#notefiledmaintop').slideDown(); $('#notedetails').focus();"
+                    class="add-note-btn">
+                        + Add Note
+                    </a>
+                </div>
+
+                {{-- Add Note Form --}}
+                <div id="notefiledmaintop" class="add-note-form" style="display:none;">
+
+                    <form id="addNoteForm">
+                        @csrf
+
+                        <input type="hidden"
+                            name="query_id"
+                            value="{{ $query->id }}">
+
+                        <textarea
+                            name="details"
+                            id="notedetails"
+                            class="form-control"
+                            placeholder="Type Note Here..."
+                            rows="3"></textarea>
+
+                        <div class="note-form-actions">
+                            <button type="button"
+                                    class="btn btn-light btn-sm"
+                                    onclick="$('#notefiledmaintop').slideUp();">
+                                Cancel
+                            </button>
+
+                            <button type="submit"
+                                    id="saveNoteButton"
+                                    class="btn btn-primary btn-sm">
+                                <i class="fa fa-plus"></i>
+                                Save Note
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+
+                {{-- Notes List --}}
+                {{-- <div id="queryNotes">
+
+                    @forelse($queryNotes as $note)
+
+                        <div class="note-item">
+
+                            <div class="note-pin">
+                                <i class="fa fa-thumbtack"></i>
+                            </div>
+
+                            <div class="note-content">
+
+                                <div class="note-text">
+                                    {{ $note->details }}
+                                </div>
+
+                                <div class="note-meta">
+
+                                    {{ $note->date_added->format('d/m/Y - h:i A') }}
+
+                                    @if($note->addedByUser)
+                                        <span>
+                                            by {{ $note->addedByUser->name }}
+                                        </span>
+                                    @endif
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    @empty
+
+                        <div class="no-notes">
+                            No Notes
+                        </div>
+
+                    @endforelse
+
+                </div> --}}
+
+            </div>
+        </div>
          <script>
              function notedetailsfun() {
                  var notedetails = $('#notedetails').val();
@@ -195,7 +248,7 @@
          <div class="row" id="nosug">
              <div class="col-lg-12"style="padding: 0px 20px; margin-bottom: 0px;">
                  <h4 class="mt-3 header-title" style="position:relative; margin-top:10px !important;">
-                     Singapore Package Suggestion ddd </h4>
+                     Singapore Package Suggestion </h4>
                  <div class="card" style="margin-bottom:5px; padding:10px;">
                      <table class="table table-hover mb-0"style=" font-size:13px;">
                          <thead>
