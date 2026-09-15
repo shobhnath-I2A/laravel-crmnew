@@ -308,12 +308,12 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::resource('email-logs', EmailLogController::class) ->only(['index', 'show', 'destroy']);
     Route::resource('compose-email', QueryMailController::class);
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/my-profile/password', [ProfileController::class, 'passwordUpdate'])
-    ->name('profile.password.update');
-});
+    Route::middleware('auth')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::post('/my-profile/password', [ProfileController::class, 'passwordUpdate'])
+        ->name('profile.password.update');
+    });
 
 require __DIR__ . '/auth.php';

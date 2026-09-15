@@ -177,9 +177,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="campaign"> Campaign </label>
-                            <input type="text" name="campaign" value="{{ old('campaign') }}"
-                                class="form-control">
-
+                            <input type="text" name="campaign" value="{{ old('campaign') }}" class="form-control">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="company_name"> Company Name </label>

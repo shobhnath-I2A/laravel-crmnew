@@ -1,5 +1,5 @@
 
-<div class="wrapper" style="margin-top: 0px; padding:15px;">
+<div class="wrapper" style="margin-top:0px; padding:15px;">
     <form action="{{ route('queries.store') }}" method="POST" id="queryForm" class="custom-validation ajax-form">
         @csrf
         <div class="container-fluid ">
@@ -64,9 +64,7 @@
                                 <input class="form-check-input" type="radio" name="querytype" id="domestic"
                                     value="Domestic" {{ old('querytype', 'Domestic') == 'Domestic' ? 'checked' : '' }}>
 
-                                <label class="form-check-label" for="domestic">
-                                    Domestic
-                                </label>
+                                <label class="form-check-label" for="domestic"> Domestic </label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="querytype" id="international"
