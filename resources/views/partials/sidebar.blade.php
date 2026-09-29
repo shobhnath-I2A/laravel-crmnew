@@ -115,42 +115,42 @@
                                     <!-- <li><a href="display.html?ga=systemreport">System Report</a></li> -->
                                     <div>
                                         <li>
-                                            <a href="display.html?ga=profitlossreport">
+                                            <a href="{{ route('profit-loss') }}">
                                                 <i class="fa fa-dot-circle-o" aria-hidden="true"></i> Profit / Loss Report
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="display.html?ga=attandancesreport">
+                                            <a href="{{ route('attandance-report') }}">
                                                 <i class="fa fa-dot-circle-o" aria-hidden="true"></i> Attandance Report
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="display.html?ga=notesreport">
+                                            <a href="{{ route('note-report') }}">
                                                 <i class="fa fa-dot-circle-o" aria-hidden="true"></i> Notes Report
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="display.html?ga=collectreport">
+                                            <a href="{{ route('collect-report') }}">
                                                 <i class="fa fa-dot-circle-o" aria-hidden="true"></i> Collection Report
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="display.html?ga=travelreport">
+                                            <a href="{{ route('tour-report') }}">
                                                 <i class="fa fa-dot-circle-o" aria-hidden="true"></i> Tours Report
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="display.html?ga=todoreport">
+                                            <a href="{{ route('task-followup-report') }}">
                                                 <i class="fa fa-dot-circle-o" aria-hidden="true"></i> Task's / Followup's Report
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="display.html?ga=misreport">
+                                            <a href="{{ route('mis-report') }}">
                                                 <i class="fa fa-dot-circle-o" aria-hidden="true"></i> MIS Report
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="display.html?ga=leisurereport">
+                                            <a href="{{ route('ledger-report') }}">
                                                 <i class="fa fa-dot-circle-o" aria-hidden="true"></i> Ledger Report
                                             </a>
                                         </li>

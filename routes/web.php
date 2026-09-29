@@ -317,3 +317,4 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     });
 
 require __DIR__ . '/auth.php';
+require __DIR__.'/report.php';
