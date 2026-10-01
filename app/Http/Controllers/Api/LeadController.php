@@ -56,6 +56,7 @@ class LeadController extends Controller
             }
 
             $data = $validator->validated();
+            unset($data['assigned_to'], $data['created_by'], $data['is_authorized'], $data['status']);
 
             $data['client_ip'] = $request->ip();
             $data['reference_url'] = $request->reference_url ?? $request->headers->get('referer');
@@ -65,7 +66,9 @@ class LeadController extends Controller
 
             $lead = Lead::create($data);
 
-            $admins = User::whereIn('role', ['admin', 'manager'])->get();
+            $admins = User::where('status', 1)->where(function ($q) {
+                $q->where('role_id', 1)->orWhereHas('role', fn ($role) => $role->whereRaw('LOWER(name) = ?', ['manager']));
+            })->get();
 
             foreach ($admins as $admin) {
                 $notificationService->send(
@@ -93,7 +96,7 @@ class LeadController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to create lead',
-                'error' => $e->getMessage(),
+                'error' => 'Please contact support with the request time.',
             ], 500);
         }
     }
@@ -114,6 +117,8 @@ class LeadController extends Controller
             ], 422);
         }
 
+        \Illuminate\Support\Facades\DB::transaction(function () use ($lead, $request) {
+        Lead::whereKey($lead->id)->lockForUpdate()->firstOrFail();
         $lead->assigned_to = $request->assigned_to;
         $lead->save();
 
@@ -124,6 +129,8 @@ class LeadController extends Controller
             'assignment_type' => 'manual',
             'assigned_at' => now(),
         ]);
+
+        });
 
         $notificationService->send(
             $request->assigned_to,

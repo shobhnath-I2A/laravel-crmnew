@@ -12,7 +12,11 @@ class EmailLogController extends Controller
      */
     public function index(Request $request)
     {
-        $query = EmailLog::query();
+        $query = EmailLog::query()->where(function ($q) {
+            $q->whereIn('query_id', \App\Services\QueryAccess::scope(\App\Models\Query::query(), auth()->user())->select('id'));
+            if (auth()->user()->isAdmin()) { $q->orWhereNull('query_id'); }
+            else { $q->orWhere(fn ($legacy) => $legacy->whereNull('query_id')->where('created_by', auth()->id())); }
+        });
 
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
@@ -86,5 +90,16 @@ class EmailLogController extends Controller
         return redirect()
             ->route('email-logs.index')
             ->with('success', 'Email log deleted successfully.');
+    }
+
+    public function attachment($email_log)
+    {
+        $log = EmailLog::findOrFail($email_log);
+        abort_unless($log->attachment, 404);
+        $path = $log->attachment;
+        abort_if(str_contains($path, '..') || str_starts_with($path, '/'), 404);
+        $disk = str_starts_with($path, 'private-mail/') ? 'local' : 'public';
+        abort_unless(\Illuminate\Support\Facades\Storage::disk($disk)->exists($path), 404);
+        return \Illuminate\Support\Facades\Storage::disk($disk)->download($path);
     }
 }

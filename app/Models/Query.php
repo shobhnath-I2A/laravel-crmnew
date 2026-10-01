@@ -67,4 +67,10 @@ class Query extends Model
 {
     return $this->hasMany(QueryGuest::class);
 }
+
+    public function notes() { return $this->hasMany(QueryNote::class)->latest('id'); }
+    public function history() { return $this->hasMany(QueryLog::class)->latest('id'); }
+    public function invoice() { return $this->hasOne(QueryInvoice::class); }
+    public function supplierBookings() { return $this->hasMany(QuerySupplierBooking::class); }
+    public function vouchers() { return $this->hasMany(QueryVoucher::class); }
 }

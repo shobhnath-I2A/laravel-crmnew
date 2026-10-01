@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Rolemaster;
+use App\Models\RoleMaster;
 use App\Models\BranchMaster;
 use App\Models\RolePermission;
 use Illuminate\Http\Request;
@@ -34,7 +34,7 @@ class RoleController extends Controller
     {
         $branches = BranchMaster::where('status', 1)->orderBy('name')->get();
 
-        $roles = Rolemaster::where('status', 1)
+        $roles = RoleMaster::where('status', 1)
             ->orderBy('name')
             ->get();
 
@@ -45,7 +45,7 @@ class RoleController extends Controller
     // {
     //     $modules = config('crm_permissions');
 
-    //     $roles = Rolemaster::where('status', 1)
+    //     $roles = RoleMaster::where('status', 1)
     //         ->orderBy('parent_id')
     //         ->orderBy('id')
     //         ->get();
@@ -82,7 +82,7 @@ class RoleController extends Controller
                 'status' => 'required|in:0,1',
             ]);
 
-            $role = Rolemaster::create([
+            $role = RoleMaster::create([
                 'branch_id' => $request->branch_id,
                 'parent_id' => $request->parent_id ?? 0,
                 'name' => $request->name,
@@ -114,13 +114,13 @@ class RoleController extends Controller
     {
 
         try {
-            $role = Rolemaster::findOrFail($id);
+            $role = RoleMaster::findOrFail($id);
 
             $branches = BranchMaster::where('status', 1)
                 ->orderBy('name')
                 ->get();
 
-            $roles = Rolemaster::where('status', 1)
+            $roles = RoleMaster::where('status', 1)
                 ->where('id', '!=', $id)
                 ->orderBy('name')
                 ->get();
@@ -134,7 +134,7 @@ class RoleController extends Controller
 
         // return view('roles.create', compact('role', 'branches', 'roles'));
 
-        // $role = Rolemaster::with('permissions')->findOrFail($id);
+        // $role = RoleMaster::with('permissions')->findOrFail($id);
         // $modules = config('crm_permissions');
 
         // $permissions = $role->permissions->keyBy('module');
@@ -145,7 +145,7 @@ class RoleController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $role = Rolemaster::findOrFail($id);
+            $role = RoleMaster::findOrFail($id);
             $request->validate([
                 'branch_id' => 'required|exists:branch_masters,id',
                 'parent_id' => 'nullable|integer',

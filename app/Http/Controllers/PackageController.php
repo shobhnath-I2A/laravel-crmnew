@@ -50,7 +50,7 @@ class PackageController extends Controller
      */
     public function edit(string $id)
     {
-        dd($id);
+
          try {
         $package = Itinerary::findOrFail($id);
         return view('itinerary.popups.itinerary-setup', compact('package'));

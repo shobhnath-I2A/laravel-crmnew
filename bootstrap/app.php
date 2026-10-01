@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+            'crm.access' => \App\Http\Middleware\QueryWorkflowAccess::class,
             'restrict.ip' => RestrictIp::class,
             'permission' => CheckPermission::class,
             'admin.only' => \App\Http\Middleware\AdminOnly::class,

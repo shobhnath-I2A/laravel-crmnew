@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Models\BranchMaster;
-use App\Models\Rolemaster;
+use App\Models\RoleMaster;
 use App\Models\RolePermission;
 use App\Models\PackageInclusion;
 use App\Models\Automation;

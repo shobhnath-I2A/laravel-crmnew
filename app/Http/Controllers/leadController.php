@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-class leadController extends Controller
+class LeadController extends Controller
 {
     /**
      * Display a listing of the resource.

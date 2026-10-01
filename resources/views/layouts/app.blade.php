@@ -204,9 +204,7 @@
                 data: formData,
                 success: function(response) {
                     $('#ajaxLoader').hide();
-                    $('#toastMessage').html(
-                        '<div class="toast-box">' + response.message + '</div>'
-                    );
+                    $('#toastMessage').empty().append($('<div>', {class: 'toast-box'}).text(response.message));
                     setTimeout(function() {
                         $('#toastMessage').fadeOut();
                     }, 3000);
@@ -222,10 +220,7 @@
                         $.each(errors, function(key, value) {
                             let input = $('[name="' + key + '"]');
                             input.addClass('is-invalid');
-                            input.after(
-                                '<div class="validation-error text-danger">' + value[0] +
-                                '</div>'
-                            );
+                            input.after($('<div>', {class: 'validation-error text-danger'}).text(value[0]));
                         });
                     }
                 }

@@ -7,6 +7,7 @@
 <div class="modal-body">
     <div class="modal-body" id="popcontent">
         <form action="{{ route('query-tasks.store') }}" method="post" enctype="multipart/form-data" id="task-form" class="custom-validation ajax-form">
+            @csrf
             <div class="form-group mb-3">
                 <div style="margin-bottom:2px; font-size:12px;">Type</div>
                 <select name="taskType" class="form-control reqfield" autocomplete="off"
@@ -32,31 +33,46 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <input type="text" name="reminderDate"
-                                    value="{{ old('reminderDate', $query->reminderDate ?? '') }}" id="reminderDate"
-                                    class="form-control reqfield">
+                                <input
+                                    type="date"
+                                    name="reminderDate"
+                                    id="reminderDate"
+                                    value="{{ old('reminderDate') }}"
+                                    class="form-control"
+                                >
                                 @error('reminderDate')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </td>
 
                             <td style="padding-left:10px;">
-                                <select id="reminderTime" name="reminderTime" autocomplete="off" class="form-control"
-                                    style="width:130px;">
+                               <select id="reminderTime"name="reminderTime"class="form-control"style="width:130px;">
+                                    <option value="">Select time</option>
+
                                     @for ($i = 0; $i < 24 * 60; $i += 15)
                                         @php
-                                            $time = \Carbon\Carbon::createFromTime(0, 0)->addMinutes($i);
+                                            $value = sprintf('%02d:%02d', intdiv($i, 60), $i % 60);
+                                            $label = \Carbon\Carbon::createFromFormat('!H:i', $value)
+                                                ->format('h:i A');
                                         @endphp
-                                        <option value="1970-01-01 {{ $time->format('H:i:s') }}">
-                                            {{ $time->format('h:i A') }}
+
+                                        <option
+                                            value="{{ $value }}"
+                                            @selected(old('reminderTime') === $value)
+                                        >
+                                            {{ $label }}
                                         </option>
                                     @endfor
                                 </select>
                             </td>
                             <td style="padding-left:10px;">
-                                <select name="status" class="form-control" autocomplete="off" style="width:100px;">
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
+                               <select name="setReminder" class="form-control" style="width:100px;">
+                                    <option value="1" @selected(old('setReminder', '1') == '1')>
+                                        Yes
+                                    </option>
+                                    <option value="0" @selected(old('setReminder', '1') == '0')>
+                                        No
+                                    </option>
                                 </select>
                             </td>
                         </tr>
@@ -64,10 +80,17 @@
                 </table>
             </div>
             <div class="form-group mb-2">
-                <select id="assignTo" name="assignTo" class="form-control" autocomplete="off"
-                    onchange="changeAssignTo('');">
-                    <option value="0">Assign To</option>
-                    <option value="4041">Aaron AK</option>
+               <select id="assignTo" name="assignTo" class="form-control">
+                    <option value="">Assign to me</option>
+
+                    @foreach ($users as $user)
+                        <option
+                            value="{{ $user->id }}"
+                            @selected(old('assignTo') == $user->id)
+                        >
+                            {{ $user->name }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
             <div class="form-group" style="overflow:hidden;">

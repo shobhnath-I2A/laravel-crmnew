@@ -35,12 +35,10 @@
                                             <td width="98%" align="left" valign="top" style="position:relative;">
                                                 <div class="card">
                                                     <div class="card-body">
-                                                        <i class="fa fa-square-o" aria-hidden="true"
-                                                            style="font-size:24px; color:#333333; cursor:pointer; position:absolute; right:10px; top:22px;"
-                                                            data-placement="top" data-original-title="Click to complete"
-                                                            onclick="loadpop('Alert',this,'600px')" data-toggle="modal"
-                                                            data-target=".bs-example-modal-center"
-                                                            popaction="action=confirmtask&amp;id=100339&amp;qid=127504"></i>
+                                                        @if($task->status == 0)
+                                                        <button type="button" class="btn btn-sm btn-success" onclick="completeQueryTask({{ $task->id }})">Mark done</button>
+                                                        @else <span class="badge badge-success">Done</span> @endif
+
 
 
 
@@ -70,3 +68,9 @@
     </div>
 </div>
 {{-- @include('followups.task') --}}
+<script>
+function completeQueryTask(id) {
+    $.ajax({url: @json(url('/task-done')) + '/' + id, method: 'POST', data: {_token: @json(csrf_token())}})
+        .done(function () { location.reload(); }).fail(function () { alert('Unable to complete task.'); });
+}
+</script>

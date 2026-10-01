@@ -6,6 +6,7 @@
     <div class="card-body">
 
         <h4>Email Details</h4>
+        @if($emailLog->attachment)<p><a href="{{ route('email-logs.attachment', $emailLog->id) }}">Download attachment</a></p>@endif
 
         <table class="table table-bordered">
 
@@ -36,7 +37,7 @@
 
             <tr>
                 <th>Message</th>
-                <td>{!! $emailLog->message !!}</td>
+                <td><iframe title="Email message" sandbox="" referrerpolicy="no-referrer" style="width:100%;min-height:350px;border:0" srcdoc="{{ '<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src data:">' . $emailLog->message }}"></iframe></td>
             </tr>
 
         </table>

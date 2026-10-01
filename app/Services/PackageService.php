@@ -18,7 +18,7 @@ class PackageService
     {
         return DB::transaction(function () use ($itineraryId) {
 
-            $itinerary = Itinerary::with('destinations')->findOrFail($itineraryId);
+            $itinerary = Itinerary::with('destinations')->lockForUpdate()->findOrFail($itineraryId);
 
             // Prevent duplicate
             $existing = Package::where('itinerary_id', $itineraryId)->first();

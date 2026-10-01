@@ -12,7 +12,7 @@ class AdminOnly
     {
         $user = auth()->user();
 
-        if (!$user || !$user->isAdmin()) {
+        if (!$user || !$user->isAdmin() || (int) $user->status !== 1) {
             abort(403, 'Administrator access only.');
         }
 

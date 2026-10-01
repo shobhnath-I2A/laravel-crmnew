@@ -107,9 +107,12 @@ class ItineraryController extends Controller
             $validated['queryId'] = $request->queryId ?? 0;
             $validated['created_by'] = auth()->id();
 
-            $itinerary = Itinerary::create($validated);
-
-            $itinerary->destinations()->sync($destinationIds);
+            $itinerary = DB::transaction(function () use ($validated, $destinationIds) {
+                $itinerary = Itinerary::create($validated);
+                $itinerary->destinations()->sync($destinationIds);
+                if ($itinerary->queryId) { \App\Services\QueryHistory::record($itinerary->queryId, 'proposal_created', 'Proposal #'.$itinerary->id.' created'); }
+                return $itinerary;
+            });
 
             return response()->json([
                 'status' => true,
@@ -225,7 +228,7 @@ class ItineraryController extends Controller
 
             $validated['child'] = $validated['child'] ?? 0;
             $validated['queryId'] = $request->queryId ?? 0;
-            $validated['created_by'] = auth()->id();
+            DB::transaction(function () use ($itinerary, $validated, $destinationIds, $id) {
             $itinerary->update($validated);
 
             // VERY IMPORTANT: update pivot table
@@ -238,6 +241,7 @@ class ItineraryController extends Controller
                 app(\App\Services\PackageService::class)
                     ->syncWithItinerary($package, $itinerary);
             }
+            });
             return response()->json([
                 'status' => true,
                 'message' => 'Itinerary updated Successfully',
@@ -349,10 +353,16 @@ class ItineraryController extends Controller
     // }
     public function getDayDetails(Request $request)
     {
+        $request->validate(['itinerary_id' => 'required|integer|exists:itineraries,id', 'day' => 'required|integer|min:1', 'date' => 'required|date', 'destination_id' => 'nullable|integer|exists:destinations,id']);
         try {
             $package = Package::where('itinerary_id', $request->itinerary_id)->firstOrFail();
 
             if ($request->filled('destination_id')) {
+                $parent = $package->itinerary->queryData;
+                $existingDestination = $package->dayItems()->where('day', $request->day)->where('type', 'daydetail')->value('destination_id');
+                if ($parent && ($parent->invoice()->exists() || $parent->supplierBookings()->exists()) && (int) $existingDestination !== (int) $request->destination_id) {
+                    abort(409, 'Cannot change a booked proposal.');
+                }
                 PackageDayItem::where('package_id', $package->id)
                     ->where('day', $request->day)
                     ->update([
@@ -360,7 +370,7 @@ class ItineraryController extends Controller
                     ]);
             }
 
-            $packageDayItems = PackageDayItem::with([
+            $packageDayItems = PackageDayItem::selectedForAcceptance($package->itinerary->accepted_hotel_option)->with([
                 'destination',
                 'flightDetail',
                 'hotelDetail',
@@ -412,7 +422,7 @@ class ItineraryController extends Controller
         $html = '<option value="">Select Hotel</option>';
 
         foreach ($hotels as $hotel) {
-            $html .= '<option value="' . $hotel->id . '">' . $hotel->name . '</option>';
+            $html .= '<option value="' . (int) $hotel->id . '">' . e($hotel->name) . '</option>';
         }
 
         return response($html);
@@ -433,73 +443,9 @@ class ItineraryController extends Controller
     }
     public function duplicate($id)
     {
-        DB::beginTransaction();
-
-        try {
-
-            $oldItinerary = Itinerary::with('destinations')->findOrFail($id);
-
-            // 1. Duplicate itinerary
-            $newItinerary = $oldItinerary->replicate();
-            $newItinerary->name = $oldItinerary->name . ' Copy';
-            $newItinerary->created_at = now();
-            $newItinerary->updated_at = now();
-            $newItinerary->save();
-
-            // 2. Duplicate itinerary destinations
-            $newItinerary->destinations()->sync(
-                $oldItinerary->destinations->pluck('id')->toArray()
-            );
-
-            // 3. Find old package
-            $oldPackage = Package::where('itinerary_id', $oldItinerary->id)->first();
-
-            if ($oldPackage) {
-
-                // 4. Duplicate package
-                $newPackage = $oldPackage->replicate();
-
-                $newPackage->itinerary_id = $newItinerary->id;
-
-                // If your package table has this spelling also
-                if (isset($newPackage->itinery_id)) {
-                    $newPackage->itinery_id = $newItinerary->id;
-                }
-
-                $newPackage->created_at = now();
-                $newPackage->updated_at = now();
-                $newPackage->save();
-
-                // 5. Duplicate package day items
-                $oldDayItems = PackageDayItem::where('package_id', $oldPackage->id)->get();
-
-                foreach ($oldDayItems as $oldItem) {
-                    $newItem = $oldItem->replicate();
-                    $newItem->package_id = $newPackage->id;
-                    $newItem->created_at = now();
-                    $newItem->updated_at = now();
-                    $newItem->save();
-                }
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Itinerary duplicated successfully',
-                'id' => $newItinerary->id
-            ]);
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            Log::error('Duplicate itinerary failed: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
+        $source = Itinerary::findOrFail($id);
+        $copy = app(\App\Services\ItineraryCopy::class)->copy($source, (int) $source->queryId);
+        return response()->json(['status' => true, 'message' => 'Itinerary duplicated successfully', 'id' => $copy->id]);
     }
     public function archive($id)
     {
@@ -547,85 +493,27 @@ class ItineraryController extends Controller
     }
     public function markAccepted(Request $request, $id)
     {
-        DB::beginTransaction();
-
-        try {
-            $request->validate([
-                'hotel_options' => 'required|in:1,2,3',
-            ]);
-
-            $itinerary = Itinerary::findOrFail($id);
-
-            $package = Package::where('itinerary_id', $itinerary->id)->firstOrFail();
-
-            $queryId = $itinerary->queryId;
-            $confirmedOption = (int) $request->hotel_options;
-
-            /*
-        |--------------------------------------------------------------------------
-        | Delete other hotel options from accommodation using pivot table
-        |--------------------------------------------------------------------------
-        */
-            $deleteOptions = array_diff([1, 2, 3], [$confirmedOption]);
-
-            $itemsToDelete = PackageDayItem::where('package_id', $package->id)
-                ->where('type', 'Accommodation')
-                ->whereHas('hotels', function ($q) use ($deleteOptions) {
-                    $q->whereIn('package_day_item_hotels.hotel_options', $deleteOptions);
-                })
-                ->pluck('id');
-
-            if ($itemsToDelete->isNotEmpty()) {
-                DB::table('package_day_item_hotels')
-                    ->whereIn('package_day_item_id', $itemsToDelete)
-                    ->delete();
-
-                PackageDayItem::whereIn('id', $itemsToDelete)->delete();
+        $data = $request->validate(['hotel_options' => 'required|in:1,2,3']);
+        $itinerary = Itinerary::findOrFail($id);
+        abort_unless($itinerary->queryId, 422, 'Insert the template into a query before accepting it.');
+        DB::transaction(function () use ($itinerary, $data) {
+            // Every acceptance for this query serializes on the same parent row.
+            $query = Query::whereKey($itinerary->queryId)->lockForUpdate()->firstOrFail();
+            $itinerary->refresh();
+            if ($query->invoice()->exists() || $query->supplierBookings()->exists()) {
+                throw ValidationException::withMessages(['hotel_options' => 'This query has billing or supplier bookings. Resolve those records before changing the accepted proposal.']);
             }
-
-            /*
-        |--------------------------------------------------------------------------
-        | Reset all itineraries of this query
-        |--------------------------------------------------------------------------
-        */
-            Itinerary::where('queryId', $queryId)
-                ->update([
-                    'status' => 0,
-                ]);
-
-            /*
-        |--------------------------------------------------------------------------
-        | Mark selected itinerary accepted
-        |--------------------------------------------------------------------------
-        */
-            $itinerary->update([
-                'status' => 1,
-            ]);
-
-            /*
-        |--------------------------------------------------------------------------
-        | Update query status
-        |--------------------------------------------------------------------------
-        */
-            Query::where('id', $queryId)->update([
-                'statusId' => 5,
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Itinerary confirmed successfully',
-                'redirect_url' => route('itineraries.show', $itinerary->id),
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+            $package = $itinerary->packages()->firstOrFail();
+            $hasHotels = $package->dayItems()->where('type', 'accommodation')->whereHas('hotelDetail')->exists();
+            if ($hasHotels && !$package->dayItems()->where('type', 'accommodation')->whereHas('hotelDetail', fn ($q) => $q->where('hotel_options', $data['hotel_options'])->orWhereNull('hotel_options'))->exists()) {
+                throw ValidationException::withMessages(['hotel_options' => 'The selected hotel option does not exist.']);
+            }
+            $query->itineraries()->where('status', 1)->update(['status' => 0, 'accepted_hotel_option' => null]);
+            $itinerary->update(['status' => 1, 'accepted_hotel_option' => $data['hotel_options']]);
+            $query->update(['statusId' => 5]);
+            \App\Services\QueryHistory::record($query->id, 'proposal_accepted', 'Proposal #'.$itinerary->id.' accepted', 'Hotel option '.$data['hotel_options']);
+        });
+        return response()->json(['status' => true, 'message' => 'Itinerary confirmed successfully', 'redirect_url' => route('itineraries.show', $itinerary->id)]);
     }
 
     public function finalItinerary(String $id)
@@ -649,98 +537,15 @@ class ItineraryController extends Controller
 
     public function insertToQuery(Request $request, Itinerary $itinerary)
     {
-        try {
+        $data = $request->validate(['queryId' => 'required|integer|exists:queries,id']);
+        \App\Services\QueryAccess::find($data['queryId']);
+        $copy = app(\App\Services\ItineraryCopy::class)->copy($itinerary, (int) $data['queryId'], false);
+        return response()->json(['status' => true, 'message' => 'Itinerary inserted successfully.', 'redirect' => route('queries.show', ['id' => $copy->queryId, 'tab' => 'proposals'])]);
+    }
 
-            $validated = $request->validate([
-                'queryId' => 'required|exists:queries,id',
-            ]);
-
-            DB::beginTransaction();
-
-            $userId = auth()->id();
-            $queryId = $validated['queryId'];
-            // dd($itinerary);
-            $itinerary->load([
-                'destinations',
-                'packages.dayItems.hotelDetail',
-                'packages.dayItems.flightDetail',
-            ]);
-
-            $newItinerary = $itinerary->replicate();
-            $newItinerary->queryId = $queryId;
-            $newItinerary->name = $itinerary->name;
-            $newItinerary->status = 0;
-            $newItinerary->created_by = $userId;
-            $newItinerary->created_at = now();
-            $newItinerary->updated_at = now();
-            $newItinerary->save();
-
-            $destinationIds = $itinerary->destinations->pluck('id')->toArray();
-            $newItinerary->destinations()->sync($destinationIds);
-
-            foreach ($itinerary->packages as $package) {
-
-                $newPackage = $package->replicate();
-                $newPackage->itinerary_id = $newItinerary->id;
-                $newPackage->created_by = $userId;
-                $newPackage->created_at = now();
-                $newPackage->updated_at = now();
-
-                if (isset($newPackage->itinery_id)) {
-                    $newPackage->itinery_id = $newItinerary->id;
-                }
-
-                $newPackage->save();
-
-                foreach ($package->dayItems as $dayItem) {
-
-                    $newItem = $dayItem->replicate();
-                    $newItem->package_id = $newPackage->id;
-                    $newItem->created_by = $userId;
-                    $newItem->created_at = now();
-                    $newItem->updated_at = now();
-                    $newItem->save();
-
-                    if ($dayItem->hotelDetail) {
-                        $newHotelDetail = $dayItem->hotelDetail->replicate();
-                        $newHotelDetail->package_day_item_id = $newItem->id;
-                        // $newHotelDetail->created_by = $userId;
-                        $newHotelDetail->created_at = now();
-                        $newHotelDetail->updated_at = now();
-                        $newHotelDetail->save();
-                    }
-
-                    if ($dayItem->flightDetail) {
-                        $newFlightDetail = $dayItem->flightDetail->replicate();
-                        $newFlightDetail->package_day_item_id = $newItem->id;
-                        // $newFlightDetail->created_by = $userId;
-                        $newFlightDetail->created_at = now();
-                        $newFlightDetail->updated_at = now();
-                        $newFlightDetail->save();
-                    }
-                }
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Itinerary inserted successfully.',
-                'redirect' => url('queries/' . $queryId . '?tab=proposals')
-            ]);
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            Log::error('Insert itinerary failed', [
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-            ]);
-
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+    public function share(Itinerary $itinerary)
+    {
+        // An internal staff link. Public/guest sharing requires a separately agreed access policy.
+        return redirect()->route('itineraries.show', $itinerary->id);
     }
 }

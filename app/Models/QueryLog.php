@@ -20,4 +20,5 @@ class QueryLog extends Model
     protected $casts = [
         'date_added' => 'datetime',
     ];
+    public function author() { return $this->belongsTo(User::class, 'added_by'); }
 }

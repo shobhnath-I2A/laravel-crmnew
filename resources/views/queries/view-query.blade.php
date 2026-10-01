@@ -1,5 +1,7 @@
 @extends('layouts.app')
 @section('content')
+@include('queries.workflow-feedback')
+
     </div>
     <div class="wrapper">
         <div class="container-fluid">

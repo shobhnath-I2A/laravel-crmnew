@@ -79,7 +79,7 @@
 
 
                                                         <a class="dropdown-item" style="cursor:pointer;"
-                                                            onclick="openPopup('Itinerary edit', this, '{{ route('itinery-setup.edit', $itinerary->id) }}')">
+                                                            onclick="openPopup('Itinerary edit', '{{ route('itineraries.edit', $itinerary->id) }}')">
                                                             Edit Itinerary
                                                         </a>
 

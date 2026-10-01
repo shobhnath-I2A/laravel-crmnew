@@ -1,12 +1,10 @@
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
     <form action="{{ isset($supplier) ? route('suppliers.update', $supplier->id) : route('suppliers.store') }}"
         method="POST" id="supplierForm" class="custom-validation ajax-form">
-
-        @csrf
-
         @if (isset($supplier))
             @method('PUT')
-        @endif @csrf
+        @endif
+        @csrf
         <div class="container-fluid ">
             <!-- SUPPLIER INFORMATION -->
             <div class="card shadow-sm mb-3 ">

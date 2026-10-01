@@ -56,34 +56,34 @@ class PackageDaysItemController extends Controller
         // dd($request->all());
         try {
             $validated = $request->validate([
-                'itinerary_id'      => 'required|integer',
-                'package_id'        => 'required|integer',
-                'destination_id'    => 'nullable|integer',
+                'itinerary_id'      => 'required|integer|exists:itineraries,id',
+                'package_id'        => 'required|integer|exists:packages,id',
+                'destination_id'    => 'nullable|integer|exists:destinations,id',
                 'type'              => 'required|string|max:50',
-                'day'               => 'required|integer',
+                'day'               => 'required|integer|min:1',
                 'day_order'         => 'nullable|integer',
 
                 'source_type' => 'nullable|in:0,1,2',
-                'activity_id'    => 'nullable|integer',
-                'transfer_id'    => 'nullable|integer',
-                'meal_master_id'    => 'nullable|integer',
+                'activity_id'    => 'nullable|integer|exists:activities,id',
+                'transfer_id'    => 'nullable|integer|exists:transfer_masters,id',
+                'meal_master_id'    => 'nullable|integer|exists:meal_plan_masters,id',
 
                 'name'              => 'nullable|string|max:255',
                 'description'       => 'nullable|string',
                 'show_time'         => 'nullable',
 
-                'hotel_id'          => 'nullable|integer',
+                'hotel_id'          => 'nullable|integer|exists:hotels,id',
                 'room_type'         => 'nullable|string|max:255',
                 'room_name'         => 'nullable|string|max:255',
                 'meal_plan'         => 'nullable|string|max:255',
                 'hotel_options'     => 'nullable|string|max:255',
 
-                'single_room'       => 'nullable|integer',
-                'double_room'       => 'nullable|integer',
-                'triple_room'       => 'nullable|integer',
-                'quad_room'         => 'nullable|integer',
-                'cwb_room'          => 'nullable|integer',
-                'cnb_room'          => 'nullable|integer',
+                'single_room'       => 'nullable|integer|min:0',
+                'double_room'       => 'nullable|integer|min:0',
+                'triple_room'       => 'nullable|integer|min:0',
+                'quad_room'         => 'nullable|integer|min:0',
+                'cwb_room'          => 'nullable|integer|min:0',
+                'cnb_room'          => 'nullable|integer|min:0',
 
                 'start_date'     => 'nullable|date',
                 'end_date'    => 'nullable|date',
@@ -228,32 +228,32 @@ class PackageDaysItemController extends Controller
         // dd($request->all());
         try {
             $validated = $request->validate([
-                // 'itinerary_id'      => 'required|integer',
-                'package_id'        => 'required|integer',
-                'destination_id'    => 'nullable|integer',
+                // 'itinerary_id'      => 'required|integer|exists:itineraries,id',
+                'package_id'        => 'required|integer|exists:packages,id',
+                'destination_id'    => 'nullable|integer|exists:destinations,id',
                 'type'              => 'required|string|max:50',
-                'day'               => 'required|integer',
+                'day'               => 'required|integer|min:1',
                 'day_order'         => 'nullable|integer',
 
                 'source_type' => 'nullable|in:0,1,2',
-                'activity_id'    => 'nullable|integer',
+                'activity_id'    => 'nullable|integer|exists:activities,id',
 
                 'name'              => 'nullable|string|max:255',
                 'description'       => 'nullable|string',
                 'show_time'         => 'nullable',
 
-                'hotel_id'          => 'nullable|integer',
+                'hotel_id'          => 'nullable|integer|exists:hotels,id',
                 'room_type'         => 'nullable|string|max:255',
                 'room_name'         => 'nullable|string|max:255',
                 'meal_plan'         => 'nullable|string|max:255',
                 'hotel_options'     => 'nullable|string|max:255',
 
-                'single_room'       => 'nullable|integer',
-                'double_room'       => 'nullable|integer',
-                'triple_room'       => 'nullable|integer',
-                'quad_room'         => 'nullable|integer',
-                'cwb_room'          => 'nullable|integer',
-                'cnb_room'          => 'nullable|integer',
+                'single_room'       => 'nullable|integer|min:0',
+                'double_room'       => 'nullable|integer|min:0',
+                'triple_room'       => 'nullable|integer|min:0',
+                'quad_room'         => 'nullable|integer|min:0',
+                'cwb_room'          => 'nullable|integer|min:0',
+                'cnb_room'          => 'nullable|integer|min:0',
 
                 'start_date'     => 'nullable|date',
                 'end_date'    => 'nullable|date',

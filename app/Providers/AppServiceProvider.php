@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->scoped('crm.destination_list', fn () => Destination::pluck('name', 'id'));
     }
 
     /**
@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         require base_path('routes/channels.php');
 
         View::composer('*', function ($view) {
-            $destinationList = Destination::pluck('name', 'id');
+            $destinationList = app('crm.destination_list');
             $view->with('destinationList', $destinationList);
 
             if (auth()->check()) {

@@ -20,4 +20,5 @@ class QueryGuest extends Model
 {
     return $this->belongsTo(Query::class, 'query_id');
 }
+    public function documents() { return $this->hasMany(QueryGuestDocument::class); }
 }

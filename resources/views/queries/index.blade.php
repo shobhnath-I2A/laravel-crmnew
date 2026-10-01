@@ -252,7 +252,7 @@
                                                                                 </button>
                                                                             </a>
                                                                         @endif
-                                                                        <a target="_blank" href="https://api.whatsapp.com/send?text=Hi&phone=+918892078092">
+                                                                        <a target="_blank" href="https://api.whatsapp.com/send?text=Hi&phone={{ preg_replace('/[^0-9]/', '', $query->mobile) }}">
                                                                             <button type="button" class="btn btn-secondary">
                                                                                 <i class="fa fa-whatsapp" aria-hidden="true"></i>
                                                                             </button>

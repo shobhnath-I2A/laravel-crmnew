@@ -25,6 +25,7 @@ class PackageDayItem extends Model
         'status',
         'activity_id',
         'transfer_id',
+        'meal_master_id',
         'created_by',
         'updated_by',
     ];
@@ -66,7 +67,8 @@ class PackageDayItem extends Model
     // }
     public function transportationMaster()
     {
-        return $this->belongsTo(TransferMaster::class, 'transfer_id', 'id');
+        return $this->belongsTo(TransferMaster::class, 'transfer_id',
+        'meal_master_id', 'id');
     }
     // public function getDisplayNameAttribute()
     // {
@@ -81,7 +83,7 @@ class PackageDayItem extends Model
     public function getDisplayNameAttribute()
     {
         if ($this->type === 'accommodation') {
-            if ($this->hotelDetail?->source_type == 1) {
+            if ($this->source_type == 1) {
                 return $this->hotelDetail?->hotel?->name ?? '';
             }
 
@@ -124,6 +126,17 @@ class PackageDayItem extends Model
     }
     public function transportation()
     {
-        return $this->belongsTo(TransferMaster::class, 'transfer_id', 'id');
+        return $this->belongsTo(TransferMaster::class, 'transfer_id',
+        'meal_master_id', 'id');
+    }
+
+    public function scopeSelectedForAcceptance($builder, $option)
+    {
+        if (!$option) { return $builder; } // Legacy accepted proposals already lost their unselected rows.
+        return $builder->where(function ($q) use ($option) {
+            $q->where('type', '!=', 'accommodation')
+              ->orWhereDoesntHave('hotelDetail')
+              ->orWhereHas('hotelDetail', fn ($hotel) => $hotel->where('hotel_options', $option)->orWhereNull('hotel_options'));
+        });
     }
 }

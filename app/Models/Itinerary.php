@@ -23,6 +23,7 @@ class Itinerary extends Model
         'about_package',
         'total_days',
         'status',
+        'accepted_hotel_option',
         'created_by'
     ];
 
@@ -45,5 +46,11 @@ class Itinerary extends Model
     public function addedBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+    // Some installations retain the obsolete text column named destinations.
+    // Keep its data intact while resolving the relationship used by the existing views.
+    public function getDestinationsAttribute($value)
+    {
+        return $this->getRelationValue('destinations');
     }
 }

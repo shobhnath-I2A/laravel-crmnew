@@ -13,10 +13,11 @@ class ItineraryPriceController extends Controller
      */
     public function index($id)
     {
+        $acceptedOption = Itinerary::findOrFail($id)->accepted_hotel_option;
         $itinerary = Itinerary::with([
             'destinations',
-            'packages.dayItems' => function ($q) {
-                $q->whereNotIn('type', ['daydetail', 'null', ''])
+            'packages.dayItems' => function ($q) use ($acceptedOption) {
+                $q->selectedForAcceptance($acceptedOption)->whereNotIn('type', ['daydetail', 'null', ''])
                     ->whereNotNull('type')
                     ->with(['hotels', 'price'])
                     ->orderBy('day')

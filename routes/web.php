@@ -79,7 +79,7 @@ Route::get('/', function () {
         : redirect()->route('login');
 });
 
-Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
+Route::middleware(['auth', 'verified', 'restrict.ip', 'crm.access'])->group(function () {
 
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -116,8 +116,7 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/get-activities-by-destination/{destination_id}', [ActivityController::class, 'getByDestination'])
         ->name('activities.by.destination');
 
-    Route::get('/itineraries/{id}', [ItineraryController::class, 'show'])
-    ->name('itineraries.show');
+
 
     Route::get('/itineraries-price/{id}', [ItineraryPriceController::class, 'index'])
         ->name('itineraries-price.index');
@@ -142,10 +141,10 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/leads/create', [LeadController::class, 'create']) ->name('leads.create');
     Route::post('/leads', [LeadController::class, 'store']) ->name('leads.store');
 
-    Route::resource('query-guests', QueryGuestController::class)
+    Route::resource('query-guests', QueryGuestController::class)->only(['index', 'store', 'destroy'])
         ->middleware('module.permission:Guest,view');
 
-    Route::resource('query-tasks', QueryTaskController::class)
+    Route::resource('query-tasks', QueryTaskController::class)->only(['index', 'store', 'destroy'])
         ->middleware('module.permission:Task,view');
 
     Route::resource('itinery-setup', PackageController::class);
@@ -156,8 +155,8 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::post('/task-done/{id}', [QueryTaskController::class, 'markDone'])
         ->middleware('module.permission:Task,edit');
 
-    Route::get('/itinerary/day-details', [ItineraryController::class, 'getDayDetails'])
-        ->middleware('module.permission:Itinerary,view')
+    Route::post('/itinerary/day-details', [ItineraryController::class, 'getDayDetails'])
+        ->middleware('module.permission:Itinerary,edit')
         ->name('itinerary.day.details');
 
     Route::get('/itinerary/acccomodation', [ItineraryController::class, 'createAccomodation'])
@@ -295,18 +294,11 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         return 'sent';
     });
 });
-    Route::get('/test-mail', function () {
-        MailService::sendMail(
-            'shobhnath.s@i2a.co',
-            'Test Mail',
-            '<h2>SMTP working</h2>'
-        );
-
-        return 'sent';
-    });
-
-    Route::resource('email-logs', EmailLogController::class) ->only(['index', 'show', 'destroy']);
-    Route::resource('compose-email', QueryMailController::class);
+Route::middleware(['auth', 'verified', 'restrict.ip', 'crm.access'])->group(function () {
+    Route::resource('email-logs', EmailLogController::class)->only(['index', 'show', 'destroy']);
+    Route::get('email-logs/{email_log}/attachment', [EmailLogController::class, 'attachment'])->name('email-logs.attachment');
+    Route::resource('compose-email', QueryMailController::class)->only(['create', 'store']);
+});
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -317,4 +309,7 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     });
 
 require __DIR__ . '/auth.php';
-require __DIR__.'/report.php';
+Route::middleware(['auth', 'verified', 'restrict.ip', 'module.permission:Query,view'])->group(function () {
+    require __DIR__.'/report.php';
+});
+require __DIR__.'/query-workflow.php';

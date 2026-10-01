@@ -11,7 +11,7 @@ use App\Models\UserPermission;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, \Laravel\Sanctum\HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -87,7 +87,7 @@ class User extends Authenticatable
 
     public function role()
     {
-        return $this->belongsTo(Rolemaster::class, 'role_id');
+        return $this->belongsTo(RoleMaster::class, 'role_id');
     }
 
     public function permissions()
@@ -108,10 +108,9 @@ class User extends Authenticatable
             return true;
         }
 
-        return $this->permissions()
-            ->where('module', $module)
-            ->where($permission, 1)
-            ->exists();
+        if (!in_array($permission, ['can_view', 'can_add', 'can_edit', 'can_delete', 'can_download'], true)) { return false; }
+        $this->loadMissing('permissions');
+        return $this->permissions->contains(fn ($row) => $row->module === $module && (int) $row->{$permission} === 1);
     }
     public function canView($module)
     {
