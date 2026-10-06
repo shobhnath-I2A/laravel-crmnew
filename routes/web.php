@@ -39,6 +39,7 @@ use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\QueryMailController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\QueryLogController;
+use App\Http\Controllers\DashboardController;
 
 if (!function_exists('permissionResource')) {
     function permissionResource($uri, $controller, $module)
@@ -81,9 +82,12 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('dashboard');
+    // })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
 
     Route::get('itineraries/insert', [ItineraryController::class, 'insertItinerary'])
         ->name('itineraries.insert');

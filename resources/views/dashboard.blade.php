@@ -11,7 +11,7 @@
                         <div class="card"
                             style="overflow: hidden; background-image: url({{ asset('assets/images/grnbx.png') }}); background-repeat: no-repeat; background-position: right top; background-size: auto 100%; position:relative;">
                             <div class="card-body" style="padding: 16px;">
-                                <h2 class="morningh2">Good Evening</h2>
+                                <h2 class="morningh2">{{ $greeting }}</h2>
                                 <div style="font-size:14px; font-weight:600;">{{ Auth::user()->name ?? '' }}</div>
                                 <div
                                     style="position: absolute; right: 10px; top: 20px; text-align: center; line-height: 18px; font-size: 12px; color: #fff; font-weight: 700; text-transform: uppercase; width: 32%;">
@@ -88,7 +88,7 @@
                     </div>
                     <div class="col-xl-6">
                         <div class="card">
-                            <a href="display.html?startDate=06-03-2026&endDate=06-03-2026&keyword=&page=&ga=query&searchcity=&searchusers=&searchsource="
+                            <a href="{{ route('queries.index') }}"
                                 style="color:#000;">
                                 <div class="card-body">
                                     <div class="cardsmheading">Today's Queries</div>
@@ -100,12 +100,12 @@
                     </div>
                     <div class="col-xl-6">
                         <div class="card">
-                            <a href="display.html?startDate=01-01-2025&endDate=06-03-2026&keyword=&page=&ga=query&searchcity=&searchusers=&searchsource="
+                            <a href="{{ route('queries.index') }}"
                                 style="color:#000;">
                                 <div class="card-body">
                                     <div class="cardsmheading">Total Queries</div>
                                     <div class="cardnumberbig">
-                                        12008 <i class="fa fa-external-link" aria-hidden="true"
+                                        {{ $totalQueries ?? 0 }} <i class="fa fa-external-link" aria-hidden="true"
                                             style="background-color:#a0a0a033; color:#6e6e6e;"></i></div>
                                 </div>
                             </a>
@@ -113,13 +113,13 @@
                     </div>
                     <div class="col-xl-6">
                         <div class="card">
-                            <a href="display.html?startDate=01-01-2025&endDate=06-03-2026&keyword=&page=&ga=query&searchcity=&searchusers=&searchsource=&statusid=8"
+                            <a href="{{ route('queries.index') }}?statusId=8"
                                 style="color:#000;">
                                 <div class="card-body">
                                     <div class="cardsmheading">Proposal Sent</div>
                                     <div class="cardnumberbig">
-                                        145 <i class="fa fa-external-link" aria-hidden="true"
-                                            tyle="background-color:#cc00a917; color:#cc00a9;"></i>
+                                        {{ $proposalSent ?? 0 }} <i class="fa fa-external-link" aria-hidden="true"
+                                            style="background-color:#cc00a917; color:#cc00a9;"></i>
                                     </div>
                                 </div>
                             </a>
@@ -127,12 +127,12 @@
                     </div>
                     <div class="col-xl-6">
                         <div class="card">
-                            <a href="display.html?startDate=01-01-2025&endDate=06-03-2026&keyword=&page=&ga=query&searchcity=&searchusers=&searchsource=&statusid=9"
+                            <a href="{{ route('queries.index') }}?statusId=9"
                                 style="color:#000;">
                                 <div class="card-body">
                                     <div class="cardsmheading">Total Pro. Conf</div>
                                     <div class="cardnumberbig">
-                                        108 <i class="fa fa-external-link" aria-hidden="true"
+                                        {{ $totalProConf ?? 0 }} <i class="fa fa-external-link" aria-hidden="true"
                                             style="background-color:#389aca33; color:#389aca;"></i>
                                     </div>
                                 </div>
@@ -141,24 +141,24 @@
                     </div>
                     <div class="col-xl-6">
                         <div class="card">
-                            <a href="display.html?startDate=01-01-2025&endDate=06-03-2026&keyword=&page=&ga=query&searchcity=&searchusers=&searchsource=&statusid=5"
+                            <a href="{{ route('queries.index') }}?statusId=5"
                                 style="color:#000;">
                                 <div class="card-body">
                                     <div class="cardsmheading">Total Confirmed</div>
                                     <div class="cardnumberbig">
-                                        152 <i class="fa fa-external-link" aria-hidden="true"></i></div>
+                                        {{ $totalConfirmed ?? 0 }} <i class="fa fa-external-link" aria-hidden="true"></i></div>
                                 </div>
                             </a>
                         </div>
                     </div>
                     <div class="col-xl-6">
                         <div class="card">
-                            <a href="display.html?startDate=01-01-2025&endDate=06-03-2026&keyword=&page=&ga=query&searchcity=&searchusers=&searchsource=&statusid=7"
+                            <a href="{{ route('queries.index') }}?statusId=7"
                                 style="color:#000;">
                                 <div class="card-body">
                                     <div class="cardsmheading">Total Lost</div>
                                     <div class="cardnumberbig">
-                                        879 <i class="fa fa-external-link" aria-hidden="true"
+                                        {{ $totalLost ?? 0 }} <i class="fa fa-external-link" aria-hidden="true"
                                             style="background-color:#f9392f21; color:#f9392f;"></i>
                                     </div>
                                 </div>
@@ -167,114 +167,87 @@
                     </div>
                     <div class="col-xl-12">
                         <div class="card">
-                            <div class="card-body" style="height: 375px;">
-                                <p class="text-muted font-weight-medium mt-1 mb-2 dashheader">This Year Queries</p>
-                                <script>
-                                    am4core.ready(function() {
-                                        // Themes begin
-                                        am4core.useTheme(am4themes_animated);
-                                        // Themes end
-                                        // Create chart instance
-                                        var chart = am4core.create("chartdiv", am4charts.XYChart3D);
-                                        // Add data
-                                        chart.data = [{
-                                                "country": "Jan",
-                                                "visits": 0
-                                            },
-                                            {
-                                                "country": "Feb",
-                                                "visits": 2
-                                            },
-                                            {
-                                                "country": "Mar",
-                                                "visits": 1
-                                            },
-                                            {
-                                                "country": "Apr",
-                                                "visits": 0
-                                            },
-                                            {
-                                                "country": "May",
-                                                "visits": 0
-                                            },
-                                            {
-                                                "country": "Jun",
-                                                "visits": 0
-                                            },
-                                            {
-                                                "country": "Jul",
-                                                "visits": 0
-                                            },
-                                            {
-                                                "country": "Aug",
-                                                "visits": 0
-                                            },
-                                            {
-                                                "country": "Sep",
-                                                "visits": 0
-                                            },
-                                            {
-                                                "country": "Oct",
-                                                "visits": 0
-                                            },
-                                            {
-                                                "country": "Nov",
-                                                "visits": 0
-                                            },
-                                            {
-                                                "country": "Dec",
-                                                "visits": 0
-                                            },
+                            <div class="card-body" style="height:375px;">
+                                <p class="text-muted font-weight-medium mt-1 mb-2 dashheader">
+                                    This Year Queries
+                                </p>
 
-
-                                        ];
-
-                                        // Create axes
-                                        let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-                                        categoryAxis.dataFields.category = "country";
-                                        categoryAxis.renderer.labels.template.rotation = 270;
-                                        categoryAxis.renderer.labels.template.hideOversized = false;
-                                        categoryAxis.renderer.minGridDistance = 20;
-                                        categoryAxis.renderer.labels.template.horizontalCenter = "right";
-                                        categoryAxis.renderer.labels.template.verticalCenter = "middle";
-                                        categoryAxis.tooltip.label.rotation = 270;
-                                        categoryAxis.tooltip.label.horizontalCenter = "right";
-                                        categoryAxis.tooltip.label.verticalCenter = "middle";
-
-                                        let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-
-                                        // Create series
-                                        var series = chart.series.push(new am4charts.ColumnSeries3D());
-                                        series.dataFields.valueY = "visits";
-                                        series.dataFields.categoryX = "country";
-                                        series.name = "Visits";
-                                        series.tooltipText = "{categoryX}: [bold]{valueY}[/]";
-                                        series.columns.template.fillOpacity = .8;
-
-                                        var columnTemplate = series.columns.template;
-                                        columnTemplate.strokeWidth = 2;
-                                        columnTemplate.strokeOpacity = 1;
-                                        columnTemplate.stroke = am4core.color("#FFFFFF");
-
-                                        columnTemplate.adapter.add("fill", function(fill, target) {
-                                            return chart.colors.getIndex(target.dataItem.index);
-                                        })
-
-                                        columnTemplate.adapter.add("stroke", function(stroke, target) {
-                                            return chart.colors.getIndex(target.dataItem.index);
-                                        })
-
-                                        chart.cursor = new am4charts.XYCursor();
-                                        chart.cursor.lineX.strokeOpacity = 0;
-                                        chart.cursor.lineY.strokeOpacity = 0;
-
-                                    }); // end am4core.ready()
-                                </script>
-                                <!-- HTML -->
-                                <div id="chartdiv"></div>
+                                <div id="chartdiv" style="width:100%; height:310px;"></div>
                             </div>
                         </div>
                     </div>
+
+                    <script>
+                        function initializeYearQueriesChart() {
+                            if (
+                                typeof am4core === 'undefined' ||
+                                typeof am4charts === 'undefined'
+                            ) {
+                                console.error('amCharts scripts are missing or have not loaded.');
+                                return;
+                            }
+
+                            am4core.ready(function () {
+                                if (typeof am4themes_animated !== 'undefined') {
+                                    am4core.useTheme(am4themes_animated);
+                                }
+
+                                var chart = am4core.create(
+                                    'chartdiv',
+                                    am4charts.XYChart3D
+                                );
+
+                                // Assign the data only once.
+                                chart.data = {{ \Illuminate\Support\Js::from($monthlyChart) }};
+
+                                var categoryAxis = chart.xAxes.push(
+                                    new am4charts.CategoryAxis()
+                                );
+
+                                categoryAxis.dataFields.category = 'country';
+                                categoryAxis.renderer.minGridDistance = 20;
+                                categoryAxis.renderer.labels.template.fontSize = 11;
+
+                                var valueAxis = chart.yAxes.push(
+                                    new am4charts.ValueAxis()
+                                );
+
+                                valueAxis.min = 0;
+                                valueAxis.maxPrecision = 0;
+
+                                var series = chart.series.push(
+                                    new am4charts.ColumnSeries3D()
+                                );
+
+                                series.dataFields.valueY = 'visits';
+                                series.dataFields.categoryX = 'country';
+                                series.name = 'Queries';
+                                series.tooltipText = '{categoryX}: [bold]{valueY}[/]';
+                                series.columns.template.fillOpacity = 0.8;
+                                series.columns.template.strokeWidth = 0;
+
+                                series.columns.template.adapter.add(
+                                    'fill',
+                                    function (fill, target) {
+                                        return target.dataItem
+                                            ? chart.colors.getIndex(target.dataItem.index)
+                                            : fill;
+                                    }
+                                );
+
+                                chart.cursor = new am4charts.XYCursor();
+                                chart.cursor.lineX.strokeOpacity = 0;
+                                chart.cursor.lineY.strokeOpacity = 0;
+                            });
+                        }
+
+                        // Wait for the page and its normal/deferred scripts.
+                        if (document.readyState === 'complete') {
+                            initializeYearQueriesChart();
+                        } else {
+                            window.addEventListener('load', initializeYearQueriesChart);
+                        }
+                    </script>
                 </div>
             </div>
             <div class="col-xl-8">
