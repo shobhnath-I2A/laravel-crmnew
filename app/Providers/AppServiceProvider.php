@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         require base_path('routes/channels.php');
 
         View::composer('*', function ($view) {
-            $destinationList = app('crm.destination_list');
+            $destinationList = Destination::pluck('name', 'id');
             $view->with('destinationList', $destinationList);
 
             if (auth()->check()) {

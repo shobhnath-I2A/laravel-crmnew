@@ -15,8 +15,7 @@ class QueryGuestController extends Controller
     public function index()
     {
         $queryId = request()->query('query_id');
-        $guest = request()->filled('edit_id') ? QueryGuest::where('query_id', $queryId)->findOrFail(request('edit_id')) : null;
-        return view('guest-documents.add-guest', compact('queryId', 'guest'));
+        return view('guest-documents.add-guest', compact('queryId'));
     }
 
     /**
@@ -35,8 +34,7 @@ class QueryGuestController extends Controller
         try {
 
             $validated = $request->validate([
-                'edit_id' => 'nullable|integer|exists:query_guests,id',
-                'query_id'   => 'required|integer|exists:queries,id',
+                'query_id'   => 'required|integer',
                 'title'      => 'required|string|max:10',
                 'first_name' => 'required|string|max:100',
                 'last_name'  => 'required|string|max:100',
@@ -47,27 +45,16 @@ class QueryGuestController extends Controller
             $validated['dob'] = Carbon::createFromFormat('d-m-Y', $validated['dob'])
                 ->format('Y-m-d');
 
-            unset($validated['edit_id']);
-            $guest = \Illuminate\Support\Facades\DB::transaction(function () use ($request, $validated) {
-            if ($request->filled('edit_id')) {
-                $guest = QueryGuest::where('query_id', $validated['query_id'])->findOrFail($request->edit_id);
-                $guest->update($validated);
-            } else {
-                $guest = QueryGuest::create($validated);
-            }
-            \App\Services\QueryHistory::record($guest->query_id, 'guest_saved', 'Guest #'.$guest->id.' saved');
-            return $guest;
-            });
+            $guest = QueryGuest::updateOrCreate(
+                ['id' => $request->edit_id],
+                $validated
+            );
 
             return response()->json([
                     'status'  => 'success',
                     'message' => 'Guest saved successfully',
                     'data'=>$guest
                 ],201);
-            } catch (ValidationException $e) {
-                throw $e;
-            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-                throw $e;
             } catch (\Exception $e) {
                 return response()->json([
                     'status'  => 'error',
@@ -106,11 +93,7 @@ class QueryGuestController extends Controller
     public function destroy(string $id)
     {
         try {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($id) {
-                $guest = QueryGuest::findOrFail($id);
-                \App\Services\QueryHistory::record($guest->query_id, 'guest_deleted', 'Guest #'.$guest->id.' removed');
-                $guest->delete();
-            });
+            QueryGuest::findOrFail($id)->delete();
 
             return back()
                 ->with('success', 'Guest removed');

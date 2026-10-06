@@ -108,9 +108,10 @@ class User extends Authenticatable
             return true;
         }
 
-        if (!in_array($permission, ['can_view', 'can_add', 'can_edit', 'can_delete', 'can_download'], true)) { return false; }
-        $this->loadMissing('permissions');
-        return $this->permissions->contains(fn ($row) => $row->module === $module && (int) $row->{$permission} === 1);
+        return $this->permissions()
+            ->where('module', $module)
+            ->where($permission, 1)
+            ->exists();
     }
     public function canView($module)
     {

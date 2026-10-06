@@ -39,7 +39,6 @@
 </head>
 
 <body class="night-theme">
-</style>
     @include('partials.navigation')
     @include('partials.header')
     @include('partials.sidebar')
@@ -204,7 +203,9 @@
                 data: formData,
                 success: function(response) {
                     $('#ajaxLoader').hide();
-                    $('#toastMessage').empty().append($('<div>', {class: 'toast-box'}).text(response.message));
+                    $('#toastMessage').html(
+                        '<div class="toast-box">' + response.message + '</div>'
+                    );
                     setTimeout(function() {
                         $('#toastMessage').fadeOut();
                     }, 3000);
@@ -220,7 +221,10 @@
                         $.each(errors, function(key, value) {
                             let input = $('[name="' + key + '"]');
                             input.addClass('is-invalid');
-                            input.after($('<div>', {class: 'validation-error text-danger'}).text(value[0]));
+                            input.after(
+                                '<div class="validation-error text-danger">' + value[0] +
+                                '</div>'
+                            );
                         });
                     }
                 }

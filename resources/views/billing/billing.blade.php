@@ -1,23 +1,191 @@
-<div class="card-body"><h4>Billing</h4>
-@if($query->invoice)
-@php($invoice = $query->invoice)
-@php($received = $invoice->payments->sum('amount_minor'))
-<div class="row mb-3"><div class="col">Total: <strong>{{ $invoice->currency }} {{ number_format($invoice->amount_minor / 100, 2) }}</strong></div>
-<div class="col">Received: <strong>{{ number_format($received / 100, 2) }}</strong></div><div class="col">Outstanding: <strong>{{ number_format(($invoice->amount_minor - $received) / 100, 2) }}</strong></div></div>
-<p>{{ $invoice->description }}</p><a class="btn btn-outline-primary mb-3" target="_blank" rel="noopener" href="{{ route('query-workflow.invoice.print', $query->id) }}">Print invoice / payment statement</a>
-<table class="table table-bordered"><thead><tr><th>Receipt</th><th>Date</th><th>Method</th><th>Reference</th><th>Amount ({{ $invoice->currency }})</th></tr></thead><tbody>
-@forelse($invoice->payments as $payment)<tr><td>PAY-{{ $payment->id }}</td><td>{{ $payment->paid_on->format('d-m-Y') }}</td><td>{{ $payment->method }}</td><td>{{ $payment->reference }}</td><td>{{ number_format($payment->amount_minor / 100, 2) }}</td></tr>
-@empty<tr><td colspan="5">No payments recorded.</td></tr>@endforelse</tbody></table>
-@if($received < $invoice->amount_minor)
-<h5>Record received payment</h5><form method="post" action="{{ route('query-workflow.payment', $query->id) }}">@csrf
-<input type="hidden" name="request_key" value="{{ old('request_key', (string) Illuminate\Support\Str::uuid()) }}">
-<div class="row"><label class="col">Amount<input type="number" step="0.01" min="0.01" name="amount" class="form-control" required></label>
-<label class="col">Reference<input name="reference" maxlength="150" class="form-control" required></label><label class="col">Date<input type="date" name="paid_on" value="{{ now()->format('Y-m-d') }}" class="form-control" required></label>
-<label class="col">Method<select class="form-control" name="method">@foreach(['Bank','Card','Cash','UPI','Other'] as $method)<option>{{ $method }}</option>@endforeach</select></label></div><button class="btn btn-primary">Record payment</button></form>@endif
-@else
-<p>Create an invoice for the accepted proposal using the agreed final total. Tax is not calculated automatically.</p>
-<form method="post" action="{{ route('query-workflow.invoice', $query->id) }}">@csrf
-<label>Currency<select name="currency" class="form-control">@foreach(['INR','USD','AED','EUR','GBP','NZD','CAD','AUD'] as $currency)<option>{{ $currency }}</option>@endforeach</select></label>
-<label>Agreed total<input type="number" step="0.01" min="0.01" name="amount" class="form-control" required></label>
-<label class="d-block">Description / inclusions<textarea name="description" maxlength="5000" class="form-control" required></textarea></label><button class="btn btn-primary">Create invoice</button></form>
-@endif</div>
+<div class="card-body">
+    <div style="padding:10px;">
+        <style>
+            .statusbox {
+                margin-right: 5px;
+                padding: 10px;
+                text-align: center;
+                background-color: #000000;
+                font-size: 13px;
+                color: #fff;
+                border-radius: 4px;
+                text-transform: uppercase;
+            }
+
+            .conf {
+                width: 100px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                padding: 5px;
+                text-align: center;
+            }
+        </style>
+        <div class=" ">
+            <div class=" ">
+                <div style="margin-bottom:10px;">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tbody>
+                            <tr>
+                                <td width="14%" align="left" valign="top">
+                                    <div class="statusbox" style="background-color:#655be6;">
+                                        <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                            ? 1,050 </div>
+                                        Total&nbsp;Amount
+                                    </div>
+                                </td>
+                                <td width="14%" align="left" valign="top">
+                                    <div class="statusbox" style="background-color:#0cb5b5;">
+                                        <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">?
+                                            12,000,000</div>
+                                        Received
+                                    </div>
+                                </td>
+                                <td width="14%" align="left" valign="top">
+                                    <div class="statusbox" style="background-color:#e45555;">
+                                        <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">?
+                                            -11,998,950</div>Pending
+                                    </div>
+                                </td>
+                                <td width="16%" align="left" valign="top">
+                                    <div class="statusbox"
+                                        style="background-color: #ffffff; color: #000000; font-weight: 600;">
+                                        <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">? 1,050
+                                        </div>Gross Profit
+                                    </div>
+                                </td>
+                                <td width="14%" align="left" valign="top">
+                                    <div class="statusbox" style="background-color:#e69f5b;">
+                                        <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">
+                                            ? 0 </div>
+                                        Supplier&nbsp;Amount
+                                    </div>
+                                </td>
+                                <td width="14%" align="left" valign="top">
+                                    <div class="statusbox" style="background-color:#71b183;">
+                                        <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">? 0</div>
+                                        Supplier&nbsp;Received
+                                    </div>
+                                </td>
+                                <td width="14%" align="left" valign="top">
+                                    <div class="statusbox" style="background-color:#ae8393;">
+                                        <div style="margin-bottom: 0px; font-size: 30px; line-height: 38px;">? 0</div>
+                                        Supplier&nbsp;Pending
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-12" style=" padding: 0px; ">
+                    <h4 class="mt-0 header-title" style="border-bottom:0px; position:relative;">Payments (1)
+                        <a onclick="loadpop('Send Payment Plan To Mail',this,'400px')" data-toggle="modal"
+                            data-target=".bs-example-modal-center"
+                            popaction="action=sendSelectedPaymentPlanToMail&amp;queryId=127497&amp;packageId=109135"
+                            style="position: absolute; font-size: 12px; font-weight: 600; right: 5px; top:2px; background-color: #005ee2; color: #fff; padding: 2px 10px; border-radius: 3px; cursor: pointer;">Send
+                            Payment Plan To Mail</a>
+                    </h4>
+                    <div class="card">
+                        <div class="card-body" style="padding:10px !important;">
+                            <table width="100%" border="1" cellpadding="5" cellspacing="0" bordercolor="#CCCCCC"
+                                style=" font-size:12px;">
+                                <thead>
+                                    <tr>
+                                        <th>Payment&nbsp;ID</th>
+                                        <th>Trans.&nbsp;ID</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Payment&nbsp;Date</th>
+                                        <th>Status</th>
+                                        <th align="center">&nbsp;</th>
+                                        <th align="center" style="display:none;">&nbsp;</th>
+                                        <th align="center">Convenience Fee</th>
+                                        <th>Receipt</th>
+                                        <th>
+                                            <div align="right">Action</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="  background-color: #e4fff9;">
+                                        <td align="left" valign="top">100572</td>
+                                        <td align="left" valign="top" style="text-transform:uppercase;">324234234
+                                        </td>
+                                        <td align="left" valign="top"><span class="badge badge-dark">UPI</span></td>
+                                        <td align="left" valign="top">? 12000000</td>
+                                        <td align="left" valign="top">03/03/2026 - 02:49 PM </td>
+                                        <td align="left" valign="top"><span class="badge badge-success">Paid</span>
+                                        </td>
+                                        <td align="center" valign="top">
+                                        </td>
+                                        <td align="center" valign="top" style="display:none;"> <button type="button"
+                                                class="btn btn-info btn-sm waves-effect waves-light"
+                                                onclick="loadpop('Send Without Link',this,'400px')" data-toggle="modal"
+                                                data-target=".bs-example-modal-center"
+                                                popaction="action=sendpaymentWithoutLink&amp;pid=109135&amp;qid=127497&amp;id=100572&amp;amt=12000000&amp;acn=1"
+                                                style="margin-bottom:0px; float:right;">Send Payment Details</button>
+                                            <br>
+                                        </td>
+                                        <td align="center" valign="top"></td>
+                                        <td align="left" valign="top"></td>
+                                        <td align="left" valign="top">
+                                            <div style=" width: 100px; float:right;">&nbsp;<button type="button"
+                                                    class="btn btn-danger btn-sm waves-effect waves-light"
+                                                    onclick="deletebill('100572');"
+                                                    style="margin-bottom:0px; float:right; margin-right: 3px;">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr style=" ">
+                                        <td colspan="3" align="right" valign="top"><strong>Not Scheduled
+                                                Amount: </strong></td>
+                                        <td align="left" valign="top"><strong>? -11998950</strong></td>
+                                        <td colspan="7" align="right" valign="top"> </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- <input name="action" type="hidden" id="action" value="sendSelectedPaymentPlanToMail" />
+                    <input name="queryId" type="hidden"  value="127497" />
+                    <input name="packageId" type="hidden"  value="109135" />   -->
+                    <div style="overflow: hidden; width: 100%; margin-top: 10px; display:none;">
+                        <table border="0" cellspacing="0" cellpadding="5">
+                            <tbody>
+                                <tr>
+                                    <td><!--<input name="Save" type="submit" value="Send Payment Plan To Mail"   id="savingbutton" class="btn btn-primary" onclick="this.form.submit(); this.disabled=true; this.value='Saving...';" style="float:left;"  />-->
+                                    </td>
+                                    <td>&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="mt-0 header-title" style="border-bottom:0px; overflow:hidden;">&nbsp;</h4>
+                    <div style="text-align:center; padding:10px;">
+                        <div style="margin-bottom:10px;">No Invoice Found</div>
+                        <a target="actoinfrm"
+                            href="actionpage.php?action=genrateinvoice&amp;queryId=127497&amp;packageId=109135&amp;amount=1050">
+                            <button type="button" class="btn btn-primary waves-effect waves-light">Genrate
+                                Invoice</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div id="saveconfee" style="display:none;"></div>
+            <script>
+                function confeefun(id) {
+                    var conFee = $('#conFee' + id).val();
+                    $('#saveconfee').load('actionpage.php?action=saveconfee&id=' + id + '&conFee=' + conFee + '&queryId=127497');
+                }
+
+                function deletebill(id) {
+                    if (confirm('Are you sure want to delete?')) {
+                        $('#saveconfee').load('actionpage.php?action=deletebill&parentId=127497&id=' + id);
+                    }
+                }
+            </script>
+        </div>
+    </div>
+</div>

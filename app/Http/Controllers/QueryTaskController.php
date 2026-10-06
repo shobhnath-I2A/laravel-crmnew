@@ -36,77 +36,60 @@ class QueryTaskController extends Controller
 
     /**
      * Store a newly created resource in storage.
-    */
+     */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'queryId'      => 'required|integer|exists:queries,id',
-            'taskType'     => 'required|in:Task,Call,Meeting',
-            'details'      => 'nullable|string|max:10000',
-            'setReminder'  => 'required|boolean',
-            'reminderDate' => 'nullable|required_if:setReminder,1|date_format:Y-m-d',
-            'reminderTime' => 'nullable|required_if:setReminder,1|date_format:H:i',
-            'assignTo'     => [
-                'nullable',
-                'integer',
-                \Illuminate\Validation\Rule::exists('users', 'id')
-                    ->where('status', 1),
-            ],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $data = $validator->validated();
-
         try {
-            $reminderDateTime = null;
+            $validator = Validator::make($request->all(), [
+                'queryId'      => 'required|integer',
+                'taskType'     => 'required|in:Task,Call,Meeting',
+                'details'      => 'nullable|string',
+  		'setReminder'  => 'required|boolean',
+                'reminderDate' => 'required|date_format:d-m-Y',
+                'reminderTime' => 'nullable',
+                'assignTo'     => 'nullable|integer',
+                'status'       => 'nullable|in:0,1',
+            ]);
 
-            if ((int) $data['setReminder'] === 1) {
-                $reminderDateTime = Carbon::createFromFormat(
-                    '!Y-m-d H:i',
-                    $data['reminderDate'] . ' ' . $data['reminderTime']
-                )->format('Y-m-d H:i:s');
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => $validator->errors()
+                ], 422);
             }
 
-            \Illuminate\Support\Facades\DB::transaction(
-                function () use ($data, $reminderDateTime) {
-                    $task = QueryTask::create([
-                        'queryId'      => $data['queryId'],
-                        'taskType'     => $data['taskType'],
-                        'details'      => $data['details'] ?? null,
-                        'reminderDate' => $reminderDateTime,
-                        'assignTo'     => $data['assignTo'] ?? auth()->id(),
-                        'status'       => 0, // Pending
-                        'created_by'      => auth()->id(),
-                    ]);
+            $reminderDateTime = null;
 
-                    \App\Services\QueryHistory::record(
-                        (int) $data['queryId'],
-                        'task_created',
-                        'Task #' . $task->id . ' created'
-                    );
+            if ($request->reminderDate) {
+                $date = Carbon::createFromFormat('d-m-Y', $request->reminderDate)
+                    ->format('Y-m-d');
+                $time = '00:00:00';
+                if ($request->reminderTime) {
+                    $time = Carbon::parse($request->reminderTime)->format('H:i:s');
                 }
-            );
+                $reminderDateTime = $date . ' ' . $time;
+            }
+            QueryTask::create([
+                'queryId'      => $request->queryId,
+                'taskType'     => $request->taskType,
+                'details'      => $request->details,
+                'reminderDate' => $reminderDateTime,
+                'assignTo'     => $request->assignTo,
+                'status'       => $request->status ?? 0,
+                'created_by'      => auth()->id() ?? null,
+            ]);
 
             return response()->json([
                 'status'  => 'success',
-                'message' => 'Task added successfully',
+                'message' => 'Task added successfully'
             ]);
-        } catch (\Throwable $e) {
-            report($e);
-
+        } catch (\Exception $e) {
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Unable to create task. Please check the application log.',
+                'message' => 'Failed to create task: ' . $e->getMessage()
             ], 500);
         }
     }
-
 
     /**
      * Display the specified resource.
@@ -138,11 +121,8 @@ class QueryTaskController extends Controller
      public function destroy(string $id)
     {
         try {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($id) {
-                $queryTask = QueryTask::findOrFail($id);
-                \App\Services\QueryHistory::record($queryTask->queryId, 'task_deleted', 'Task #'.$queryTask->id.' removed');
-                $queryTask->delete();
-            });
+            $queryTask = QueryTask::findOrFail($id);
+            $queryTask->delete();
 
             return response()->json([
                 'status'  => true,
@@ -168,8 +148,7 @@ class QueryTaskController extends Controller
     public function checkReminders()
     {
         try {
-            $tasks = QueryTask::whereIn('queryId', \App\Services\QueryAccess::scope(\App\Models\Query::query(), auth()->user())->select('id'))
-                ->where('status', 0)
+            $tasks = QueryTask::where('status', 0)
                 ->whereNotNull('reminderDate')
                 ->where('reminderDate', '<=', now())
                 ->get();
@@ -182,12 +161,12 @@ class QueryTaskController extends Controller
     public function markDone($id)
     {
         try {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($id) {
-                $task = QueryTask::lockForUpdate()->findOrFail($id);
-                if ((int) $task->status === 1) { return; }
-                $task->update(['status' => 1, 'makeDone' => 1, 'confirmDate' => now()]);
-                \App\Services\QueryHistory::record($task->queryId, 'task_completed', 'Task #'.$task->id.' completed');
-            });
+            $task = QueryTask::findOrFail($id);
+            $task->update([
+                'status' => 1,
+                'makeDone' => 1,
+                'confirmDate' => now()
+            ]);
 
             return response()->json(['success' => true]);
         } catch (Exception $e) {

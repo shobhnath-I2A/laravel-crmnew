@@ -124,9 +124,9 @@ class SupplierController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // dd($request->all());
         try {
             $supplier = Supplier::findOrFail($id);
+            // dd($request->all());
             $request->validate([
                 'destination_id' => 'nullable|exists:destinations,id',
                 'company_name'      => 'required|string|max:255',

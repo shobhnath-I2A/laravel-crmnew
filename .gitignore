@@ -1,5 +1,6 @@
 *.log
 *.zip
+/compare-code
 .DS_Store
 .env
 .env.backup

@@ -35,9 +35,7 @@ class QuotationController extends Controller
      */
     public function show(string $id)
     {
-        $query = \App\Services\QueryAccess::find($id);
-        $itineraries = $query->itineraries()->with(['destinations', 'packages.dayItems.price', 'packages.dayItems.hotelDetail.hotel', 'packages.dayItems.flightDetail'])->whereIn('status', [0, 1, 2])->get();
-        return view('proposals.view-quotation', compact('query', 'itineraries'));
+        return view('proposals.view-quotation', ['queryId' => $id]);
     }
 
     /**

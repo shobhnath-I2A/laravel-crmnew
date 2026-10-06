@@ -40,7 +40,7 @@ class MailService
                 : strtolower($smtp->security_type),
             'username'   => $smtp->email_account,
             'password'   => $smtp->email_password,
-            'timeout'    => 15,
+            'timeout'    => null,
             'auth_mode'  => null,
         ]);
 

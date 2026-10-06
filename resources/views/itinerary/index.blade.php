@@ -68,7 +68,7 @@
                                                 <td>
                                                     <div align="center">{{ $iti->total_days ?? '' }} Days</div>
                                                 </td>
-                                                <td>₹ 11,220 </td>
+                                               <td>₹ {{ number_format(($iti->website_cost ?? 0) * ($iti->adult ?? 0) * ($iti->child ?? 0)) }}</td>
                                                 <td width="12%">{{ $iti->created_at }}</td>
                                                 <td width="1%">
                                                     <div class="">

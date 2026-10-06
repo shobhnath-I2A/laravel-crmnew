@@ -282,7 +282,7 @@
                 console.log('Loading day details:', url);
 
                 $('#load_build_day_details').html('<div style="padding:20px;">Loading...</div>');
-                $('#load_build_day_details').load(url, {_token: @json(csrf_token())});
+                $('#load_build_day_details').load(url);
 
                 updateManualAddButton();
             }

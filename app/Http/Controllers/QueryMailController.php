@@ -15,6 +15,7 @@ class QueryMailController extends Controller
      */
     public function index()
     {
+        //
     }
 
     /**
@@ -35,35 +36,24 @@ class QueryMailController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->filled('supplier_id')) {
-            abort_unless(auth()->user()->canView('Supplier'), 403);
-            $request->validate(['supplier_id' => 'required|integer|exists:suppliers,id']);
-            $supplier = \App\Models\Supplier::where('status', 1)->findOrFail($request->supplier_id);
-            $request->merge(['to' => $supplier->email]);
-        }
         $request->validate([
             'query_id' => 'required|exists:queries,id',
             'to' => 'required|email',
             'cc' => 'nullable|string',
             'subject' => 'required|string|max:255',
             'message' => 'required|string',
-            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,txt,csv|max:10240',
+            'attachment' => 'nullable|file|max:10240',
         ]);
 
 
-        if ($request->filled('cc')) {
-            validator(['cc' => array_map('trim', explode(',', $request->cc))], ['cc' => 'array|max:20', 'cc.*' => 'required|email'])->validate();
-        }
-        if ($request->filled('supplier_id')) { $request->merge(['message' => nl2br(e($request->message))]); }
+        // dd($request);
         $attachmentPath = null;
 
         if ($request->hasFile('attachment')) {
             $attachmentPath = $request->file('attachment')
-                ->store('private-mail', 'local');
-            abort_unless($attachmentPath, 500, 'Attachment could not be stored.');
+                ->store('email-attachments', 'public');
         }
 
-        try {
         $emailLog = EmailLog::create([
             'query_id' => $request->query_id,
             'from_email' => config('mail.from.address'),
@@ -75,11 +65,6 @@ class QueryMailController extends Controller
             'status' => 'pending',
             'created_by' => auth()->id(),
         ]);
-        } catch (\Throwable $e) {
-            if ($attachmentPath) { \Illuminate\Support\Facades\Storage::disk('local')->delete($attachmentPath); }
-            throw $e;
-        }
-        $sent = false;
 
         try {
             $sent = \App\Services\MailService::sendMail(
@@ -87,7 +72,7 @@ class QueryMailController extends Controller
                 $request->subject,
                 $request->message,
                 $request->cc,
-                $attachmentPath ? \Illuminate\Support\Facades\Storage::disk('local')->path($attachmentPath) : null
+                $attachmentPath ? storage_path('app/public/' . $attachmentPath) : null
             );
 
             if (!$sent) {
@@ -99,45 +84,94 @@ class QueryMailController extends Controller
                 return back()->with('error', 'Mail sending failed.');
             }
 
-            \Illuminate\Support\Facades\DB::transaction(function () use ($emailLog) {
             $emailLog->update([
                 'from_email' => config('mail.from.address'),
                 'status' => 'sent',
             ]);
-            \App\Services\QueryHistory::record($emailLog->query_id, 'mail_sent', 'Email #'.$emailLog->id.' sent', $emailLog->subject);
-            });
 
             return back()->with('success', 'Mail sent successfully.');
         } catch (\Exception $e) {
-            if ($sent) {
-                report($e);
-                return back()->with('error', 'SMTP accepted the email, but its history could not be updated. Do not resend without checking delivery.');
-            }
             $emailLog->update([
                 'status' => 'failed',
                 'error_message' => $e->getMessage(),
             ]);
 
-            report($e);
-            return back()->with('error', 'Mail sending failed.');
+            return back()->with('error', $e->getMessage());
         }
     }
+    // public function store(Request $request)
+    // {
+    //     // dd($request->all());
+    //     $request->validate([
+    //         'query_id' => 'required|exists:queries,id',
+    //         'to' => 'required|email',
+    //         'cc' => 'nullable|string',
+    //         'subject' => 'required|string|max:255',
+    //         'message' => 'required|string',
+    //         'attachment' => 'nullable|file|max:10240',
+    //     ]);
 
+    //     if (!MailService::configure()) {
+    //         return back()->with('error', 'SMTP configuration failed.');
+    //     }
 
+    //     $attachmentPath = null;
 
+    //     if ($request->hasFile('attachment')) {
+    //         $attachmentPath = $request->file('attachment')
+    //             ->store('email-attachments', 'public');
+    //     }
 
+    //     $emailLog = EmailLog::create([
+    //         'query_id' => $request->query_id,
+    //         'from_email' => config('mail.from.address'),
+    //         'to_email' => $request->to,
+    //         'cc' => $request->cc,
+    //         'subject' => $request->subject,
+    //         'message' => $request->message,
+    //         'attachment' => $attachmentPath,
+    //         'status' => 'pending',
+    //         'created_by' => auth()->id(),
+    //     ]);
 
+    //     try {
+    //         Mail::send([], [], function ($mail) use ($request, $attachmentPath) {
+    //             $mail->from(config('mail.from.address'), config('mail.from.name'))
+    //                 ->to($request->to)
+    //                 ->subject($request->subject)
+    //                 ->html($request->message);
 
+    //             if ($request->filled('cc')) {
+    //                 $ccEmails = array_filter(array_map('trim', explode(',', $request->cc)));
+    //                 $mail->cc($ccEmails);
+    //             }
 
+    //             if ($attachmentPath) {
+    //                 $mail->attach(storage_path('app/public/' . $attachmentPath));
+    //             }
+    //         });
 
+    //         $emailLog->update([
+    //             'status' => 'sent',
+    //         ]);
 
+    //         return back()->with('success', 'Mail sent successfully.');
+    //     } catch (\Exception $e) {
+    //         $emailLog->update([
+    //             'status' => 'failed',
+    //             'error_message' => $e->getMessage(),
+    //         ]);
 
+    //         return back()->with('error', $e->getMessage());
+    //     }
+    // }
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
+        //
     }
 
     /**
@@ -145,6 +179,7 @@ class QueryMailController extends Controller
      */
     public function edit(string $id)
     {
+        //
     }
 
     /**
@@ -152,6 +187,7 @@ class QueryMailController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        //
     }
 
     /**
@@ -159,5 +195,6 @@ class QueryMailController extends Controller
      */
     public function destroy(string $id)
     {
+        //
     }
 }

@@ -25,11 +25,18 @@ class QueryController extends Controller
      */
     public function index(Request $request)
     {
-        $request->validate(['startDate' => 'nullable|date_format:d-m-Y', 'endDate' => 'nullable|date_format:d-m-Y', 'statusId' => 'nullable|integer|exists:query_statuses,id']);
         try {
 
             $loginUser = Auth::user();
-            $queryBuilder = \App\Services\QueryAccess::scope(Query::with(['status', 'originCity', 'destinationCity', 'itineraries.destinations']), $loginUser);
+            $queryBuilder = Query::with(['status', 'itineraries']);
+
+            if ($loginUser->role_id == 1 || $loginUser->show_query_status == 2) {
+                // show all query
+                } elseif ($loginUser->show_query_status == 0) {
+                    $queryBuilder->where('assignTo', $loginUser->id);
+                } elseif ($loginUser->show_query_status == 1) {
+                    $queryBuilder->where('statusId', 5);
+            }
 
             if ($request->filled('statusId')) {
                 $queryBuilder->where('statusId', $request->statusId);
@@ -51,7 +58,15 @@ class QueryController extends Controller
 
             $queries->appends($request->all());
 
-            $countQuery = \App\Services\QueryAccess::scope(Query::query(), $loginUser);
+            $countQuery = Query::query();
+
+            if ($loginUser->role_id == 1 || $loginUser->show_query_status == 2) {
+                // show all query
+            } elseif ($loginUser->show_query_status == 0) {
+                $countQuery->where('assignTo', $loginUser->id);
+            } elseif ($loginUser->show_query_status == 1) {
+               $countQuery->where('statusId', 5);
+            }
 
             if ($request->filled('startDate')) {
                 $startDate = Carbon::createFromFormat('d-m-Y', $request->startDate);
@@ -96,7 +111,7 @@ class QueryController extends Controller
             Log::error('Error fetching queries: ' . $e->getMessage());
 
             return view('queries.index', [
-                'queries' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10),
+                'queries' => collect(),
                 'statuses' => collect(),
                 'statusCounts' => collect(),
                 'totalQueries' => 0,
@@ -105,28 +120,110 @@ class QueryController extends Controller
             ]);
         }
     }
+    // public function index(Request $request)
+    // {
+    //     try {
 
+    //         $loginUser = Auth::user();
 
+    //         $queryBuilder = Query::with(['status', 'itineraries']);
 
+    //         if ($request->filled('statusId')) {
+    //             $queryBuilder->where('statusId', $request->statusId);
+    //         }
 
+    //         $queries = $queryBuilder
+    //             ->latest()
+    //             ->paginate(10);
 
+    //         $queries->appends($request->all());
 
+    //         $totalQueries = Query::count();
 
+    //         $statuses = QueryStatus::where('is_active', 1)
+    //             ->orderBy('sort_order')
+    //             ->get();
 
+    //         $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
+    //             ->groupBy('statusId')
+    //             ->pluck('total', 'statusId');
 
+    //         if ($loginUser->role_id == 3) {
+    //             $users = User::where('id', $loginUser->id)
+    //                 ->where('status', 1)
+    //                 ->get(['id', 'name']);
+    //         } else {
+    //             $users = User::where('status', 1)
+    //                 ->orderBy('name')
+    //                 ->get(['id', 'name']);
+    //         }
 
+    //         return view('queries.index', compact(
+    //             'queries',
+    //             'statuses',
+    //             'statusCounts',
+    //             'totalQueries',
+    //             'users'
+    //         ));
+    //     } catch (Exception $e) {
 
+    //         Log::error('Error fetching queries: ' . $e->getMessage());
 
+    //         return view('queries.index', [
+    //             'queries' => collect(),
+    //             'statuses' => collect(),
+    //             'statusCounts' => collect(),
+    //             'totalQueries' => 0,
+    //             'users' => collect(),
+    //             'error' => 'Unable to fetch queries at this time.'
+    //         ]);
+    //     }
+    // }
+    // public function index(Request $request)
+    // {
+    //     try {
 
+    //         $queryBuilder = Query::with('status');
 
+    //         if ($request->filled('statusId')) {
+    //             $queryBuilder->where('statusId', $request->statusId);
+    //         }
 
+    //         $queries = $queryBuilder
+    //             ->latest()
+    //             ->paginate(10);
 
+    //         $queries->appends($request->all());
 
+    //         $totalQueries = Query::count();
 
+    //         $statuses = QueryStatus::where('is_active', 1)
+    //             ->orderBy('sort_order')
+    //             ->get();
 
+    //         $statusCounts = Query::selectRaw('statusId, COUNT(*) as total')
+    //             ->groupBy('statusId')
+    //             ->pluck('total', 'statusId');
 
+    //         return view('queries.index', compact(
+    //             'queries',
+    //             'statuses',
+    //             'statusCounts',
+    //             'totalQueries'
+    //         ));
+    //     } catch (Exception $e) {
 
+    //         Log::error('Error fetching queries: ' . $e->getMessage());
 
+    //         return view('queries.index', [
+    //             'queries' => collect(),
+    //             'statuses' => collect(),
+    //             'statusCounts' => collect(),
+    //             'totalQueries' => 0,
+    //             'error' => 'Unable to fetch queries at this time.'
+    //         ]);
+    //     }
+    // }
 
     /**
      * Show the form for creating a new resource.
@@ -157,22 +254,17 @@ class QueryController extends Controller
                 'infant' => 'nullable|integer|min:0',
                 'leadSource' => 'nullable|string|max:100',
                 'priorityStatus' => 'nullable|integer',
-                'assignTo' => 'nullable|integer|exists:users,id',
+                'assignTo' => 'nullable|string|max:100',
                 'serviceId' => 'nullable|string|max:100',
                 'details' => 'nullable|string',
                 'startDate' => 'required|date',
-                'endDate' => 'required|date|after_or_equal:startDate',
+                'endDate' => 'required|date',
             ]);
             $validated['created_by'] = auth()->id();
-            if (auth()->user()->role_id == 3) { $validated['assignTo'] = auth()->id(); }
             $validated['startDate'] = Carbon::parse($request->startDate)->format('Y-m-d');
             $validated['endDate'] = Carbon::parse($request->endDate)->format('Y-m-d');
 
-            $query = DB::transaction(function () use ($validated) {
-                $query = Query::create($validated);
-                \App\Services\QueryHistory::record($query->id, 'query_created', 'Query created');
-                return $query;
-            });
+            $query = Query::create($validated);
             return response()->json([
                 'status' => true,
                 'message' => 'Query created successfully',
@@ -227,7 +319,7 @@ class QueryController extends Controller
                         $q->whereIn('status', [0, 1, 2]);
                     }
 
-                    $q->with('destinations')->latest();
+                    $q->latest();
                 },
             ])->findOrFail($id);
 
@@ -238,7 +330,7 @@ class QueryController extends Controller
             $suppliers = collect();
             $postSaleItems = collect();
 
-            if (in_array($tab, ['suppliers-communication', 'post-sales-supplier'])) {
+            if ($tab === 'suppliers-communication') {
                 $suppliers = Supplier::with('destination')
                     ->where('status', 1)
                     ->latest()
@@ -246,13 +338,12 @@ class QueryController extends Controller
             }
 
             if ($tab === 'post-sales-supplier') {
-                $accepted = $query->itineraries()->where('status', 1)->first();
                 $postSaleItems = PackageDayItem::with([
-                    'package.itinerary', 'supplier', 'hotelDetail.hotel', 'flightDetail', 'price',
+                    'package.itinerary',
+                    'supplier',
                 ])
-                    ->selectedForAcceptance($accepted?->accepted_hotel_option)
                     ->whereHas('package.itinerary', function ($q) use ($query) {
-                        $q->where('queryId', $query->id)->where('status', 1);
+                        $q->where('queryId', $query->id);
                     })
                     ->orderBy('type')
                     ->orderBy('day')
@@ -260,8 +351,6 @@ class QueryController extends Controller
                     ->groupBy('type');
             }
 
-            $query->load(['originCity', 'destinationCity']);
-            \App\Services\QueryWorkflowData::load($query, $tab);
             return view('queries.view-query', compact(
                 'query',
                 'tab',
@@ -278,26 +367,176 @@ class QueryController extends Controller
                 ->with('error', 'Query not found.');
         }
     }
+    // public function show(Request $request, $id)
+    // {
+    //     try {
+    //         $tab = $request->query('tab', 'details');
+    //         $status = $request->query('status', 'active');
 
+    //         $allowedTabs = [
+    //             'details',
+    //             'proposals',
+    //             'mails',
+    //             'followups',
+    //             'suppliers-communication',
+    //             'post-sales-supplier',
+    //             'voucher',
+    //             'billing',
+    //             'guest-documents',
+    //             'history',
+    //         ];
 
+    //         if (! in_array($tab, $allowedTabs)) {
+    //             $tab = 'details';
+    //         }
 
+    //         $query = Query::with([
+    //             'itineraries' => function ($q) use ($status) {
 
+    //                 if ((string) $status === '3') {
+    //                     $q->where('status', 3);
+    //                 } else {
+    //                     $q->whereIn('status', [0, 1, 2]);
+    //                 }
 
+    //                 $q->latest();
+    //             },
+    //         ])->findOrFail($id);
 
+    //         $suppliers = collect();
+    //         $postSaleItems = collect();
 
+    //         if ($tab === 'suppliers-communication') {
+    //             $suppliers = Supplier::with('destination')
+    //                 ->where('status', 1)
+    //                 ->latest()
+    //                 ->get();
+    //         }
 
+    //         if ($tab === 'post-sales-supplier') {
+    //             $postSaleItems = PackageDayItem::with([
+    //                 'package.itinerary',
+    //                 'supplier',
+    //             ])
+    //                 ->whereHas('package.itinerary', function ($q) use ($query) {
+    //                     $q->where('queryId', $query->id);
+    //                 })
+    //                 ->orderBy('type')
+    //                 ->orderBy('day')
+    //                 ->get()
+    //                 ->groupBy('type');
+    //         }
 
+    //         return view('queries.view-query', compact(
+    //             'query',
+    //             'tab',
+    //             'suppliers',
+    //             'postSaleItems',
+    //             'status'
+    //         ));
+    //     } catch (Exception $e) {
+    //         Log::error('Error fetching query: ' . $e->getMessage());
 
+    //         return redirect()
+    //             ->route('queries.index')
+    //             ->with('error', 'Query not found.');
+    //     }
+    // }
+    // public function show(Request $request, $id)
+    // {
+    //     try {
+    //         $tab = $request->query('tab', 'details');
 
+    //         $allowedTabs = [
+    //             'details',
+    //             'proposals',
+    //             'mails',
+    //             'followups',
+    //             'suppliers-communication',
+    //             'post-sales-supplier',
+    //             'voucher',
+    //             'billing',
+    //             'guest-documents',
+    //             'history',
+    //         ];
 
+    //         if (! in_array($tab, $allowedTabs)) {
+    //             $tab = 'details';
+    //         }
 
+    //         $query = Query::with([
+    //             'itineraries',
+    //         ])->findOrFail($id);
 
+    //         $suppliers = collect();
+    //         $postSaleItems = collect();
 
+    //         if ($tab === 'suppliers-communication') {
+    //             $suppliers = Supplier::with('destination')
+    //                 ->where('status', 1)
+    //                 ->latest()
+    //                 ->get();
+    //         }
+    //         $postSaleItems = collect();
 
+    //         if ($tab === 'post-sales-supplier') {
+    //             $postSaleItems = PackageDayItem::with([
+    //                 'package.itinerary',
+    //                 'supplier',
+    //             ])
+    //                 ->whereHas('package.itinerary', function ($q) use ($query) {
+    //                     $q->where('queryId', $query->id);
+    //                 })
+    //                 // ->whereNotIn('type', ['Leisure'])
+    //                 // ->whereNotNull('title')
+    //                 ->orderBy('type')
+    //                 ->orderBy('day')
+    //                 // ->orderBy('start_date')
+    //                 ->get()
+    //                 ->groupBy('type');
+    //         }
 
+    //         return view('queries.view-query', compact(
+    //             'query',
+    //             'tab',
+    //             'suppliers',
+    //             'postSaleItems'
+    //         ));
+    //     } catch (Exception $e) {
+    //         Log::error('Error fetching query: ' . $e->getMessage());
 
+    //         return redirect()
+    //             ->route('queries.index')
+    //             ->with('error', 'Query not found.');
+    //     }
+    // }
+    // public function show(Request $request, $id)
+    // {
+    //     try {
+    //         // $query = Query::findOrFail($id);
+    //         $tab = $request->query('tab', 'details');
+    //         $query = Query::with('itineraries')->findOrFail($id);
+    //         $suppliers = collect();
 
+    //     if ($tab === 'suppliers-communication') {
+    //         $suppliers = Supplier::with('destination')
+    //             ->latest()
+    //             ->get();
+    //     }
+    //     if ($tab === 'post-sales-supplier') {
+    //         $suppliers = Supplier::with('destination')
+    //             ->latest()
+    //             ->get();
+    //     }
 
+    //     return view('queries.view-query', compact('query', 'tab', 'suppliers'));
+    //         // return view('queries.view-query', compact('query', 'tab'));
+    //     } catch (Exception $e) {
+    //         Log::error('Error fetching query: ' . $e->getMessage());
+    //         return redirect()->route('queries.index')
+    //             ->with('error', 'Query not found.');
+    //     }
+    // }
 
     /**
      * Show the form for editing the specified resource.
@@ -334,25 +573,21 @@ class QueryController extends Controller
                 'infant' => 'nullable|integer|min:0',
                 'leadSource' => 'nullable|string|max:100',
                 'priorityStatus' => 'nullable|integer',
-                'assignTo' => 'nullable|integer|exists:users,id',
+                'assignTo' => 'nullable|string|max:100',
                 'serviceId' => 'nullable|string|max:100',
                 'details' => 'nullable|string',
                 'startDate' => 'required|date',
-                'endDate' => 'required|date|after_or_equal:startDate',
+                'endDate' => 'required|date',
             ]);
 
             $query = Query::findOrFail($id);
 
-            if (auth()->user()->role_id == 3) { $validated['assignTo'] = auth()->id(); }
             $validated['startDate'] = Carbon::parse($validated['startDate'])->format('Y-m-d');
             $validated['endDate'] = Carbon::parse($validated['endDate'])->format('Y-m-d');
             $validated['child'] = $validated['child'] ?? 0;
             $validated['infant'] = $validated['infant'] ?? 0;
 
-            DB::transaction(function () use ($query, $validated) {
-                $query->update($validated);
-                \App\Services\QueryHistory::record($query->id, 'query_updated', 'Query updated');
-            });
+            $query->update($validated);
 
             return response()->json([
                 'status' => true,
@@ -381,6 +616,7 @@ class QueryController extends Controller
      */
     public function destroy(string $id)
     {
+        //
     }
 
     public function changeStatus(Request $request, $id)
@@ -398,10 +634,9 @@ class QueryController extends Controller
 
         $query = Query::findOrFail($id);
 
-        DB::transaction(function () use ($query, $request) {
-            $query->update(['statusId' => $request->statusId]);
-            \App\Services\QueryHistory::record($query->id, 'status_changed', 'Query status changed to '.$request->statusId);
-        });
+        $query->update([
+            'statusId' => $request->statusId
+        ]);
 
         return response()->json([
             'status' => true,
@@ -411,7 +646,6 @@ class QueryController extends Controller
 
     public function assignUser(Request $request)
     {
-        $request->validate(['query_id' => 'required|integer|exists:queries,id', 'user_id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('users', 'id')->where('status', 1)]]);
         try {
             $loginUser = auth()->user();
 
@@ -423,11 +657,9 @@ class QueryController extends Controller
             }
 
             $query = Query::findOrFail($request->query_id);
-            DB::transaction(function () use ($query, $request) {
-                $query->assignTo = $request->user_id;
-                $query->save();
-                \App\Services\QueryHistory::record($query->id, 'query_assigned', 'Assigned to staff #'.$request->user_id);
-            });
+            // dd($query);
+            $query->assignTo = $request->user_id;
+            $query->save();
 
             return response()->json([
                 'status' => true,
@@ -445,8 +677,8 @@ class QueryController extends Controller
     public function addNote(Request $request)
     {
         $request->validate([
-            'queryid' => 'required|integer|exists:queries,id',
-            'details' => 'required|string|max:10000',
+            'queryid' => 'required',
+            'details' => 'required|string',
         ]);
 
         $queryId = $request->queryid;
@@ -456,6 +688,7 @@ class QueryController extends Controller
 
         DB::transaction(function () use ( $queryId, $details,$userId ) {
 
+            // Create note
             QueryNote::create([
                 'query_id'     => $queryId,
                 'details'     => $details,
@@ -463,6 +696,7 @@ class QueryController extends Controller
                 'date_added'   => now(),
             ]);
 
+            // Create activity log
             QueryLog::create([
                 'details'       => 'Note Created',
                 'query_id'       => $queryId,
