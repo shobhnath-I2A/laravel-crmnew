@@ -39,16 +39,14 @@
             </li>
 
             <li class="nav-item" style="position:absolute;right:247px;">
-                <a href="#" class="nav-link" onclick="loadpop('View Quotation',this,'1000px')" data-toggle="modal"
-                    data-target=".bs-example-modal-center" popaction="action=viewquotation&id={{ $itinerary->id }}">
+                <a href="#" class="nav-link"
+                onclick="openPopup('View Quotation', '{{ route('view.quotation', ['id' => $itinerary->queryId]) }}' )">
                     <i class="fa fa-file-text"></i> &nbsp;Quotation
                 </a>
             </li>
 
             <li class="nav-item" style="position:absolute;right:120px;">
-                <a href="#" class="nav-link" onclick="loadpop('Export Itinerary',this,'500px')"
-                    data-toggle="modal" data-target=".bs-example-modal-center"
-                    popaction="action=exportitinerary&pid={{ $itinerary->id }}">
+                <a href="#" class="nav-link" onclick="openPopup('Export Itinerary', '{{ route('itinerary-pdf.create', ['id' => $itinerary->id]) }}' )">
                     <i class="fa fa-file-text"></i> &nbsp;Export
                 </a>
             </li>

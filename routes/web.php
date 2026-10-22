@@ -40,6 +40,7 @@ use App\Http\Controllers\QueryMailController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\QueryLogController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ItineraryPdf;
 
 if (!function_exists('permissionResource')) {
     function permissionResource($uri, $controller, $module)
@@ -244,8 +245,11 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
 
+    // Route::get('itinerary-pdf/{id}', [ItineraryPdf::class, 'create']) ->name('itinerary-pdf.create');
+    // Route::get('itinerary-pdf/{id}', [ItineraryPdf::class, 'show']) ->name('itinerary-pdf.show');
 
-
+    Route::get('itinerary-pdf/create/{id}', [ItineraryPdf::class, 'create']) ->name('itinerary-pdf.create');
+    Route::get('itinerary-pdf/{id}', [ItineraryPdf::class, 'show']) ->name('itinerary-pdf.show');
 
     Route::middleware(['auth', 'admin.only'])->group(function () {
         Route::resource('settings', SettingController::class);
