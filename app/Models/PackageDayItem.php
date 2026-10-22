@@ -67,8 +67,7 @@ class PackageDayItem extends Model
     // }
     public function transportationMaster()
     {
-        return $this->belongsTo(TransferMaster::class, 'transfer_id',
-        'meal_master_id', 'id');
+        return $this->belongsTo(TransferMaster::class, 'transfer_id');
     }
     // public function getDisplayNameAttribute()
     // {
@@ -126,8 +125,7 @@ class PackageDayItem extends Model
     }
     public function transportation()
     {
-        return $this->belongsTo(TransferMaster::class, 'transfer_id',
-        'meal_master_id', 'id');
+        return $this->belongsTo(TransferMaster::class, 'transfer_id');
     }
 
     public function scopeSelectedForAcceptance($builder, $option)

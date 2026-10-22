@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Itinerary;
 use App\Models\PackageDayItem;
+use App\Services\ItineraryPricingService;
 
 class ItineraryPriceController extends Controller
 {
@@ -37,22 +38,6 @@ class ItineraryPriceController extends Controller
         $totalMarkup = $dayItems->sum(fn($item) => (float) ($item->price->markup_amount ?? 0));
         $totalGross = $dayItems->sum(fn($item) => (float) ($item->price->final_price ?? 0));
 
-        $withoutHotelGross = $dayItems
-            ->where('type', '!=', 'accommodation')
-            ->sum(fn($item) => (float) ($item->price->final_price ?? 0));
-
-        $hotelOptionTotals = [];
-
-        foreach ($dayItems->where('type', 'accommodation') as $item) {
-            $option = $item->hotels->first()?->pivot?->hotel_options ?? 1;
-
-            if (!isset($hotelOptionTotals[$option])) {
-                $hotelOptionTotals[$option] = 0;
-            }
-
-            $hotelOptionTotals[$option] += (float) ($item->price->final_price ?? 0);
-        }
-
         $billingType = 1;
         $gstType = 0;
 
@@ -62,6 +47,19 @@ class ItineraryPriceController extends Controller
         $tcs = 10;
         $discount = 0;
         $extraMarkup = 74;
+
+        [
+            'withoutHotelGross' => $withoutHotelGross,
+            'hotelOptionTotals' => $hotelOptionTotals,
+        ] = app(ItineraryPricingService::class)->calculateHotelOptionTotals(
+            $dayItems,
+            $cgst,
+            $sgst,
+            $igst,
+            $tcs,
+            $extraMarkup,
+            $discount
+        );
 
         $baseAmount = $billingType == 2
             ? round($totalGross / $totalPax, 2)

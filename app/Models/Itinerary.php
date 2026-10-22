@@ -39,6 +39,10 @@ class Itinerary extends Model
     {
         return $this->hasMany(Package::class, 'itinerary_id');
     }
+    public function packageTheme()
+    {
+        return $this->belongsTo(PackageTheme::class, 'package_theme_id');
+    }
     public function queryData()
     {
         return $this->belongsTo(Query::class, 'queryId', 'id');
