@@ -176,7 +176,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-in date* </label>
-                  <input type="text" class="form-control" name="start_date" id="startDate"
+                  <input type="date" class="form-control" name="start_date" id="startDate"
                         value="{{ old('start_date', isset($packageDayItem->start_date) ? \Carbon\Carbon::parse($packageDayItem->start_date)->format('d-m-Y') : '') }}">
                     @if ($errors->has('start_date'))
                         <span class="text-danger">{{ $errors->first('start_date') }}</span>
@@ -204,7 +204,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-out date*</label>
-                    <input type="text" class="form-control" name="end_date" id="endDate"
+                    <input type="date" class="form-control" name="end_date" id="endDate"
                         value="{{ old('end_date', isset($packageDayItem->end_date) ? \Carbon\Carbon::parse($packageDayItem->end_date)->format('d-m-Y') : '') }}">
                     @if ($errors->has('end_date'))
                         <span class="text-danger">{{ $errors->first('end_date') }}</span>

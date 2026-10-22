@@ -89,9 +89,9 @@
                 height: 100%;
             }
 
-            .container-fluid {
+            /* .container-fluid {
                 max-width: 1300px !important;
-            }
+            } */
 
             .itinerariesbox {
                 padding: 10px 30px !important;
