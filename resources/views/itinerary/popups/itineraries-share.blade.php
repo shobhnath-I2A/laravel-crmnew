@@ -14,7 +14,7 @@
                 ? route('itinerary-share.public', $itinerary->public_share_no_price_token)
                 : '';
             $phone = preg_replace('/\D+/', '', (string) ($client?->mobile ?? ''));
-            $whatsappLink = static fn ($url) => $url
+            $whatsappLink = static fn($url) => $url
                 ? 'https://api.whatsapp.com/send?' . http_build_query(['text' => $url, 'phone' => $phone])
                 : '#';
         @endphp
@@ -43,9 +43,9 @@
         </style>
         <ul class="nav nav-pills nav-bg-custom nav-justified intab" role="tablist" style=" text-transform:uppercase;">
             <li class="nav-item" style="text-transform:uppercase;">
-                <a class="nav-link active show" data-toggle="tab" href="#tb1" role="tab"
-                    aria-selected="true"><span class="d-none d-md-block">Share privately</span><span
-                        class="d-block d-md-none"><i class="mdi mdi-home-variant h5"></i></span></a>
+                <a class="nav-link active show" data-toggle="tab" href="#tb1" role="tab" aria-selected="true"><span
+                        class="d-none d-md-block">Share privately</span><span class="d-block d-md-none"><i
+                            class="mdi mdi-home-variant h5"></i></span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#tb2" role="tab" aria-selected="false"><span
@@ -70,9 +70,9 @@
                     <div class="row" style="padding: 0px 6px;  ">
                         <div class="col-md-12 col-xl-12">
                             <div class="form-group">
-                                <input id="clientkeywordsearch" type="search"
-                                    class="form-control" placeholder="Enter name, email, mobile" value=""
-                                    disabled="disabled" style="display: none;">
+                                <input id="clientkeywordsearch" type="search" class="form-control"
+                                    placeholder="Enter name, email, mobile" value="" disabled="disabled"
+                                    style="display: none;">
                                 <div style="margin-top:20px;" id="loadSearchClients">
                                     <table class="table table-hover mb-0">
                                         <thead></thead>
@@ -145,12 +145,10 @@
                             <td colspan="2">
                                 <div class="checkbox">
                                     <form id="sharelinkenable"
-                                        action="{{ route('itinerary-share.update', $itinerary->id) }}"
-                                        method="post">
+                                        action="{{ route('itinerary-share.update', $itinerary->id) }}" method="post">
                                         @csrf
                                         <input type="checkbox" name="linkSharing" id="linkSharing" value="1"
-                                            @checked($itinerary->public_share_enabled)
-                                            style="width: 19px; height: 22px;">
+                                            @checked($itinerary->public_share_enabled) style="width: 19px; height: 22px;">
                                     </form>
                                 </div>
                             </td>
@@ -161,14 +159,11 @@
                 <p></p>
 
                 <div class="col-md-12 col-xl-12" style="padding:0px;">
-                    <a id="withPriceWhatsapp" target="_blank"
-                        href="{{ $whatsappLink($withPriceUrl) }}"
+                    <a id="withPriceWhatsapp" target="_blank" href="{{ $whatsappLink($withPriceUrl) }}"
                         style="position: absolute; right: 0px; top: -4px;">
                         <button type="button" class="btn btn-light btn-sm"
                             style="background-color:#46cd93; color:#fff;"> <i class="fa fa-whatsapp"
                                 aria-hidden="true"></i> WhatsApp</button></a>
-
-
                     <div style=" margin-bottom:5px;">With Price (Copy this link)</div>
                     <div class="form-group">
                         <input id="withPriceUrl" class="form-control" readonly="readonly"
@@ -177,8 +172,7 @@
                 </div>
 
                 <div class="col-md-12 col-xl-12" style="padding:0px;">
-                    <a id="withoutPriceWhatsapp" target="_blank"
-                        href="{{ $whatsappLink($withoutPriceUrl) }}"
+                    <a id="withoutPriceWhatsapp" target="_blank" href="{{ $whatsappLink($withoutPriceUrl) }}"
                         style="position: absolute; right: 0px; top: -4px;">
                         <button type="button" class="btn btn-light btn-sm"
                             style="background-color:#46cd93; color:#fff;"> <i class="fa fa-whatsapp"
@@ -187,13 +181,9 @@
                     <div class="form-group">
                         <input id="withoutPriceUrl" class="form-control" readonly="readonly"
                             value="{{ $withoutPriceUrl }}">
-
-
                     </div>
-
                 </div>
             </div>
-
         </div>
         <script>
             (function() {
@@ -208,16 +198,18 @@
                 shareForm.addEventListener('submit', async function(event) {
                     event.preventDefault();
                     checkbox.disabled = true;
-
                     try {
                         const response = await fetch(shareForm.action, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Accept': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .content
                             },
-                            body: JSON.stringify({ linkSharing: checkbox.checked ? 1 : 0 })
+                            body: JSON.stringify({
+                                linkSharing: checkbox.checked ? 1 : 0
+                            })
                         });
 
                         if (!response.ok) {
@@ -227,18 +219,18 @@
                         const links = await response.json();
                         document.getElementById('withPriceUrl').value = links.withPriceUrl;
                         document.getElementById('withoutPriceUrl').value = links.withoutPriceUrl;
-                        document.getElementById('withPriceWhatsapp').href = links.withPriceUrl
-                            ? 'https://api.whatsapp.com/send?' + new URLSearchParams({
+                        document.getElementById('withPriceWhatsapp').href = links.withPriceUrl ?
+                            'https://api.whatsapp.com/send?' + new URLSearchParams({
                                 text: links.withPriceUrl,
                                 phone: (links.phone || '').replace(/\D+/g, '')
-                            })
-                            : '#';
-                        document.getElementById('withoutPriceWhatsapp').href = links.withoutPriceUrl
-                            ? 'https://api.whatsapp.com/send?' + new URLSearchParams({
+                            }) :
+                            '#';
+                        document.getElementById('withoutPriceWhatsapp').href = links.withoutPriceUrl ?
+                            'https://api.whatsapp.com/send?' + new URLSearchParams({
                                 text: links.withoutPriceUrl,
                                 phone: (links.phone || '').replace(/\D+/g, '')
-                            })
-                            : '#';
+                            }) :
+                            '#';
                     } catch (error) {
                         checkbox.checked = !checkbox.checked;
                         window.alert(error.message);
