@@ -7,12 +7,6 @@
                 background-color: #eef0f6;
             }
 
-            .activity img.icon-info,
-            .activity i.icon-info {
-                color: #9ba7ca;
-                background-color: #eef0f6;
-            }
-
             .activity img,
             .activity i {
                 width: 36px;
@@ -58,102 +52,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Query Update</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">9 March 2026 04:32 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Query Update</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">9 March 2026 04:29 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Query Update</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">9 March 2026 04:25 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Query Update</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">9 March 2026 04:24 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Query Update</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">9 March 2026 04:23 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Query Update</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">9 March 2026 04:23 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Query Update</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">9 March 2026 03:59 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Query Update</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">9 March 2026 03:51 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Update Payment</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">3 March 2026 02:49 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Update Payment</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">3 March 2026 02:49 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Proposal Status Changed: Mark as Accepted</td>
-                            <td align="left" valign="top">Proposal Status Changed: Mark as Accepted</td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">3 March 2026 02:48 PM</td>
-                        </tr>
-                        <tr>
-                            <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
-                                    aria-hidden="true"></i></td>
-                            <td align="left" valign="top">Query Created</td>
-                            <td align="left" valign="top"></td>
-                            <td align="left" valign="top"><span style="text-transform:uppercase;">i2a</span></td>
-                            <td width="25%" align="left" valign="top">3 March 2026 02:48 PM</td>
-                        </tr>
+                        @if (isset($query))
+                            @foreach ($query->history as $history)
+                                <tr>
+                                    <td width="1%" align="center" valign="top"><i class="fa fa-dot-circle-o"
+                                            aria-hidden="true"></i></td>
+                                    <td align="left" valign="top">
+                                        {{ $history->log_type ? ucwords(str_replace('_', ' ', $history->log_type)) : $history->details }}
+                                    </td>
+                                    <td align="left" valign="top">
+                                        {{ $history->log_type ? ($history->status_comment ?: $history->details) : $history->status_comment }}
+                                    </td>
+                                    <td align="left" valign="top">
+                                        <span style="text-transform:uppercase;">{{ $history->author?->name ?? '' }}</span>
+                                    </td>
+                                    <td width="25%" align="left" valign="top">
+                                        {{ $history->date_added?->format('j F Y h:i A') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>

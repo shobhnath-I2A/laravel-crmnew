@@ -326,6 +326,14 @@ class QueryController extends Controller
                 },
             ])->findOrFail($id);
 
+            if ($tab === 'guest-documents') {
+                $query->load('guests.documents');
+            }
+
+            if ($tab === 'history') {
+                $query->load('history.author');
+            }
+
             if ($tab === 'proposals' && $query->itineraries->isNotEmpty()) {
                 $packages = Package::whereIn(
                     'itinerary_id',

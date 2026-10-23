@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use App\Models\QueryGuest;
+use App\Services\QueryAccess;
 use Carbon\Carbon;
 
 class QueryGuestController extends Controller
@@ -15,7 +16,12 @@ class QueryGuestController extends Controller
     public function index()
     {
         $queryId = request()->query('query_id');
-        return view('guest-documents.add-guest', compact('queryId'));
+        $query = QueryAccess::find($queryId);
+        $guest = request()->query('guest_id')
+            ? $query->guests()->findOrFail(request()->query('guest_id'))
+            : null;
+
+        return view('guest-documents.add-guest', compact('queryId', 'guest'));
     }
 
     /**

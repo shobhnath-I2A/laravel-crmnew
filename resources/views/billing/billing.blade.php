@@ -92,7 +92,7 @@
                     <h4 class="mt-0 header-title" style="border-bottom:0px; position:relative;">Payments (4)
 
                         <a
-                              onclick="openPopup('Send Payment Details', '{{ route('payment-link.send', ['id' => $query->id]) }}')"
+                            onclick="openPopup('Send Payment Details', '{{ route('payment-link.send', ['id' => $query->id]) }}')"
                             style="position: absolute; font-size: 12px; font-weight: 600; right: 5px; top:2px; background-color: #005ee2; color: #fff; padding: 2px 10px; border-radius: 3px; cursor: pointer;">Send
                             Payment Plan To Mail</a>
 
