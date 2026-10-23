@@ -24,13 +24,23 @@ class Itinerary extends Model
         'total_days',
         'status',
         'accepted_hotel_option',
-        'created_by'
+        'created_by',
+    ];
+
+    protected $casts = [
+        'public_share_enabled' => 'boolean',
+    ];
+
+    protected $hidden = [
+        'public_share_price_token',
+        'public_share_no_price_token',
     ];
 
     public function destinations()
     {
         return $this->belongsToMany(Destination::class, 'itinerary_destination')->withTimestamps();
     }
+
     // public function packages()
     // {
     //     return $this->hasMany(Package::class);
@@ -39,18 +49,22 @@ class Itinerary extends Model
     {
         return $this->hasMany(Package::class, 'itinerary_id');
     }
+
     public function packageTheme()
     {
         return $this->belongsTo(PackageTheme::class, 'package_theme_id');
     }
+
     public function queryData()
     {
         return $this->belongsTo(Query::class, 'queryId', 'id');
     }
+
     public function addedBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
     // Some installations retain the obsolete text column named destinations.
     // Keep its data intact while resolving the relationship used by the existing views.
     public function getDestinationsAttribute($value)

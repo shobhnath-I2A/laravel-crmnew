@@ -1,48 +1,52 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivityRateController;
 use App\Http\Controllers\AutomationController;
-use App\Http\Controllers\LeadController;
-use App\Http\Controllers\QueryController;
-use App\Http\Controllers\ItineraryController;
+use App\Http\Controllers\BranchMasterController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CurrencyExchangeMasterController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DayItineraryMasterController;
 use App\Http\Controllers\DestinationController;
-use App\Http\Controllers\QueryTaskController;
-use App\Http\Controllers\QueryGuestController;
+use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HotelRateController;
 use App\Http\Controllers\HotelRoomTypeController;
+use App\Http\Controllers\ItineraryController;
+use App\Http\Controllers\ItineraryPdf;
+use App\Http\Controllers\ItineraryPriceController;
+use App\Http\Controllers\LeadController;
+use App\Http\Controllers\LeadSourceController;
+use App\Http\Controllers\MealPlanMasterController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PackageDaysItemController;
+use App\Http\Controllers\PackageThemeController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QueryController;
+use App\Http\Controllers\QueryGuestController;
+use App\Http\Controllers\QueryLogController;
+use App\Http\Controllers\QueryMailController;
+use App\Http\Controllers\QueryTaskController;
+use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ShareItineraryController;
+use App\Http\Controllers\SmtpSettingController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransferMasterController;
 use App\Http\Controllers\TransferMasterRateListController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\MealPlanMasterController;
-use App\Http\Controllers\DayItineraryMasterController;
-use App\Http\Controllers\LeadSourceController;
-use App\Http\Controllers\PackageThemeController;
 use App\Http\Controllers\WeatherSettingController;
-use App\Http\Controllers\CurrencyExchangeMasterController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\BranchMasterController;
-use App\Http\Controllers\ItineraryPriceController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SmtpSettingController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\PackageController;
 use App\Services\MailService;
-use App\Http\Controllers\EmailLogController;
-use App\Http\Controllers\QueryMailController;
-use App\Http\Controllers\QuotationController;
-use App\Http\Controllers\QueryLogController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ItineraryPdf;
+use Illuminate\Support\Facades\Route;
 
-if (!function_exists('permissionResource')) {
+Route::get('/shared-itinerary/{token}', [ShareItineraryController::class, 'publicShow'])
+    ->middleware('throttle:60,1')
+    ->name('itinerary-share.public');
+
+if (! function_exists('permissionResource')) {
     function permissionResource($uri, $controller, $module)
     {
         Route::get($uri, [$controller, 'index'])
@@ -87,16 +91,14 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     //     return view('dashboard');
     // })->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware('auth')
-    ->name('dashboard');
+        ->middleware('auth')
+        ->name('dashboard');
 
     Route::get('itineraries/insert', [ItineraryController::class, 'insertItinerary'])
         ->name('itineraries.insert');
 
     Route::post('itineraries/insert/{itinerary}', [ItineraryController::class, 'insertToQuery'])
-    ->name('itineraries.insert.to.query');
-
-
+        ->name('itineraries.insert.to.query');
 
     permissionResource('queries', QueryController::class, 'Query');
     permissionResource('clients', ClientController::class, 'Client');
@@ -115,20 +117,19 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     // Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
     //     ->name('itineraries.final')
     //     ->middleware('module.permission:itineraries-final,view');
-    Route::get( '/online-users', [StaffController::class, 'onlineUsers'] )->name('online-users');
-
+    Route::get('/online-users', [StaffController::class, 'onlineUsers'])->name('online-users');
 
     Route::get('/get-activities-by-destination/{destination_id}', [ActivityController::class, 'getByDestination'])
         ->name('activities.by.destination');
 
     Route::get('/itineraries/{id}', [ItineraryController::class, 'show'])
-    ->name('itineraries.show');
+        ->name('itineraries.show');
 
     Route::get('/itineraries-price/{id}', [ItineraryPriceController::class, 'index'])
         ->name('itineraries-price.index');
 
     Route::get('/pricing/{item}/edit', [ItineraryPriceController::class, 'edit'])
-    ->name('pricing.edit');
+        ->name('pricing.edit');
 
     Route::post('/pricing/{item}/update', [ItineraryPriceController::class, 'updatePricing'])
         ->name('pricing.update');
@@ -137,15 +138,15 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         ->name('itineraries.final');
 
     Route::post('/queries/assign-user', [QueryController::class, 'assignUser'])
-    ->name('queries.assign-user');
+        ->name('queries.assign-user');
     Route::post('/query/add-note', [QueryController::class, 'addNote'])
         ->name('query.addNote');
 
     Route::post('/query-logs', [QueryLogController::class, 'store'])
-    ->name('query_logs.store');
+        ->name('query_logs.store');
 
-    Route::get('/leads/create', [LeadController::class, 'create']) ->name('leads.create');
-    Route::post('/leads', [LeadController::class, 'store']) ->name('leads.store');
+    Route::get('/leads/create', [LeadController::class, 'create'])->name('leads.create');
+    Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
 
     Route::resource('query-guests', QueryGuestController::class)
         ->middleware('module.permission:Guest,view');
@@ -179,11 +180,10 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/load-hotel-data', [ItineraryController::class, 'loadHotelData'])->name('load.hotel.data')
         ->middleware('module.permission:Itinerary,view');
     Route::get('/load-meal-plans', [HotelController::class, 'loadMealPlans'])
-    ->name('load.meal.plans');
+        ->name('load.meal.plans');
 
     Route::post('/itineraries/{id}/duplicate', [ItineraryController::class, 'duplicate'])
-    ->name('itineraries.duplicate');
-
+        ->name('itineraries.duplicate');
 
     Route::get('/itineraries/{itinerary}/share', [ItineraryController::class, 'share'])
         ->name('itineraries.share');
@@ -192,12 +192,12 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         ->name('itineraries.archive');
 
     Route::post('/itineraries/{itinerary}/unarchive', [ItineraryController::class, 'unarchive'])
-    ->name('itineraries.unarchive');
+        ->name('itineraries.unarchive');
 
-    Route::post( '/itineraries/{id}/accept', [ItineraryController::class, 'markAccepted'] )->name('itineraries.accept');
+    Route::post('/itineraries/{id}/accept', [ItineraryController::class, 'markAccepted'])->name('itineraries.accept');
 
     Route::post('/queries/{id}/change-status', [QueryController::class, 'changeStatus'])
-    ->name('queries.change-status');
+        ->name('queries.change-status');
 
     Route::get('/transfers-list', [TransferMasterController::class, 'getalltransfer'])->name('transfers.list');
 
@@ -224,7 +224,6 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::resource('transfer-rate-list', TransferMasterRateListController::class)
         ->middleware('module.permission:Transfer,edit');
 
-
     Route::resource('meal-plan-master', MealPlanMasterController::class)
         ->middleware('module.permission:MealPlan,view');
 
@@ -239,17 +238,24 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::resource('weather-setting', WeatherSettingController::class);
     Route::get('weather-setting/{id}/weather', [WeatherSettingController::class, 'fetchWeather'])
-    ->name('weather-setting.weather');
+        ->name('weather-setting.weather');
     Route::post('weather-setting/{id}/refresh', [WeatherSettingController::class, 'refreshWeather'])
-    ->name('weather-setting.refresh');
+        ->name('weather-setting.refresh');
 
     Route::resource('currency-exchange', CurrencyExchangeMasterController::class);
 
     // Route::get('itinerary-pdf/{id}', [ItineraryPdf::class, 'create']) ->name('itinerary-pdf.create');
     // Route::get('itinerary-pdf/{id}', [ItineraryPdf::class, 'show']) ->name('itinerary-pdf.show');
 
-    Route::get('itinerary-pdf/create/{id}', [ItineraryPdf::class, 'create']) ->name('itinerary-pdf.create');
-    Route::get('itinerary-pdf/{id}', [ItineraryPdf::class, 'show']) ->name('itinerary-pdf.show');
+    Route::get('itinerary-pdf/create/{id}', [ItineraryPdf::class, 'create'])->name('itinerary-pdf.create');
+    Route::get('itinerary-pdf/{id}', [ItineraryPdf::class, 'show'])->name('itinerary-pdf.show');
+
+    Route::get('itinerary-share/create/{id}', [ShareItineraryController::class, 'create'])
+        ->middleware('module.permission:Itinerary,view')
+        ->name('itinerary-share.create');
+    Route::post('itinerary-share/{id}', [ShareItineraryController::class, 'updateSharing'])
+        ->middleware('module.permission:Itinerary,edit')
+        ->name('itinerary-share.update');
 
     Route::middleware(['auth', 'admin.only'])->group(function () {
         Route::resource('settings', SettingController::class);
@@ -303,26 +309,19 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
         return 'sent';
     });
 });
-    Route::get('/test-mail', function () {
-        MailService::sendMail(
-            'shobhnath.s@i2a.co',
-            'Test Mail',
-            '<h2>SMTP working</h2>'
-        );
 
-        return 'sent';
-    });
+Route::get('/test-mail', function () { MailService::sendMail( 'shobhnath.s@i2a.co', 'Test Mail', '<h2>SMTP working</h2>' ); return 'sent'; });
 
-    Route::resource('email-logs', EmailLogController::class) ->only(['index', 'show', 'destroy']);
-    Route::resource('compose-email', QueryMailController::class);
+Route::resource('email-logs', EmailLogController::class)->only(['index', 'show', 'destroy']);
+Route::resource('compose-email', QueryMailController::class);
 
-    Route::middleware('auth')->group(function () {
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        Route::post('/my-profile/password', [ProfileController::class, 'passwordUpdate'])
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/my-profile/password', [ProfileController::class, 'passwordUpdate'])
         ->name('profile.password.update');
-    });
+});
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 require __DIR__.'/report.php';

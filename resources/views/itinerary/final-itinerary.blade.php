@@ -1,9 +1,11 @@
-@extends('layouts.app')
+@extends(($isPublic ?? false) ? 'layouts.public' : 'layouts.app')
 
 @section('content')
     </div>
     <div class="wrapper">
-        @include('itinerary.partials.top-nav', ['itinerary' => $itinerary])
+        @unless ($isPublic ?? false)
+            @include('itinerary.partials.top-nav', ['itinerary' => $itinerary])
+        @endunless
 
         @php
             $startDate = \Carbon\Carbon::parse($itinerary->start_date);
@@ -13,19 +15,19 @@
             $coverImage = $itinerary->packageTheme?->image;
             $policySections = [
                 [
-                    'title' => $packageSettings['inclusions_title'] ?: 'Inclusions',
+                    'title' => ($packageSettings['inclusions_title'] ?? null) ?: 'Inclusions',
                     'content' => $packageSettings['package_inclusions'] ?? null,
                 ],
                 [
-                    'title' => $packageSettings['exclusions_title'] ?: 'Exclusions',
+                    'title' => ($packageSettings['exclusions_title'] ?? null) ?: 'Exclusions',
                     'content' => $packageSettings['package_exclusions'] ?? null,
                 ],
                 [
-                    'title' => $packageSettings['important_tips_title'] ?: 'Important tips',
+                    'title' => ($packageSettings['important_tips_title'] ?? null) ?: 'Important tips',
                     'content' => $packageSettings['package_important_tips'] ?? null,
                 ],
                 [
-                    'title' => $packageSettings['travel_information_title'] ?: 'Travel information',
+                    'title' => ($packageSettings['travel_information_title'] ?? null) ?: 'Travel information',
                     'content' => $packageSettings['package_travel_info'] ?? null,
                 ],
             ];
@@ -50,6 +52,12 @@
                 border-radius: 8px;
                 overflow: hidden;
             }
+
+            @if ($isPublic ?? false)
+                .final-cover {
+                    margin-top: 24px;
+                }
+            @endif
 
             .final-cover-content {
                 width: 100%;
@@ -297,18 +305,18 @@
                         ({{ $travellerCount }} total)
                     </strong>
                 </div>
-                @if ($packageTotal !== null)
+                @if (($showPrice ?? true) && $packageTotal !== null)
                     <div class="final-summary-item">
                         <span class="final-summary-label">Total{{ $selectedPriceOption ? ' (Hotel Option ' . $selectedPriceOption . ')' : '' }}</span>
                         <strong>₹ {{ number_format((float) $packageTotal, 2) }}</strong>
                     </div>
-                @elseif ($itinerary->website_cost !== null)
+                @elseif (($showPrice ?? true) && $itinerary->website_cost !== null)
                     <div class="final-summary-item">
                         <span class="final-summary-label">Package price</span>
                         <strong>₹ {{ number_format((float) $itinerary->website_cost, 2) }}</strong>
                     </div>
                 @endif
-                @if ($itinerary->website_validity)
+                @if (($showPrice ?? true) && $itinerary->website_validity)
                     <div class="final-summary-item">
                         <span class="final-summary-label">Price valid until</span>
                         <strong>{{ \Carbon\Carbon::parse($itinerary->website_validity)->format('d M Y') }}</strong>

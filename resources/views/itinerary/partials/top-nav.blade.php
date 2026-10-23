@@ -52,8 +52,7 @@
             </li>
 
             <li class="nav-item" style="position:absolute;right:0;">
-                <a href="#" class="nav-link" onclick="loadpop('Share',this,'700px')" data-toggle="modal"
-                    data-target=".bs-example-modal-center" popaction="action=shareitinerary&pid={{ $itinerary->id }}">
+                <a href="#" class="nav-link" onclick="openPopup('Share', '{{ route('itinerary-share.create', ['id' => $itinerary->id]) }}')">
                     <i class="fa fa-paper-plane"></i> &nbsp;Share
                 </a>
             </li>
