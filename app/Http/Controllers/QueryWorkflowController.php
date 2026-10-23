@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\{Query, QueryInvoice, QueryPayment, QuerySupplierBooking, QueryVoucher, QueryGuestDocument, PackageDayItem, Supplier, Itinerary};
+use App\Models\{AppSetting, Query, QueryInvoice, QueryPayment, QueryPaymentSchedule, QuerySupplierBooking, QueryVoucher, QueryGuestDocument, PackageDayItem, QueryLog, Supplier, Itinerary};
 use App\Services\{QueryAccess, QueryHistory};
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{DB, Storage};
+use Illuminate\Support\Facades\{Crypt, DB, Http, Log, Storage};
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -18,6 +19,306 @@ class QueryWorkflowController extends Controller
     }
     private function moneyRules(): array { return ['required', 'regex:/^\d{1,9}(\.\d{1,2})?$/']; }
     private function backTo($id, string $tab) { return redirect()->route('queries.show', ['id' => $id, 'tab' => $tab])->with('success', 'Saved successfully.'); }
+    private function gatewayCredentials($user): array
+    {
+        $countryCode = $user->country_code ?? $user->user_country ?? 91;
+        return AppSetting::where('country_code', $countryCode)
+            ->where('group_name', 'payment_gateway')
+            ->pluck('value', 'key_name')
+            ->all();
+    }
+
+    private function moneyMinor($value): int
+    {
+        return $this->money($value);
+    }
+
+    private function scheduleCapacity(QueryInvoice $invoice, ?int $exceptId = null): int
+    {
+        $paid = (int) $invoice->payments()->whereNull('voided_at')->sum('amount_minor');
+        $scheduled = (int) $invoice->schedules()
+            ->where('status', 'pending')
+            ->when($exceptId, fn ($query) => $query->whereKeyNot($exceptId))
+            ->sum('amount_minor');
+
+        return max((int) $invoice->amount_minor - $paid - $scheduled, 0);
+    }
+
+    public function createPaymentSchedule(Request $request, $query_id)
+    {
+        $query = QueryAccess::find($query_id);
+        abort_unless(auth()->user()->canEdit('Query'), 403);
+        $data = $request->validate([
+            'amount' => $this->moneyRules(),
+            'convenience_fee' => ['required', 'regex:/^\d{1,7}(\.\d{1,2})?$/'],
+            'due_on' => 'required|date|after_or_equal:today',
+        ]);
+
+        DB::transaction(function () use ($query, $data) {
+            Query::whereKey($query->id)->lockForUpdate()->firstOrFail();
+            $invoice = $query->invoice()->lockForUpdate()->firstOrFail();
+            $amount = $this->moneyMinor($data['amount']);
+            $fee = $this->moneyMinor($data['convenience_fee']);
+            if ($amount <= 0 || $amount > $this->scheduleCapacity($invoice)) {
+                throw ValidationException::withMessages(['amount' => 'Installment amount must fit within the invoice balance not already scheduled.']);
+            }
+
+            QueryPaymentSchedule::create([
+                'query_id' => $query->id,
+                'query_invoice_id' => $invoice->id,
+                'amount_minor' => $amount,
+                'convenience_fee_minor' => $fee,
+                'due_on' => $data['due_on'],
+                'created_by' => auth()->id(),
+            ]);
+        });
+
+        return $this->backTo($query->id, 'billing');
+    }
+
+    public function updatePaymentSchedule(Request $request, $query_id, $schedule_id)
+    {
+        $query = QueryAccess::find($query_id);
+        abort_unless(auth()->user()->canEdit('Query'), 403);
+        $data = $request->validate([
+            'amount' => $this->moneyRules(),
+            'convenience_fee' => ['required', 'regex:/^\d{1,7}(\.\d{1,2})?$/'],
+            'due_on' => 'required|date',
+        ]);
+
+        DB::transaction(function () use ($query, $schedule_id, $data) {
+            Query::whereKey($query->id)->lockForUpdate()->firstOrFail();
+            $invoice = $query->invoice()->lockForUpdate()->firstOrFail();
+            $schedule = $invoice->schedules()->lockForUpdate()->findOrFail($schedule_id);
+            abort_unless($schedule->status === 'pending' && !$schedule->razorpay_order_id, 409, 'A scheduled payment cannot be changed after its payment link has been issued.');
+            $amount = $this->moneyMinor($data['amount']);
+            if ($amount <= 0 || $amount > $this->scheduleCapacity($invoice, $schedule->id)) {
+                throw ValidationException::withMessages(['amount' => 'Installment amount must fit within the invoice balance not already scheduled.']);
+            }
+
+            $schedule->update([
+                'amount_minor' => $amount,
+                'convenience_fee_minor' => $this->moneyMinor($data['convenience_fee']),
+                'due_on' => $data['due_on'],
+                'razorpay_order_id' => null,
+                'public_token_hash' => null,
+                'public_token_encrypted' => null,
+            ]);
+        });
+
+        return $this->backTo($query->id, 'billing');
+    }
+
+    public function deletePaymentSchedule($query_id, $schedule_id)
+    {
+        $query = QueryAccess::find($query_id);
+        abort_unless(auth()->user()->canEdit('Query'), 403);
+        $schedule = $query->invoice()->firstOrFail()->schedules()->findOrFail($schedule_id);
+        abort_unless($schedule->status === 'pending' && !$schedule->razorpay_order_id, 409, 'A scheduled payment cannot be deleted after its payment link has been issued.');
+        $schedule->delete();
+
+        return $this->backTo($query->id, 'billing');
+    }
+
+    public function sendPaymentPlan($query_id)
+    {
+        $query = QueryAccess::find($query_id);
+        abort_unless(auth()->user()->canEdit('Query'), 403);
+        $invoice = $query->invoice()->with('schedules')->firstOrFail();
+        if (!$query->email) {
+            throw ValidationException::withMessages(['email' => 'This query has no customer email address.']);
+        }
+
+        $sent = \App\Services\MailService::sendMail(
+            $query->email,
+            'Payment plan for invoice INV-'.$invoice->id,
+            view('billing.payment-plan-email', compact('query', 'invoice'))->render()
+        );
+        if (!$sent) {
+            return redirect()->route('queries.show', ['id' => $query->id, 'tab' => 'billing'])
+                ->with('error', 'Payment plan email could not be sent. Check the SMTP settings and try again.');
+        }
+
+        return $this->backTo($query->id, 'billing')->with('success', 'Payment plan emailed to '.$query->email.'.');
+    }
+
+    public function sendPaymentDetails($query_id, $schedule_id)
+    {
+        $query = QueryAccess::find($query_id);
+        abort_unless(auth()->user()->canEdit('Query'), 403);
+        $invoice = $query->invoice()->firstOrFail();
+        $schedule = $invoice->schedules()->findOrFail($schedule_id);
+        if (!$query->email) {
+            throw ValidationException::withMessages(['email' => 'This query has no customer email address.']);
+        }
+
+        $countryCode = auth()->user()->country_code ?? auth()->user()->user_country ?? 91;
+        $bankInformation = AppSetting::where('country_code', $countryCode)
+            ->where('group_name', 'default')
+            ->where('key_name', 'bank_information')
+            ->value('value');
+        $sent = \App\Services\MailService::sendMail(
+            $query->email,
+            'Payment details for invoice INV-'.$invoice->id,
+            view('billing.payment-details-email', compact('query', 'invoice', 'schedule', 'bankInformation'))->render()
+        );
+        if (!$sent) {
+            return redirect()->route('queries.show', ['id' => $query->id, 'tab' => 'billing'])
+                ->with('error', 'Payment details email could not be sent. Check the SMTP settings and try again.');
+        }
+
+        return $this->backTo($query->id, 'billing')->with('success', 'Payment details emailed to '.$query->email.'.');
+    }
+
+    public function sendPaymentLink($query_id, $schedule_id)
+    {
+        $query = QueryAccess::find($query_id);
+        abort_unless(auth()->user()->canEdit('Query'), 403);
+        $invoice = $query->invoice()->firstOrFail();
+        $schedule = $invoice->schedules()->findOrFail($schedule_id);
+        abort_unless($schedule->status === 'pending', 409);
+        if (!$query->email) {
+            throw ValidationException::withMessages(['email' => 'This query has no customer email address.']);
+        }
+
+        $credentials = $this->gatewayCredentials($schedule->creator);
+        if (empty($credentials['api_key']) || empty($credentials['api_secret'])) {
+            throw ValidationException::withMessages(['payment' => 'Configure Razorpay API credentials before sending a payment link.']);
+        }
+
+        $token = DB::transaction(function () use ($schedule, $invoice, $query, $credentials) {
+            $lockedSchedule = QueryPaymentSchedule::whereKey($schedule->id)->lockForUpdate()->firstOrFail();
+            abort_unless($lockedSchedule->status === 'pending', 409);
+            if ($lockedSchedule->razorpay_order_id && $lockedSchedule->public_token_encrypted) {
+                return Crypt::decryptString($lockedSchedule->public_token_encrypted);
+            }
+
+            $orderResponse = Http::withBasicAuth($credentials['api_key'], $credentials['api_secret'])
+                ->timeout(15)
+                ->post('https://api.razorpay.com/v1/orders', [
+                    'amount' => $lockedSchedule->amount_minor + $lockedSchedule->convenience_fee_minor,
+                    'currency' => $invoice->currency,
+                    'receipt' => 'schedule-'.$lockedSchedule->id,
+                    'notes' => ['query_id' => (string) $query->id, 'schedule_id' => (string) $lockedSchedule->id],
+                ]);
+            if (!$orderResponse->successful() || !$orderResponse->json('id')) {
+                Log::error('Razorpay order creation failed', ['status' => $orderResponse->status(), 'query_id' => $query->id, 'schedule_id' => $lockedSchedule->id]);
+                throw ValidationException::withMessages(['payment' => 'Razorpay could not create a payment order. Check gateway settings and try again.']);
+            }
+
+            $token = Str::random(64);
+            $lockedSchedule->update([
+                'razorpay_order_id' => $orderResponse->json('id'),
+                'public_token_hash' => hash('sha256', $token),
+                'public_token_encrypted' => Crypt::encryptString($token),
+            ]);
+
+            return $token;
+        });
+        $paymentUrl = route('query-payment.show', ['token' => $token]);
+        $sent = \App\Services\MailService::sendMail(
+            $query->email,
+            'Payment link for invoice INV-'.$invoice->id,
+            view('billing.payment-link-email', compact('query', 'invoice', 'schedule', 'paymentUrl'))->render()
+        );
+        if (!$sent) {
+            return redirect()->route('queries.show', ['id' => $query->id, 'tab' => 'billing'])
+                ->with('error', 'The payment link was created, but the email could not be sent. Check SMTP settings and retry.')
+                ->with('payment_link', $paymentUrl);
+        }
+
+        return $this->backTo($query->id, 'billing')->with('success', 'Payment link emailed to '.$query->email.'.');
+    }
+
+    public function publicPayment($token)
+    {
+        $schedule = QueryPaymentSchedule::with(['invoice', 'creator'])
+            ->where('public_token_hash', hash('sha256', $token))
+            ->firstOrFail();
+        $credentials = $this->gatewayCredentials($schedule->creator);
+        if ($schedule->status === 'pending') {
+            abort_unless(!empty($credentials['api_key']), 503, 'Payment gateway is not available.');
+        }
+
+        return view('billing.public-payment', compact('schedule', 'token', 'credentials'));
+    }
+
+    public function verifyPublicPayment(Request $request, $token)
+    {
+        $data = $request->validate([
+            'razorpay_payment_id' => 'required|string|max:100',
+            'razorpay_order_id' => 'required|string|max:100',
+            'razorpay_signature' => 'required|string|size:64',
+        ]);
+        $schedule = QueryPaymentSchedule::with(['invoice', 'creator'])
+            ->where('public_token_hash', hash('sha256', $token))
+            ->firstOrFail();
+        if ($schedule->status === 'paid' && $schedule->payment?->reference === $data['razorpay_payment_id']) {
+            return redirect()->route('query-payment.show', ['token' => $token])->with('success', 'Payment received successfully.');
+        }
+        abort_unless($schedule->status === 'pending', 409);
+        abort_unless(hash_equals((string) $schedule->razorpay_order_id, $data['razorpay_order_id']), 422);
+
+        $credentials = $this->gatewayCredentials($schedule->creator);
+        abort_unless(!empty($credentials['api_key']) && !empty($credentials['api_secret']), 503);
+        $expectedSignature = hash_hmac(
+            'sha256',
+            $data['razorpay_order_id'].'|'.$data['razorpay_payment_id'],
+            $credentials['api_secret']
+        );
+        abort_unless(hash_equals($expectedSignature, $data['razorpay_signature']), 422, 'Payment verification failed.');
+
+        $paymentResponse = Http::withBasicAuth($credentials['api_key'], $credentials['api_secret'])
+            ->timeout(15)
+            ->get('https://api.razorpay.com/v1/payments/'.rawurlencode($data['razorpay_payment_id']));
+        if (!$paymentResponse->successful()) {
+            Log::error('Razorpay payment verification request failed', ['status' => $paymentResponse->status(), 'schedule_id' => $schedule->id]);
+            abort(502, 'Payment verification is temporarily unavailable.');
+        }
+        $providerPayment = $paymentResponse->json();
+        abort_unless(
+            ($providerPayment['order_id'] ?? null) === $schedule->razorpay_order_id
+                && ($providerPayment['status'] ?? null) === 'captured'
+                && (int) ($providerPayment['amount'] ?? 0) === $schedule->amount_minor + $schedule->convenience_fee_minor
+                && ($providerPayment['currency'] ?? null) === $schedule->invoice->currency,
+            422,
+            'Razorpay did not confirm the expected captured amount.'
+        );
+
+        DB::transaction(function () use ($schedule, $data) {
+            Query::whereKey($schedule->query_id)->lockForUpdate()->firstOrFail();
+            $locked = QueryPaymentSchedule::whereKey($schedule->id)->lockForUpdate()->firstOrFail();
+            if ($locked->status === 'paid') {
+                return;
+            }
+            abort_unless($locked->status === 'pending', 409);
+            $invoice = QueryInvoice::whereKey($locked->query_invoice_id)->lockForUpdate()->firstOrFail();
+            $remaining = $invoice->amount_minor
+                - $invoice->payments()->whereNull('voided_at')->sum('amount_minor')
+                - $invoice->schedules()->where('status', 'pending')->sum('amount_minor');
+            abort_unless($remaining >= 0, 409, 'Scheduled payments exceed the invoice balance.');
+            $payment = QueryPayment::create([
+                'query_id' => $locked->query_id,
+                'query_invoice_id' => $locked->query_invoice_id,
+                'request_key' => (string) Str::uuid(),
+                'amount_minor' => $locked->amount_minor,
+                'reference' => $data['razorpay_payment_id'],
+                'method' => 'Card',
+                'paid_on' => now()->toDateString(),
+                'created_by' => $locked->created_by,
+            ]);
+            $locked->update(['status' => 'paid', 'query_payment_id' => $payment->id]);
+            QueryLog::create([
+                'query_id' => $locked->query_id,
+                'added_by' => $locked->created_by,
+                'date_added' => now(),
+                'log_type' => 'payment_recorded',
+                'details' => 'Razorpay payment PAY-'.$payment->id.' recorded',
+            ]);
+        });
+
+        return redirect()->route('query-payment.show', ['token' => $token])->with('success', 'Payment received successfully.');
+    }
 
     public function invoice(Request $request, $query_id)
     {
@@ -37,6 +338,34 @@ class QueryWorkflowController extends Controller
         return $this->backTo($query->id, 'billing');
     }
 
+    public function voidPayment(Request $request, $query_id, $payment_id)
+    {
+        $query = QueryAccess::find($query_id);
+        abort_unless(auth()->user()->canEdit('Query'), 403);
+        $data = $request->validate(['void_reason' => 'required|string|max:500']);
+
+        DB::transaction(function () use ($query, $payment_id, $data) {
+            Query::whereKey($query->id)->lockForUpdate()->firstOrFail();
+            $invoice = $query->invoice()->lockForUpdate()->firstOrFail();
+            $payment = $invoice->payments()->lockForUpdate()->findOrFail($payment_id);
+            abort_unless(!$payment->voided_at, 409, 'This payment has already been voided.');
+            abort_if(
+                QueryPaymentSchedule::where('query_payment_id', $payment->id)->exists(),
+                409,
+                'Payments captured against an installment cannot be voided here.'
+            );
+
+            $payment->update([
+                'voided_at' => now(),
+                'voided_by' => auth()->id(),
+                'void_reason' => $data['void_reason'],
+            ]);
+            QueryHistory::record($query->id, 'payment_voided', 'Payment PAY-'.$payment->id.' voided', $data['void_reason']);
+        });
+
+        return $this->backTo($query->id, 'billing');
+    }
+
     public function payment(Request $request, $query_id)
     {
         $query = QueryAccess::find($query_id);
@@ -51,7 +380,9 @@ class QueryWorkflowController extends Controller
                 }
                 return;
             }
-            $remaining = $invoice->amount_minor - $invoice->payments()->sum('amount_minor');
+            $remaining = $invoice->amount_minor
+                - $invoice->payments()->whereNull('voided_at')->sum('amount_minor')
+                - $invoice->schedules()->where('status', 'pending')->sum('amount_minor');
             if ($amount <= 0 || $amount > $remaining) { throw ValidationException::withMessages(['amount' => 'Payment must be positive and no greater than the outstanding balance.']); }
             $payment = QueryPayment::create(['query_id' => $query->id, 'query_invoice_id' => $invoice->id,
                 'request_key' => $data['request_key'], 'amount_minor' => $amount, 'reference' => $data['reference'],
@@ -136,6 +467,7 @@ class QueryWorkflowController extends Controller
     {
         $query = QueryAccess::find($query_id);
         $invoice = $query->invoice()->with('payments')->firstOrFail();
+        $invoice->setRelation('payments', $invoice->payments->whereNull('voided_at')->values());
         return view('billing.print', compact('query', 'invoice'));
     }
 

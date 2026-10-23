@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Package;
+use App\Models\AppSetting;
 use App\Models\Query;
 use App\Models\QueryStatus;
 use App\Models\Supplier;
@@ -373,6 +374,11 @@ class QueryController extends Controller
 
             $suppliers = collect();
             $postSaleItems = collect();
+            $billingPrice = null;
+            $billingCurrency = 'INR';
+            $supplierTotals = collect();
+            $paymentSchedules = collect();
+            $paymentGatewayScheduleIds = [];
 
             if ($tab === 'suppliers-communication') {
                 $suppliers = Supplier::with('destination')
@@ -395,13 +401,82 @@ class QueryController extends Controller
                     ->groupBy('type');
             }
 
+            if ($tab === 'billing') {
+                $query->load(['invoice.payments', 'invoice.schedules.payment', 'invoice.schedules.creator', 'supplierBookings']);
+                $paymentSchedules = $query->invoice?->schedules ?? collect();
+                $gatewayCountries = $paymentSchedules
+                    ->map(fn ($schedule) => $schedule->creator?->country_code ?? $schedule->creator?->user_country ?? 91)
+                    ->unique()
+                    ->values();
+                $paymentGatewaySettings = AppSetting::whereIn('country_code', $gatewayCountries)
+                    ->where('group_name', 'payment_gateway')
+                    ->whereIn('key_name', ['api_key', 'api_secret'])
+                    ->get()
+                    ->groupBy('country_code');
+                $paymentGatewayScheduleIds = $paymentSchedules
+                    ->filter(function ($schedule) use ($paymentGatewaySettings) {
+                        $countryCode = $schedule->creator?->country_code ?? $schedule->creator?->user_country ?? 91;
+                        $settings = $paymentGatewaySettings->get($countryCode, collect())->pluck('value', 'key_name');
+                        return filled($settings->get('api_key')) && filled($settings->get('api_secret'));
+                    })
+                    ->pluck('id')
+                    ->all();
+                $supplierTotals = $query->supplierBookings
+                    ->where('status', '!=', 'cancelled')
+                    ->groupBy('currency')
+                    ->map(fn ($bookings) => [
+                        'amount' => $bookings->sum('amount_minor'),
+                        'paid' => $bookings->sum('paid_minor'),
+                    ]);
+
+                $acceptedItinerary = $query->itineraries()
+                    ->where('status', 1)
+                    ->with('packages')
+                    ->latest('id')
+                    ->first();
+
+                if ($acceptedItinerary) {
+                    $acceptedPackages = $acceptedItinerary->packages;
+                    $pricingItems = PackageDayItem::with(['hotels', 'hotelDetail', 'price'])
+                        ->whereIn('package_id', $acceptedPackages->pluck('id'))
+                        ->whereNotIn('type', ['daydetail', 'null', ''])
+                        ->whereNotNull('type')
+                        ->get();
+                    $priceTotals = app(ItineraryPricingService::class)->calculateHotelOptionTotals(
+                        $pricingItems,
+                        9,
+                        10,
+                        0,
+                        10,
+                        74,
+                        0
+                    )['optionTotals'];
+                    $selectedOption = $acceptedItinerary->accepted_hotel_option
+                        ?? array_key_first($priceTotals);
+                    $billingPrice = $selectedOption !== null
+                        ? ($priceTotals[$selectedOption] ?? null)
+                        : null;
+                    $billingPrice ??= $acceptedItinerary->website_cost;
+                }
+
+                if ($query->invoice) {
+                    $billingPrice = $query->invoice->amount_minor / 100;
+                    $billingCurrency = $query->invoice->currency;
+                }
+            }
+
             return view('queries.view-query', compact(
                 'query',
                 'tab',
                 'suppliers',
                 'postSaleItems',
                 'status',
-                'statuses'
+                'statuses',
+                'billingPrice',
+                'billingCurrency',
+                'supplierTotals',
+                'paymentSchedules',
+                'paymentGatewayScheduleIds'
             ));
         } catch (Exception $e) {
             Log::error('Error fetching query: ' . $e->getMessage());

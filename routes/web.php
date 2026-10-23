@@ -41,6 +41,7 @@ use App\Http\Controllers\TransferMasterRateListController;
 use App\Http\Controllers\WeatherSettingController;
 use App\Services\MailService;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BillController;
 
 Route::get('/shared-itinerary/{token}', [ShareItineraryController::class, 'publicShow'])
     ->middleware('throttle:60,1')
@@ -294,6 +295,10 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/notifications/latest', [NotificationController::class, 'latest']);
     Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead']);
 
+    Route::get('/invoice/{id}', [BillController::class, 'show'])->name('invoice.show');
+    Route::get('/payment-link/{id}', [BillController::class, 'send_payment_link_to_mail'])->name('payment-link.send');
+    Route::get('/schedule-payment/{id}', [BillController::class, 'edit'])->name('schedule-payment.edit');
+
     Route::get('/test-broadcast', function () {
         $notification = (object) [
             'id' => 999,
@@ -325,3 +330,4 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 require __DIR__.'/report.php';
+require __DIR__.'/query-workflow.php';
