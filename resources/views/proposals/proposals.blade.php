@@ -156,7 +156,14 @@
                                             <td colspan="2" align="center" valign="top">
                                                 <div
                                                     style="font-size:18px; font-weight:600; border-top:1px solid #ddd; padding-top:10px; color:#000000;">
-                                                    Option 1: ₹ 98,679<br>
+                                                    @if ($itinerary->proposal_price !== null)
+                                                        @if ($itinerary->proposal_price_option !== null)
+                                                            Option {{ $itinerary->proposal_price_option }}:
+                                                        @else
+                                                            Package price:
+                                                        @endif
+                                                        ₹ {{ number_format((float) $itinerary->proposal_price, 2) }}<br>
+                                                    @endif
                                                 </div>
 
                                             </td>
@@ -182,7 +189,7 @@
                                                     style="width: 100%; background-color: #3574b3 !important; border-color: #246090 !important; color: #ffffff; font-weight: 600 !important; margin-top: 10px;"
                                                     onclick="openPopup(
                                                         'View Quotation',
-                                                        '{{ route('view.quotation', ['id' => $query->id]) }}'
+                                                        '{{ route('view.quotation', ['id' => $query->id, 'itinerary' => $itinerary->id]) }}'
                                                     )">
                                                     View Quotation
                                                 </a>

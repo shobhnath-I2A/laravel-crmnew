@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\Package;
 use App\Models\Query;
 use App\Models\QueryStatus;
 use App\Models\Supplier;
@@ -15,6 +16,7 @@ use App\Models\PackageDayItem;
 use App\Models\QueryNote;
 use App\Models\QueryLog;
 use Carbon\Carbon;
+use App\Services\ItineraryPricingService;
 use Exception;
 
 
@@ -322,6 +324,48 @@ class QueryController extends Controller
                     $q->latest();
                 },
             ])->findOrFail($id);
+
+            if ($tab === 'proposals' && $query->itineraries->isNotEmpty()) {
+                $packages = Package::whereIn(
+                    'itinerary_id',
+                    $query->itineraries->pluck('id')
+                )->get(['id', 'itinerary_id']);
+                $pricingItems = PackageDayItem::with(['hotels', 'hotelDetail', 'price'])
+                    ->whereIn('package_id', $packages->pluck('id'))
+                    ->whereNotIn('type', ['daydetail', 'null', ''])
+                    ->whereNotNull('type')
+                    ->get()
+                    ->groupBy('package_id');
+                $packagesByItinerary = $packages->groupBy('itinerary_id');
+                $pricingService = app(ItineraryPricingService::class);
+
+                foreach ($query->itineraries as $itinerary) {
+                    $packageIds = $packagesByItinerary->get($itinerary->id, collect())->pluck('id');
+                    $itineraryItems = $packageIds
+                        ->flatMap(fn ($packageId) => $pricingItems->get($packageId, collect()))
+                        ->values();
+                    $optionTotals = $pricingService->calculateHotelOptionTotals(
+                        $itineraryItems,
+                        9,
+                        10,
+                        0,
+                        10,
+                        74,
+                        0
+                    )['optionTotals'];
+                    $selectedOption = $itinerary->accepted_hotel_option
+                        ?? array_key_first($optionTotals);
+                    $optionTotal = $selectedOption !== null
+                        ? ($optionTotals[$selectedOption] ?? null)
+                        : null;
+
+                    $itinerary->setAttribute('proposal_price_option', $optionTotal !== null ? $selectedOption : null);
+                    $itinerary->setAttribute(
+                        'proposal_price',
+                        $optionTotal ?? $itinerary->website_cost
+                    );
+                }
+            }
 
             $statuses = QueryStatus::where('is_active', 1)
                 ->orderBy('sort_order')

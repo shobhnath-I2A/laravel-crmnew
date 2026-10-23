@@ -40,7 +40,7 @@
 
             <li class="nav-item" style="position:absolute;right:247px;">
                 <a href="#" class="nav-link"
-                onclick="openPopup('View Quotation', '{{ route('view.quotation', ['id' => $itinerary->queryId]) }}' )">
+                onclick="openPopup('View Quotation', '{{ route('view.quotation', ['id' => $itinerary->queryId ?: $itinerary->id, 'itinerary' => $itinerary->id, 'standalone' => $itinerary->queryId ? null : 1]) }}' )">
                     <i class="fa fa-file-text"></i> &nbsp;Quotation
                 </a>
             </li>
