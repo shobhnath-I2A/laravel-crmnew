@@ -42,6 +42,7 @@ use App\Http\Controllers\WeatherSettingController;
 use App\Services\MailService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\NoteBookMasterController;
 
 Route::get('/shared-itinerary/{token}', [ShareItineraryController::class, 'publicShow'])
     ->middleware('throttle:60,1')
@@ -298,6 +299,12 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
     Route::get('/invoice/{id}', [BillController::class, 'show'])->name('invoice.show');
     Route::get('/payment-link/{id}', [BillController::class, 'send_payment_link_to_mail'])->name('payment-link.send');
     Route::get('/schedule-payment/{id}', [BillController::class, 'edit'])->name('schedule-payment.edit');
+
+
+    Route::get('/notebook', [NoteBookMasterController::class, 'index'])->name('notebook.index');
+    Route::post('/notebook', [NoteBookMasterController::class, 'store'])->name('notebook.store');
+    Route::put('/notebook/{id}', [NoteBookMasterController::class, 'update'])->name('notebook.update');
+    Route::delete('/notebook/{id}', [NoteBookMasterController::class, 'destroy'])->name('notebook.destroy');
 
     Route::get('/test-broadcast', function () {
         $notification = (object) [
