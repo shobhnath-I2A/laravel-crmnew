@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Query;
+use App\Models\QueryStatus;
+use App\Models\Destination;
 class DashboardController extends Controller
 {
     /**
@@ -71,27 +73,34 @@ class DashboardController extends Controller
 // dd($monthlyCounts, $monthlyChart);
 
 
-            $statusNames = [
-                1  => 'New',
-                2  => 'Active',
-                3  => 'No Connect',
-                4  => 'Hot Lead',
-                5  => 'Confirmed',
-                6  => 'Cancelled',
-                7  => 'Invalid',
-                8  => 'Proposal Sent',
-                9  => 'Follow Up',
-                10 => 'No Revert',
-            ];
+        $statusChart = QueryStatus::query()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get(['id', 'name'])
+            ->map(function (QueryStatus $status) use ($statusCounts, $totalQueries) {
+                $value = (int) ($statusCounts[$status->id] ?? 0);
 
-            $statusChart = [];
-
-            foreach ($statusNames as $id => $name) {
-                $statusChart[] = [
-                    'name'  => $name,
-                    'value' => (int) ($statusCounts[$id] ?? 0),
+                return [
+                    'name' => $status->name,
+                    'value' => $value,
+                    'share' => $totalQueries > 0
+                        ? number_format(($value / $totalQueries) * 100, 1, '.', '')
+                        : '0.0',
                 ];
-            }
+            })
+            ->values()
+            ->all();
+
+        $topDestinations = Destination::query()
+            ->join('queries', 'queries.destination', '=', 'destinations.id')
+            ->select('destinations.id', 'destinations.name')
+            ->selectRaw('COUNT(queries.id) AS query_count')
+            ->groupBy('destinations.id', 'destinations.name')
+            ->orderByDesc('query_count')
+            ->orderBy('destinations.name')
+            ->limit(5)
+            ->get();
+
         // Change "dashboard" if your Blade view has a different name.
         return view('dashboard', compact(
             'greeting',
@@ -103,6 +112,7 @@ class DashboardController extends Controller
             'totalLost',
             'monthlyChart',
             'statusChart',
+            'topDestinations',
         ));
     }
 

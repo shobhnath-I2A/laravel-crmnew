@@ -1669,3 +1669,13 @@ border-radius: 3px;
 padding: 5px;
 text-align: center;
 }
+
+.watherbox {
+    background: rgb(140, 190, 244);
+    background: linear-gradient(180deg, rgba(140, 190, 244, 1) 0%, rgba(51, 140, 236, 1) 48%);
+    color: #FFFFFF;
+    padding: 8px;
+    text-align: center;
+    border-radius: 5px;
+    text-shadow: 0px 1px 2px #00000085;
+}

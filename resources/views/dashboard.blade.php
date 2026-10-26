@@ -457,77 +457,50 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-6">
-                        <div class="card">
-                            <div class="card-body" style="height: height: 365px;;">
+                   <div class="col-xl-6">
+						<div class="card">
+                            <div class="card-body" style="height: 365px;">
                                 <p class="text-muted font-weight-medium mt-1 mb-2 dashheader">QUERIES BY STATUS</p>
                                 <div id="chartdiv2" style="height:292px;"></div>
-                                <script>
-                                    am4core.ready(function() {
-                                        // Themes begin
-                                        am4core.useTheme(am4themes_animated);
-                                        // Themes end
-                                        var chart = am4core.create("chartdiv2", am4charts.SlicedChart);
-                                        chart.hiddenState.properties.opacity = 0; // this makes initial fade in effect
-                                        chart.data = [{
-                                                "name": "New",
-                                                "value": 245
-                                            },
-                                            {
-                                                "name": "Active",
-                                                "value": 146
-                                            },
-                                            {
-                                                "name": "No Connect",
-                                                "value": 374
-                                            },
-                                            {
-                                                "name": "Hot Lead",
-                                                "value": 3
-                                            },
-                                            {
-                                                "name": "Confirmed",
-                                                "value": 152
-                                            },
-                                            {
-                                                "name": "Cancelled",
-                                                "value": 9903
-                                            },
-                                            {
-                                                "name": "Invalid",
-                                                "value": 881
-                                            },
-                                            {
-                                                "name": "Proposal Sent",
-                                                "value": 145
-                                            },
-                                            {
-                                                "name": "Follow Up",
-                                                "value": 108
-                                            },
-                                            {
-                                                "name": "No Revert",
-                                                "value": 51
-                                            },
+                                    <script>
+                                        function initializeStatusChart() {
+                                            if (
+                                                typeof am4core === 'undefined' ||
+                                                typeof am4charts === 'undefined'
+                                            ) {
+                                                console.error('amCharts scripts are missing or have not loaded.');
+                                                return;
+                                            }
 
-                                        ];
+                                            am4core.ready(function () {
+                                                if (typeof am4themes_animated !== 'undefined') {
+                                                    am4core.useTheme(am4themes_animated);
+                                                }
 
-                                        var series = chart.series.push(new am4charts.FunnelSeries());
-                                        series.colors.step = 2;
-                                        series.dataFields.value = "value";
-                                        series.dataFields.category = "name";
-                                        series.alignLabels = false;
+                                                var chart = am4core.create('chartdiv2', am4charts.SlicedChart);
+                                                chart.hiddenState.properties.opacity = 0;
+                                                chart.data = {{ \Illuminate\Support\Js::from($statusChart) }};
 
-                                        series.labelsContainer.paddingLeft = 15;
-                                        series.labelsContainer.width = 200;
+                                                var series = chart.series.push(new am4charts.FunnelSeries());
+                                                series.colors.step = 2;
+                                                series.dataFields.value = 'value';
+                                                series.dataFields.category = 'name';
+                                                series.alignLabels = false;
+                                                series.labels.template.text = '{category}: {share}%';
+                                                series.labelsContainer.paddingLeft = 15;
+                                                series.labelsContainer.width = 200;
+                                            });
+                                        }
 
-                                        //series.orientation = "horizontal";
-                                        //series.bottomRatio = 1;
-                                    }); // end am4core.ready()
-                                </script>
-                            </div>
-                        </div>
-                    </div>
+                                        if (document.readyState === 'complete') {
+                                            initializeStatusChart();
+                                        } else {
+                                            window.addEventListener('load', initializeStatusChart);
+                                        }
+                                    </script>
+							    </div>
+							</div>
+						</div>
                     <div class="col-xl-6">
                         <div class="card">
                             <div class="card-body">
@@ -560,61 +533,25 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-2">
-                                <a href="display.html?startDate=&endDate=&keyword=&page=&ga=query&searchcity=39825&searchusers=&searchsource="
-                                    style="color:#000000;">
-                                    <div class="card" style="margin:0px; background-color:#FFE1E1;#FFE1E1;">
+                            @php
+                                $destinationColors = ['#FFE1E1', '#fae4e4', '#f7e7e7', '#f7ebeb', '#f3eeee'];
+                            @endphp
+                            @forelse ($topDestinations as $destination)
+                                <div class="col-xl-2">
+                                    <div class="card" style="margin:0px; background-color:{{ $destinationColors[$loop->index % count($destinationColors)] }};">
                                         <div class="card-body"
                                             style="text-align:center; font-size:16px; padding:7px; font-weight:600;">
-                                            Bangkok (2546)
+                                            {{ $destination->name }} ({{ number_format($destination->query_count) }})
                                         </div>
                                     </div>
-                                </a>
-                            </div>
-                            <div class="col-xl-2">
-                                <a href="display.html?startDate=&endDate=&keyword=&page=&ga=query&searchcity=41391&searchusers=&searchsource="
-                                    style="color:#000000;">
-                                    <div class="card" style="margin:0px; background-color:#fae4e4;">
-                                        <div class="card-body"
-                                            style="text-align:center; font-size:16px; padding:7px; font-weight:600;">
-                                            Dubai (2444)
-                                        </div>
+                                </div>
+                            @empty
+                                <div class="col-xl-10">
+                                    <div class="watherbox" style="padding:12px 0; text-align:center;">
+                                        No destination data
                                     </div>
-                                </a>
-                            </div>
-                            <div class="col-xl-2">
-                                <a href="display.html?startDate=&endDate=&keyword=&page=&ga=query&searchcity=10070&searchusers=&searchsource="
-                                    style="color:#000000;">
-                                    <div class="card" style="margin:0px; background-color:#f7e7e7;">
-                                        <div class="card-body"
-                                            style="text-align:center; font-size:16px; padding:7px; font-weight:600;">
-                                            Bali (1590)
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-xl-2">
-                                <a href="display.html?startDate=&endDate=&keyword=&page=&ga=query&searchcity=37541&searchusers=&searchsource="
-                                    style="color:#000000;">
-                                    <div class="card" style="margin:0px; background-color:#f7ebeb;">
-                                        <div class="card-body"
-                                            style="text-align:center; font-size:16px; padding:7px; font-weight:600;">
-                                            Singapore (1251)
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-xl-2">
-                                <a href="display.html?startDate=&endDate=&keyword=&page=&ga=query&searchcity=48316&searchusers=&searchsource="
-                                    style="color:#000000;">
-                                    <div class="card" style="margin:0px; background-color:">
-                                        <div class="card-body"
-                                            style="text-align:center; font-size:16px; padding:7px; font-weight:600;">
-                                            Maldives (1015)
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
+                                </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>

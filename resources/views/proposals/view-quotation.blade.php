@@ -1,7 +1,6 @@
 <style>
     .popup-box {
         max-width: 50%;
-        margin-top: 5px;
     }
 </style>
 <div class="modal-body">
