@@ -139,6 +139,19 @@ class ActivityRateController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $activityRate = ActivityRate::findOrFail($id);
+            $activityRate->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Activity Rate deleted successfully !!!'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
