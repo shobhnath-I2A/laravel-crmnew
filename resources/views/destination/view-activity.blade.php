@@ -31,7 +31,7 @@
                                             class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
                                             style="margin-bottom:10px;">
                                             <i class="fa fa-envelope-o" aria-hidden="true"></i> &nbsp;Email</button>
-                                    </a>                                 
+                                    </a>
                                 </div>
                                 <div>
                                     <a target="_blank" href="https://api.whatsapp.com/send?text=Hi&amp;phone=+918882355788">

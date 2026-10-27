@@ -205,7 +205,7 @@ class ItineraryController extends Controller
                 'show_in_popular' => 'nullable|integer',
                 'show_in_special' => 'nullable|integer',
                 'about_package' => 'nullable|string',
-                'queryId' => 'nullable|integer',
+                // 'queryId' => 'nullable|integer',
 
             ]);
 
@@ -226,7 +226,7 @@ class ItineraryController extends Controller
             $validated['total_days'] = (int) ceil($start->floatDiffInDays($end)) + 1;
 
             $validated['child'] = $validated['child'] ?? 0;
-            $validated['queryId'] = $request->queryId ?? 0;
+            // $validated['queryId'] = $request->queryId ?? 0;
             $validated['created_by'] = auth()->id();
             $itinerary->update($validated);
 

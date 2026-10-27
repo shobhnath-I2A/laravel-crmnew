@@ -55,24 +55,11 @@
                                                         aria-expanded="false">
                                                         <i class="mdi mdi-dots-vertical"></i> </button>
                                                     <div class="dropdown-menu" style="">
-                                                        <div class="leg" style="display:none;">CHANGE STATUS</div>
 
-                                                        <a style="display:none;"
-                                                            href="display.html?ga=query&amp;view=1&amp;id=127368&amp;c=2&amp;status=1&amp;i=109047"
-                                                            class="dropdown-item">Proposal <i class="fa fa-check"
-                                                                aria-hidden="true"></i></a>
-
-                                                        <a style="display:none;"
-                                                            href="display.html?ga=query&amp;view=1&amp;id=127368&amp;c=2&amp;status=3&amp;i=109047&amp;s="
-                                                            class="dropdown-item">Itinerary accepted</a>
-
-                                                        <a style="display:none;"
-                                                            href="display.html?ga=query&amp;view=1&amp;id=127368&amp;c=2&amp;status=2&amp;i=109047&amp;s="
-                                                            class="dropdown-item">Final</a>
                                                         <!--<hr />-->
                                                         <div class="leg">ACTIONS</div>
                                                         <a class="dropdown-item" target="_blank"
-                                                            href="https://api.whatsapp.com/send?text=http://localhost:8081/API/sharepackage/109047/ms-seema-trails-to-malaysia-5n6d-.html&amp;phone=+918892078092"><i
+                                                            href="https://api.whatsapp.com/send?text=http://localhost:8081/API/sharepackage/{{$itinerary->id ?? '' }}/{{ $itinerary->name ?? '' }}-.html&amp;phone=+{{ $query->mobile ?? '' }}"><i
                                                                 class="fa fa-whatsapp" aria-hidden="true"></i>
                                                             &nbsp;WhatsApp</a>
 
@@ -146,10 +133,10 @@
                                         </tr>
                                         <tr>
                                             <td align="left" valign="top">
-                                                <div class="smtext">By: <strong>Sunil...</strong></div>
+                                                <div class="smtext">By: <strong>{{ ucfirst($itinerary->addedBy?->name ?? '—') }}</strong></div>
                                             </td>
                                             <td width="60%" align="left" valign="top">
-                                                <div class="smtext">Created: <strong>04/08/2025</strong></div>
+                                                <div class="smtext">Created: <strong>{{ $itinerary->created_at?->format('d/m/Y') ?? '—' }}</strong></div>
                                             </td>
                                         </tr>
                                         <tr>

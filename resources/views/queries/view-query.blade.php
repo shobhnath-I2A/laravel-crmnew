@@ -34,7 +34,7 @@
                                     </a>
                                 </div>
                                 <div>
-                                    <a target="_blank" href="https://api.whatsapp.com/send?text=Hi&amp;phone=+918882355788">
+                                    <a target="_blank" href="https://api.whatsapp.com/send?text=Hi&amp;phone=+{{ $query->mobile ?? '' }}">
                                         <button type="button"
                                             class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
                                             style="margin-bottom:10px;">

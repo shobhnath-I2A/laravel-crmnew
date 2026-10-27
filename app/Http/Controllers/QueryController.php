@@ -316,6 +316,8 @@ class QueryController extends Controller
             $query = Query::with([
                 'status',
                 'itineraries' => function ($q) use ($status) {
+                    $q->with('addedBy');
+
                     if ((string) $status === '3') {
                         $q->where('status', 3);
                     } else {
