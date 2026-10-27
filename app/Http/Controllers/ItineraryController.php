@@ -549,40 +549,49 @@ class ItineraryController extends Controller
     }
     public function markAccepted(Request $request, $id)
     {
+        $itinerary = Itinerary::findOrFail($id);
+        $package = Package::where('itinerary_id', $itinerary->id)->firstOrFail();
+        $availableOptions = DB::table('package_day_item_hotels')
+            ->join('package_day_items', 'package_day_items.id', '=', 'package_day_item_hotels.package_day_item_id')
+            ->where('package_day_items.package_id', $package->id)
+            ->whereNotNull('package_day_item_hotels.hotel_options')
+            ->distinct()
+            ->pluck('package_day_item_hotels.hotel_options')
+            ->map(fn ($option) => (int) $option)
+            ->filter(fn ($option) => $option >= 1 && $option <= 255)
+            ->unique()
+            ->values()
+            ->all();
+
+        if (empty($availableOptions)) {
+            $availableOptions = [1];
+        }
+
+        $request->validate([
+            'hotel_options' => ['required', 'integer', 'in:' . implode(',', $availableOptions)],
+        ]);
+
+        $confirmedOption = (int) $request->hotel_options;
         DB::beginTransaction();
 
         try {
-            $request->validate([
-                'hotel_options' => 'required|in:1,2,3',
-            ]);
-
-            $itinerary = Itinerary::findOrFail($id);
-
-            $package = Package::where('itinerary_id', $itinerary->id)->firstOrFail();
-
             $queryId = $itinerary->queryId;
-            $confirmedOption = (int) $request->hotel_options;
 
-            /*
-        |--------------------------------------------------------------------------
-        | Delete other hotel options from accommodation using pivot table
-        |--------------------------------------------------------------------------
-        */
-            $deleteOptions = array_diff([1, 2, 3], [$confirmedOption]);
+            $alternativeItemIds = DB::table('package_day_items')
+                ->join('package_day_item_hotels', 'package_day_item_hotels.package_day_item_id', '=', 'package_day_items.id')
+                ->where('package_day_items.package_id', $package->id)
+                ->whereRaw('LOWER(package_day_items.type) = ?', ['accommodation'])
+                ->whereNotNull('package_day_item_hotels.hotel_options')
+                ->where('package_day_item_hotels.hotel_options', '!=', (string) $confirmedOption)
+                ->distinct()
+                ->pluck('package_day_items.id');
 
-            $itemsToDelete = PackageDayItem::where('package_id', $package->id)
-                ->where('type', 'Accommodation')
-                ->whereHas('hotels', function ($q) use ($deleteOptions) {
-                    $q->whereIn('package_day_item_hotels.hotel_options', $deleteOptions);
-                })
-                ->pluck('id');
-
-            if ($itemsToDelete->isNotEmpty()) {
+            if ($alternativeItemIds->isNotEmpty()) {
                 DB::table('package_day_item_hotels')
-                    ->whereIn('package_day_item_id', $itemsToDelete)
+                    ->whereIn('package_day_item_id', $alternativeItemIds)
                     ->delete();
 
-                PackageDayItem::whereIn('id', $itemsToDelete)->delete();
+                PackageDayItem::whereIn('id', $alternativeItemIds)->delete();
             }
 
             /*
@@ -591,9 +600,10 @@ class ItineraryController extends Controller
         |--------------------------------------------------------------------------
         */
             Itinerary::where('queryId', $queryId)
-                ->update([
-                    'status' => 0,
-                ]);
+            ->where('status', '!=', 3)
+            ->update([
+                'status' => 0,
+            ]);
 
             /*
         |--------------------------------------------------------------------------
@@ -602,7 +612,8 @@ class ItineraryController extends Controller
         */
             $itinerary->update([
                 'status' => 1,
-            ]);
+            'accepted_hotel_option' => $confirmedOption,
+        ]);
 
             /*
         |--------------------------------------------------------------------------

@@ -362,12 +362,30 @@ class QueryController extends Controller
                         74,
                         0
                     )['optionTotals'];
+                    $hotelOptions = collect($optionTotals)
+                        ->sortKeys(SORT_NUMERIC)
+                        ->map(fn ($total, $option) => [
+                            'value' => (string) $option,
+                            'price' => (float) $total,
+                            'label' => 'Option ' . $option . ' : ₹ ' . number_format((float) $total, 2),
+                        ])
+                        ->values();
+
+                    if ($hotelOptions->isEmpty()) {
+                        $hotelOptions->push([
+                            'value' => '1',
+                            'price' => (float) ($itinerary->website_cost ?? 0),
+                            'label' => 'Option 1 : ₹ ' . number_format((float) ($itinerary->website_cost ?? 0), 2),
+                        ]);
+                    }
+
                     $selectedOption = $itinerary->accepted_hotel_option
                         ?? array_key_first($optionTotals);
                     $optionTotal = $selectedOption !== null
                         ? ($optionTotals[$selectedOption] ?? null)
                         : null;
 
+                    $itinerary->setAttribute('proposal_hotel_options', $hotelOptions->all());
                     $itinerary->setAttribute('proposal_price_option', $optionTotal !== null ? $selectedOption : null);
                     $itinerary->setAttribute(
                         'proposal_price',

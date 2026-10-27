@@ -16,21 +16,33 @@ class ItineraryPricingService
         float $discount
     ): array {
         $withoutHotelGross = $dayItems
-            ->where('type', '!=', 'accommodation')
+            ->filter(fn ($item) => strtolower((string) $item->type) !== 'accommodation')
             ->sum(fn ($item) => (float) ($item->price->final_price ?? 0));
 
         $hotelAmounts = [];
 
-        foreach ($dayItems->where('type', 'accommodation') as $item) {
-            $option = $item->hotels->first()?->pivot?->hotel_options
-                ?? $item->hotelDetail?->hotel_options
-                ?? 1;
+        foreach ($dayItems->filter(fn ($item) => strtolower((string) $item->type) === 'accommodation') as $item) {
+            $options = collect($item->hotels ?? [])
+                ->map(fn ($hotel) => $hotel->pivot?->hotel_options)
+                ->push($item->hotelDetail?->hotel_options)
+                ->filter(fn ($option) => $option !== null && trim((string) $option) !== '')
+                ->map(fn ($option) => (string) $option)
+                ->unique()
+                ->values();
 
-            $hotelAmounts[$option] = ($hotelAmounts[$option] ?? 0)
-                + (float) ($item->price->final_price ?? 0);
+            if ($options->isEmpty()) {
+                $options->push('1');
+            }
+
+            foreach ($options as $option) {
+                $hotelAmounts[$option] = ($hotelAmounts[$option] ?? 0)
+                    + (float) ($item->price->final_price ?? 0);
+            }
         }
 
         $optionTotals = [];
+
+        ksort($hotelAmounts, SORT_NUMERIC);
 
         foreach ($hotelAmounts as $option => $hotelAmount) {
             $optionGross = $withoutHotelGross + $hotelAmount;

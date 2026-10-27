@@ -259,18 +259,30 @@ class TravelWorkflowRegressionTest extends TestCase
         $this->actingAs($user)->postJson('/queries/'.$query->id.'/workflow/invoice', ['amount' => '100', 'currency' => 'INR', 'description' => 'Trip'])->assertStatus(500);
         $this->assertDatabaseCount('query_invoices', 0);
     }
-    public function test_acceptance_preserves_alternative_hotels_and_archived_proposals(): void
+    public function test_acceptance_deletes_other_hotel_options_and_preserves_archived_proposals(): void
     {
         $user = $this->staff(); $query = $this->queryFor($user);
         $proposal = Itinerary::create(['name' => 'Trip', 'queryId' => $query->id, 'status' => 0]);
         $archived = Itinerary::create(['name' => 'Archived', 'queryId' => $query->id, 'status' => 3]);
         $package = DB::table('packages')->insertGetId(['itinerary_id' => $proposal->id]);
+        $selectedItem = null;
+        $alternativeItem = null;
         foreach ([1, 2] as $option) {
             $item = DB::table('package_day_items')->insertGetId(['package_id' => $package, 'type' => 'accommodation']);
+            if ($option === 1) {
+                $selectedItem = $item;
+            } else {
+                $alternativeItem = $item;
+            }
             DB::table('package_day_item_hotels')->insert(['package_day_item_id' => $item, 'hotel_options' => $option]);
         }
+        $otherItem = DB::table('package_day_items')->insertGetId(['package_id' => $package, 'type' => 'activity']);
+
         $this->actingAs($user)->postJson('/itineraries/'.$proposal->id.'/accept', ['hotel_options' => 1])->assertOk();
-        $this->assertDatabaseCount('package_day_item_hotels', 2);
+        $this->assertDatabaseCount('package_day_item_hotels', 1);
+        $this->assertDatabaseHas('package_day_item_hotels', ['package_day_item_id' => $selectedItem, 'hotel_options' => 1]);
+        $this->assertDatabaseMissing('package_day_items', ['id' => $alternativeItem]);
+        $this->assertDatabaseHas('package_day_items', ['id' => $otherItem, 'type' => 'activity']);
         $this->assertSame(1, (int) $proposal->fresh()->accepted_hotel_option);
         $this->assertSame(3, (int) $archived->fresh()->status);
         $this->assertSame(5, (int) $query->fresh()->statusId);

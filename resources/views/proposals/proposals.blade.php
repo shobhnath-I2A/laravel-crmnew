@@ -156,14 +156,17 @@
                                             <td colspan="2" align="center" valign="top">
                                                 <div
                                                     style="font-size:18px; font-weight:600; border-top:1px solid #ddd; padding-top:10px; color:#000000;">
-                                                    @if ($itinerary->proposal_price !== null)
-                                                        @if ($itinerary->proposal_price_option !== null)
-                                                            Option {{ $itinerary->proposal_price_option }}:
-                                                        @else
-                                                            Package price:
+                                                    @forelse ($itinerary->proposal_hotel_options ?? [] as $option)
+                                                        <div>
+                                                            Option {{ $option['value'] }}: ₹
+                                                            {{ number_format((float) $option['price'], fmod((float) $option['price'], 1) === 0.0 ? 0 : 2) }}
+                                                        </div>
+                                                    @empty
+                                                        @if ($itinerary->proposal_price !== null)
+                                                            Package price: ₹
+                                                            {{ number_format((float) $itinerary->proposal_price, 2) }}
                                                         @endif
-                                                        ₹ {{ number_format((float) $itinerary->proposal_price, 2) }}<br>
-                                                    @endif
+                                                    @endforelse
                                                 </div>
 
                                             </td>
@@ -179,7 +182,8 @@
                                                 @else
                                                     <button id="acceptBtn_{{ $itinerary->id }}" type="button"
                                                         class="btn btn-warning btn-lg"
-                                                        onclick="openAcceptModal({{ $itinerary->id }}, '{{ $itinerary->website_cost ?? 0 }}')">
+                                                        data-hotel-options="{{ json_encode($itinerary->proposal_hotel_options) }}"
+                                                        onclick="openAcceptModal({{ $itinerary->id }}, this)">
                                                         Mark as Accepted
                                                     </button>
                                                 @endif
@@ -404,14 +408,19 @@
                 });
             }
 
-            function openAcceptModal(id, amount) {
+            function openAcceptModal(id, button) {
 
                 $('#acceptItineraryId').val(id);
+                const options = JSON.parse(button.dataset.hotelOptions || '[]');
+                const optionSelect = $('#acceptOption').empty().append(
+                    $('<option>').val('').text('Select')
+                );
 
-                $('#acceptOption').html(`
-                    <option value="">Select</option>
-                    <option value="1">Option 1 : ₹ ${amount}</option>
-                `);
+                options.forEach(function(option) {
+                    optionSelect.append(
+                        $('<option>').val(option.value).text(option.label)
+                    );
+                });
 
                 $('#acceptItineraryModal').modal('show');
             }
