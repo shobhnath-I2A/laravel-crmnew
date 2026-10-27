@@ -1,5 +1,4 @@
 {{-- ONLINE USERS FOOTER BUTTON --}}
-
 <div class="online-users-footer-btn">
     <a href="javascript:void(0)" onclick="openOnlineUsersPopup()" title="Online Users">
         <i class="fa fa-user"></i>
@@ -10,11 +9,8 @@
     </a>
 </div>
 
-
 {{-- ONLINE USERS POPUP  --}}
-
 <div id="onlineUsersPopup" class="online-users-popup">
-
     {{-- Header --}}
     <div class="online-users-header">
         <span class="online-users-title">
@@ -24,8 +20,6 @@
             &times;
         </button>
     </div>
-
-
     {{-- Table Header --}}
     <div class="online-users-table-head">
         <div>User</div>
@@ -33,8 +27,6 @@
             Status
         </div>
     </div>
-
-
     {{-- Dynamic Users --}}
     <div id="onlineUsersList" class="online-users-list">
         <div class="online-users-loading">
@@ -43,13 +35,8 @@
     </div>
 </div>
 
-
 <script>
-    /*
-|--------------------------------------------------------------------------
-| Popup Open
-|--------------------------------------------------------------------------
-*/
+    /* Popup Open */
 
     function openOnlineUsersPopup() {
         const popup = document.getElementById('onlineUsersPopup');
@@ -57,34 +44,16 @@
         loadOnlineUsers();
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Popup Close
-    |--------------------------------------------------------------------------
-    */
-
+    /* Popup Close  */
     function closeOnlineUsersPopup() {
         document.getElementById('onlineUsersPopup').style.display = 'none';
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Load Users From Laravel
-    |--------------------------------------------------------------------------
-    */
+    /* Load Users From Laravel */
 
     function loadOnlineUsers() {
         const list = document.getElementById('onlineUsersList');
-
-        list.innerHTML = `
-        <div class="online-users-loading">
-            Loading users...
-        </div>
-    `;
-
-
+        list.innerHTML = ` <div class="online-users-loading"> Loading users... </div> `;
         fetch('{{ route('online-users') }}', {
                 headers: {
                     'Accept': 'application/json',
@@ -93,95 +62,49 @@
             })
 
             .then(response => {
-
                 if (!response.ok) {
                     throw new Error('Unable to load users');
                 }
-
                 return response.json();
             })
 
             .then(data => {
-
                 let html = '';
-
-
                 if (!data.users || data.users.length === 0) {
-
-                    list.innerHTML = `
-                <div class="online-users-empty">
-                    No users found
-                </div>
-            `;
-
+                  list.innerHTML = ` <div class="online-users-empty"> No users found </div> `;
                     updateOnlineCount(0);
-
                     return;
                 }
 
-
                 data.users.forEach(function(user) {
-
-                    const statusClass =
-                        user.is_online ?
-                        'online' :
-                        'offline';
-
-
+                 const statusClass = user.is_online ? 'online' : 'offline';
                     html += `
-
-                <div class="online-user-row">
-
-                    <div
-                        class="online-user-name"
-                        title="${escapeOnlineHtml(user.name)}"
-                    >
-
-                        ${escapeOnlineHtml(user.name)}
-
-                    </div>
-
-
-                    <div class="online-user-status">
-
-                        <span
-                            class="online-status-dot ${statusClass}"
-                            title="${user.is_online ? 'Online' : 'Offline'}"
-                        ></span>
-
-                    </div>
-
-                </div>
-
-            `;
+                        <div class="online-user-row">
+                        <divclass="online-user-name"title="${escapeOnlineHtml(user.name)}">
+                                ${escapeOnlineHtml(user.name)}
+                            </div>
+                            <div class="online-user-status">
+                                <span
+                                    class="online-status-dot ${statusClass}"
+                                    title="${user.is_online ? 'Online' : 'Offline'}"
+                                ></span>
+                            </div>
+                        </div>
+                    `;
                 });
 
-
                 list.innerHTML = html;
-
                 updateOnlineCount(data.online_count ?? 0);
 
             })
 
             .catch(error => {
-
                 console.error(error);
-
-                list.innerHTML = `
-            <div class="online-users-error">
-                Unable to load online users.
-            </div>
-        `;
-
+                list.innerHTML = ` <div class="online-users-error"> Unable to load online users. </div> `;
             });
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Footer Online Count
-    |--------------------------------------------------------------------------
-    */
+    /* Footer Online Count */
 
     function updateOnlineCount(count) {
         const countBox =
@@ -201,12 +124,7 @@
         }
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Escape HTML
-    |--------------------------------------------------------------------------
-    */
+    /* Escape HTML */
 
     function escapeOnlineHtml(value) {
         const div = document.createElement('div');
@@ -216,12 +134,7 @@
         return div.innerHTML;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Initial Online Count
-    |--------------------------------------------------------------------------
-    */
+    /* Initial Online Count */
 
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -229,12 +142,7 @@
 
     });
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Auto Refresh Every 30 Seconds
-    |--------------------------------------------------------------------------
-    */
+    /* Auto Refresh Every 30 Seconds */
 
     setInterval(function() {
 

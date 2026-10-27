@@ -6,7 +6,7 @@
             <div class="main-content">
                 <div class="page-content">
                     <div class="newboxheading">
-                        <div class="newhead">Insert Itinerary ddd
+                        <div class="newhead">Insert Itinerary
                             <div class="newoptionmenu">
                                 <div>
                                     <a href="{{ route('queries.show', $queryId) }}">
