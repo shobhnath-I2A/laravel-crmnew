@@ -3,14 +3,12 @@
     <span>Notebook</span>
     <i class="fa fa-times" aria-hidden="true" onclick="closeNotebookPopup();"></i>
   </div>
-
   <div class="popcontentbodybox" style="height: 531px;">
     <div class="addnotebookouter">
       <a class="notebookadd" title="Add New Note" id="btn-add-note">
         <i class="fa fa-plus-square" aria-hidden="true"></i>
       </a>
     </div>
-
     <div class="usernotesouter" id="notes-container">
       @forelse($notes as $note)
         <div class="usernotes" id="note-block-{{ $note->id }}">

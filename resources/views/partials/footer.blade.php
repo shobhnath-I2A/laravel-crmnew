@@ -20,7 +20,6 @@
     const notebookIndexUrl = @json(route('notebook.index'));
     const notebookStoreUrl = @json(route('notebook.store'));
     const notebookCsrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
     async function notebookRequest(url, options = {}) {
         const response = await fetch(url, {
             ...options,
@@ -38,11 +37,9 @@
         } catch {
             throw new Error(responseText || response.statusText);
         }
-
         if (!response.ok) {
             throw new Error(data.message || 'Notebook request failed.');
         }
-
         return data;
     }
 
