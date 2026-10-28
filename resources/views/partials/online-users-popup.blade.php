@@ -50,7 +50,6 @@
     }
 
     /* Load Users From Laravel */
-
     function loadOnlineUsers() {
         const list = document.getElementById('onlineUsersList');
         list.innerHTML = ` <div class="online-users-loading"> Loading users... </div> `;
@@ -80,7 +79,7 @@
                  const statusClass = user.is_online ? 'online' : 'offline';
                     html += `
                         <div class="online-user-row">
-                        <divclass="online-user-name"title="${escapeOnlineHtml(user.name)}">
+                        <div class="online-user-name"title="${escapeOnlineHtml(user.name)}">
                                 ${escapeOnlineHtml(user.name)}
                             </div>
                             <div class="online-user-status">
@@ -105,48 +104,31 @@
     }
 
     /* Footer Online Count */
-
     function updateOnlineCount(count) {
         const countBox =
             document.getElementById('footerOnlineUserCount');
-
-
-        countBox.innerText = count;
-
-
+            countBox.innerText = count;
         if (count > 0) {
-
             countBox.style.display = 'inline-flex';
-
         } else {
-
             countBox.style.display = 'none';
         }
     }
 
     /* Escape HTML */
-
     function escapeOnlineHtml(value) {
         const div = document.createElement('div');
-
         div.textContent = value ?? '';
-
         return div.innerHTML;
     }
 
     /* Initial Online Count */
-
     document.addEventListener('DOMContentLoaded', function() {
-
         loadOnlineUsers();
-
     });
 
     /* Auto Refresh Every 30 Seconds */
-
     setInterval(function() {
-
         loadOnlineUsers();
-
     }, 30000);
 </script>

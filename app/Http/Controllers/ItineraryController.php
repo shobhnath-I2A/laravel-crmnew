@@ -595,32 +595,20 @@ class ItineraryController extends Controller
                 PackageDayItem::whereIn('id', $alternativeItemIds)->delete();
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | Reset all itineraries of this query
-        |--------------------------------------------------------------------------
-        */
+            /* Reset all itineraries of this query */
             Itinerary::where('queryId', $queryId)
             ->where('status', '!=', 3)
             ->update([
                 'status' => 0,
             ]);
 
-            /*
-        |--------------------------------------------------------------------------
-        | Mark selected itinerary accepted
-        |--------------------------------------------------------------------------
-        */
+            /* Mark selected itinerary accepted */
             $itinerary->update([
                 'status' => 1,
             'accepted_hotel_option' => $confirmedOption,
         ]);
 
-            /*
-        |--------------------------------------------------------------------------
-        | Update query status
-        |--------------------------------------------------------------------------
-        */
+            /* Update query status */
             Query::where('id', $queryId)->update([
                 'statusId' => 5,
             ]);
