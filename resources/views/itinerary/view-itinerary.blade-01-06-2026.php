@@ -246,21 +246,15 @@
             // }
 
             document.addEventListener("DOMContentLoaded", function() {
-
                 document.querySelectorAll('.itidaytab').forEach(tab => {
-
                     tab.addEventListener('click', function() {
-
                         let day = this.dataset.day;
                         let date = this.dataset.date;
-
                         loadDayDetails(day, date);
-
                         document.querySelectorAll('.itidaytab').forEach(t => t.classList.remove(
                             'activedaytab'));
                         this.classList.add('activedaytab');
                     });
-
                 });
 
             });

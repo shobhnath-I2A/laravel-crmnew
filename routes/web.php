@@ -21,6 +21,7 @@ use App\Http\Controllers\LeadSourceController;
 use App\Http\Controllers\MealPlanMasterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PackageCommentController;
 use App\Http\Controllers\PackageDaysItemController;
 use App\Http\Controllers\PackageThemeController;
 use App\Http\Controllers\ProfileController;
@@ -138,6 +139,9 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::get('/itineraries-final/{id}', [ItineraryController::class, 'finalItinerary'])
         ->name('itineraries.final');
+
+    Route::post('/package-comments', [PackageCommentController::class, 'store'])
+        ->name('package-comments.store');
 
     Route::post('/queries/assign-user', [QueryController::class, 'assignUser'])
         ->name('queries.assign-user');

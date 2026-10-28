@@ -12,6 +12,7 @@ use App\Models\PackageDayItem;
 use App\Models\Package;
 use App\Models\Query;
 use App\Models\AppSetting;
+use App\Models\PackageComment;
 use App\Services\ItineraryPricingService;
 use App\Services\PackageService;
 use Illuminate\Validation\ValidationException;
@@ -690,12 +691,20 @@ class ItineraryController extends Controller
         $packageSettings = AppSetting::where('country_code', $countryCode)
             ->where('group_name', 'package_inclusions')
             ->pluck('value', 'key_name');
+        $organisationSettings = AppSetting::where('country_code', $countryCode)
+            ->where('group_name', 'organisation')
+            ->pluck('value', 'key_name');
+        $packageComments = $package
+            ? PackageComment::where('packageid', $package->id)->latest()->get()
+            : collect();
 
         return view('itinerary.final-itinerary', compact(
             'itinerary',
             'package',
             'dayItems',
             'packageSettings',
+            'organisationSettings',
+            'packageComments',
             'selectedPriceOption',
             'packageTotal'
         ));

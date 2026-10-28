@@ -465,6 +465,187 @@
                     </div>
                 </section>
             @endif
+
+            <div class="row">
+                <div class="col-md-12 col-xl-12">
+                    <div class="itiday" style="text-align:center;">Comments</div>
+                    <div style="padding-bottom:20px;">
+                        <div class="col-md-12 col-xl-12">
+                            <div class="card">
+                                <div class="card-body" style="padding:20px !important;" id="loadpackagecommnet">
+                                    @forelse ($packageComments ?? collect() as $packageComment)
+                                        <div style="border-bottom:1px solid #eee; padding:12px 0;">
+                                            <div>{{ $packageComment->comment }}</div>
+                                            <small style="color:#777;">{{ optional($packageComment->created_at)->format('d M Y, h:i A') }}</small>
+                                        </div>
+                                    @empty
+                                        <div style="text-align:center; padding:20px 0px;">No Comment Available</div>
+                                    @endforelse
+
+                                    @if (!($isPublic ?? false) && $package)
+                                        <form id="package-comment-form" class="custom-validation" novalidate method="post" action="{{ route('package-comments.store') }}">
+                                            @csrf
+                                            <input name="packageid" type="hidden" value="{{ $package->id }}">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            <textarea name="comment" id="comment" style="border: 2px solid #ddd; padding: 10px; font-size: 14px; width: 100%; border-radius: 5px;" placeholder="Enter Your Comment" required></textarea>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="3" style="padding-top:10px;"><button type="submit" id="page2" class="btn btn-secondary btn-sm waves-effect" style="float:right; font-size:12px;">Submit Comment</button></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </form>
+                                        <script>
+                                            (function () {
+                                                var form = document.getElementById('package-comment-form');
+                                                if (!form) return;
+
+                                                form.addEventListener('submit', function (event) {
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
+
+                                                    var submitButton = form.querySelector('button[type="submit"]');
+                                                    submitButton.disabled = true;
+
+                                                    fetch(form.action, {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Accept': 'application/json',
+                                                            'X-CSRF-TOKEN': form.querySelector('[name="_token"]').value
+                                                        },
+                                                        body: new FormData(form)
+                                                    })
+                                                    .then(function (response) {
+                                                        if (!response.ok) {
+                                                            return response.json().then(function (data) {
+                                                                throw new Error(data.message || 'Unable to submit comment.');
+                                                            });
+                                                        }
+                                                        return response.json();
+                                                    })
+                                                    .then(function (response) {
+                                                        var noComment = document.querySelector('#loadpackagecommnet div[style*="text-align:center"]');
+                                                        if (noComment) noComment.remove();
+
+                                                        var wrapper = document.createElement('div');
+                                                        wrapper.style.cssText = 'border-bottom:1px solid #eee; padding:12px 0;';
+
+                                                        var text = document.createElement('div');
+                                                        text.textContent = response.comment.comment;
+                                                        wrapper.appendChild(text);
+
+                                                        var date = document.createElement('small');
+                                                        date.style.color = '#777';
+                                                        date.textContent = response.comment.created_at
+                                                            ? new Date(response.comment.created_at).toLocaleString()
+                                                            : '';
+                                                        wrapper.appendChild(date);
+
+                                                        var commentsContainer = document.getElementById('loadpackagecommnet');
+                                                        commentsContainer.insertBefore(wrapper, form);
+                                                        form.querySelector('[name="comment"]').value = '';
+                                                    })
+                                                    .catch(function (error) {
+                                                        alert(error.message || 'Unable to submit comment.');
+                                                    })
+                                                    .finally(function () {
+                                                        submitButton.disabled = false;
+                                                    });
+                                                });
+                                            })();
+                                        </script>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="display:none;">
+                    <div class="col-md-12 col-xl-12">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <h5 style="line-height: 32px; margin-top:0px;">Inclusion / Exclusion </h5>
+                                <p>Thanks and Regards</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="width:100%; background-color:#343642; color:#fff; overflow:hidden; padding:20px 0px; ">
+                <div class="container-fluid" style="padding-left:0px;">
+                    <div class="main-content">
+                        <div class="row">
+                            <div class="col-md-6 col-xl-6">
+                                <div class="card-body">
+                                    <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #ffffff30;">
+                                        <table border="0" cellpadding="0" cellspacing="0" style="color:#fff;">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <div style="width:50px; height:50px; overflow:hidden; margin-right:10px; border-radius: 100%;">
+                                                            @if ($itinerary->addedBy?->profile_image)
+                                                                <img src="{{ asset('uploads/profile/' . $itinerary->addedBy->profile_image) }}" style="width:100%; height:auto; min-height:100%;">
+                                                            @endif
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div style="font-size:16px; margin-bottom:0px; font-weight:800;">{{ $organisationSettings['organisation_name'] ?? ($itinerary->addedBy?->submit_name ?: $itinerary->addedBy?->name) }}</div>
+                                                        <div style="font-size:14px; margin-bottom:0px;">{{ trim(($itinerary->addedBy?->name ?? '') . ' ' . ($itinerary->addedBy?->last_name ?? '')) }}</div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #ffffff30;">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="color:#fff;">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="50%" align="left">Email address</td>
+                                                    <td width="50%" align="right">{{ $organisationSettings['invoice_email'] ?? $itinerary->addedBy?->email }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-xl-6">
+                                <div class="card-body">
+                                    <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #ffffff30;">
+                                        <table border="0" cellpadding="0" cellspacing="0" style="color:#fff;">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <div style="width:50px; height:50px; overflow:hidden; margin-right:10px; border-radius: 100%;"> </div>
+                                                    </td>
+                                                    <td> </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #ffffff30;">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="color:#fff;">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="50%" align="left">Phone Number
+                                                    </td>
+                                                    <td width="50%" align="right">{{ $organisationSettings['invoice_phone'] ?? trim(($itinerary->addedBy?->mobile_code ? '+' . $itinerary->addedBy->mobile_code . ' ' : '') . ($itinerary->addedBy?->mobile ?? '')) }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 @endsection

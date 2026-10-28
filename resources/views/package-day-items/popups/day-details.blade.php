@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
-                <label for="validationCustom02">Subject</label>{{ $packageDayItem->id }}
+                <label for="validationCustom02">Subject</label>
                 <input name="name" type="text" class="form-control" id="daySubject" value="{{ old('name', $packageDayItem->name ?? '') }}">
             </div>
         </div>

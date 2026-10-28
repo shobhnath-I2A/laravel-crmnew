@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AppSetting;
 use App\Models\Itinerary;
+use App\Models\PackageComment;
 use App\Models\PackageDayItem;
 use App\Services\ItineraryPricingService;
 use Illuminate\Http\JsonResponse;
@@ -121,6 +122,12 @@ class ShareItineraryController extends Controller
         $packageSettings = AppSetting::where('country_code', $countryCode)
             ->where('group_name', 'package_inclusions')
             ->pluck('value', 'key_name');
+        $organisationSettings = AppSetting::where('country_code', $countryCode)
+            ->where('group_name', 'organisation')
+            ->pluck('value', 'key_name');
+        $packageComments = $package
+            ? PackageComment::where('packageid', $package->id)->latest()->get()
+            : collect();
         $isPublic = true;
 
         return view('itinerary.final-itinerary', compact(
@@ -128,6 +135,8 @@ class ShareItineraryController extends Controller
             'package',
             'dayItems',
             'packageSettings',
+            'organisationSettings',
+            'packageComments',
             'selectedPriceOption',
             'packageTotal',
             'showPrice',
