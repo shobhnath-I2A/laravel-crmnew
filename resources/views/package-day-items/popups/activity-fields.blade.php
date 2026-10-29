@@ -63,7 +63,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label>Date*</label>
-                    <input type="text" class="form-control" name="start_date" id="startDate"
+                    <input type="date" class="form-control" name="start_date" id="startDate"
                         value="{{ old('start_date', isset($packageDayItem->start_date) ? \Carbon\Carbon::parse($packageDayItem->start_date)->format('d-m-Y') : '') }}">
                 </div>
             </div>
