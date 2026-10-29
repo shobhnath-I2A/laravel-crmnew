@@ -10,15 +10,11 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title cardtitle">Room Type
-                                        <form action="{{ route('room-type.index') }}" class="newsearchsecform" style="left:54px;" method="get"
-                                            enctype="multipart/form-data">
-                                            <input type="text" name="keyword" class="form-control newsearchsec"
-                                                placeholder="Search by name" value="{{ request('keyword') }}" style="margin-top: 3px;">
+                                        <form action="{{ route('room-type.index') }}" class="newsearchsecform" style="left:54px;" method="get" enctype="multipart/form-data">
+                                            <input type="text" name="keyword" class="form-control newsearchsec" placeholder="Search by name" value="{{ request('keyword') }}" style="margin-top: 3px;">
                                         </form>
                                         <div class="float-right">
-                                            <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
-                                                onclick="openPopup('Add Room Type','{{ route('room-type.create') }}')"
-                                                data-backdrop="static">Add Room Type</button>
+                                            <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" onclick="openPopup('Add Room Type','{{ route('room-type.create') }}')" data-backdrop="static">Add Room Type</button>
                                         </div>
                                     </h4>
                                     <div class="table-responsive">
@@ -65,8 +61,7 @@
                                                         </td>
                                                         <td width="12%" align="left">{{ $room->created_at }}</td>
                                                         <td width="1%">
-                                                            <a class="dropdown-item neweditpan"
-                                                            onclick="openPopup('Edit Room Type', '{{ route('room-type.edit', $room->id ) }}')">
+                                                            <a class="dropdown-item neweditpan" onclick="openPopup('Edit Room Type', '{{ route('room-type.edit', $room->id ) }}')">
                                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                                             </a>
                                                         </td>
@@ -77,7 +72,8 @@
                                     </div>
                                     <div class="mt-3 pageingouter">
                                         <div style="float: left; font-size: 13px; padding: 7px 11px; border: 1px solid #ededed; background-color: #fff; color: #000;">
-                                            Total Records: <strong>{{ $roomTypeCount }}</strong></div>
+                                            Total Records: <strong>{{ $roomTypeCount }}</strong>
+                                        </div>
                                         <div class="d-flex justify-content-end">
                                             {{ $roomType->links() }}
                                         </div>
@@ -90,5 +86,4 @@
             </div>
         </div>
     </div>
-
 @endsection

@@ -218,30 +218,30 @@
                 <th>&nbsp;</th>
             </tr>
         </thead>
-       <tbody>
-    @forelse ($hotelRates as $rate)
-        <tr>
-            <td>{{ \Carbon\Carbon::parse($rate->start_date)->format('d/m/Y') }}</td>
-            <td>{{ \Carbon\Carbon::parse($rate->end_date)->format('d/m/Y') }}</td>
-            <td>{{ $rate->room_type }}</td>
-            <td>{{ $rate->meal_plan }}</td>
-            <td>{{ $rate->single }}</td>
-            <td>{{ $rate->double }}</td>
-            <td>{{ $rate->triple }}</td>
-            <td>{{ $rate->quad }}</td>
-            <td>{{ $rate->child_bed }}</td>
-            <td>{{ $rate->extra_adult }}</td>
-            <td>
-                <button class="btn btn-primary" onclick="openPopup('Edit Rate', '{{ route('hotels-rates.edit', $rate->id) }}')">
-                    Edit
-                </button>
-            </td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="11" style="text-align:center;">No Rate</td>
-        </tr>
-    @endforelse
-</tbody>
+        <tbody>
+            @forelse ($hotelRates as $rate)
+                <tr>
+                    <td>{{ \Carbon\Carbon::parse($rate->start_date)->format('d/m/Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($rate->end_date)->format('d/m/Y') }}</td>
+                    <td>{{ $rate->room_type }}</td>
+                    <td>{{ $rate->meal_plan }}</td>
+                    <td>{{ $rate->single }}</td>
+                    <td>{{ $rate->double }}</td>
+                    <td>{{ $rate->triple }}</td>
+                    <td>{{ $rate->quad }}</td>
+                    <td>{{ $rate->child_bed }}</td>
+                    <td>{{ $rate->extra_adult }}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="openPopup('Edit Rate', '{{ route('hotels-rates.edit', $rate->id) }}')">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+                @empty
+                    <tr>
+                        <td colspan="11" style="text-align:center;">No Rate</td>
+                    </tr>
+            @endforelse
+        </tbody>
     </table>
 </div>

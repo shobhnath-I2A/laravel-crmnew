@@ -2,21 +2,10 @@
     <div style="padding:10px;">
         <div class="btn-toolbar p-3" role="toolbar" style="background-color: #cfd7df42;">
             <div class="btn-group mr-2 mb-2 mb-sm-0" style="overflow:visible;">
-                <button type="button" class="btn btn-primary waves-light waves-effect"
-                    onclick="openPopup(
-                        'Compose Mail',
-                        '{{ route('compose-email.create') }}?query_id={{ $query->id }}&email={{ urlencode($query->email) }}'
-                    )">
-                    <i class="fa fa-envelope-o"></i> Compose
-                </button>
+               <button type="button" class="btn btn-primary waves-light waves-effect" onclick="openPopup( 'Compose Mail', '{{ route('compose-email.create') }}?query_id={{ $query->id }}&email={{ urlencode($query->email) }}' )"> <i class="fa fa-envelope-o"></i> Compose </button>
             </div>
             <div class="btn-group mr-2 mb-2 mb-sm-0">
-                <button style="background-color: #fff; border: 1px solid #ddd; font-size:12px;" type="button"
-                    class="btn btn-light waves-effect"
-                    onclick="openPopup('Compose Mail', '{{ route('compose-email.create') }}')"><i
-                        class="fa fa-info-circle"></i>
-                    {{ $query->emailLogs[0]->to_email ?? '' }}
-                </button>
+               <button style="background-color: #fff; border: 1px solid #ddd; font-size:12px;" type="button" class="btn btn-light waves-effect" onclick="openPopup('Compose Mail', '{{ route('compose-email.create') }}')"><i class="fa fa-info-circle"></i> {{ $query->emailLogs[0]->to_email ?? '' }} </button>
             </div>
         </div>
         <style>
@@ -37,9 +26,7 @@
             @foreach ($query->emailLogs as $mail)
                 <li onclick="">
                     <div class="col-mail col-mail-1">
-                        <a class="title mailsent"
-                            style=" cursor:pointer; left: 0px; padding-left:28px;">
-                            <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> {{ $mail->to_email ?? '' }}</a>
+                       <a class="title mailsent" style=" cursor:pointer; left: 0px; padding-left:28px;"> <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> {{ $mail->to_email ?? '' }}</a>
                     </div>
                     <div class="col-mail col-mail-2">
                         <a class="title mailsent" style="cursor:pointer;">

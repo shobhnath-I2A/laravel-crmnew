@@ -17,58 +17,47 @@
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Email</label>
                             {{ $query->email ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-4" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Country</label>
                         </div>
                     </div>
                     <div class="col-lg-3" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">State</label>
                         </div>
                     </div>
                     <div class="col-lg-5" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">City</label>
                         </div>
                     </div>
                 </div>
-
                 <h4 class="mt-3 header-title">Query Information</h4>
-
                 <div class="row" style="padding-left:10px;  ">
                     <div class="col-lg-3" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
-                            <label for="validationCustom02">FROM
-                                CITY</label>
+                        <div class="form-group input-group" style="position:relative;">
+                            <label for="validationCustom02">FROM CITY</label>
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Origin </label>
                             {{ $query->origin ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Destination
                             </label>
                             {{ $query->destination ?? '' }}
                         </div>
                     </div>
-
                     <div class="col-lg-3">
                         <div class="form-group input-group"
                             style="position:relative;">
@@ -118,7 +107,6 @@
                             i2a Technologies
                         </div>
                     </div>
-
                     <div class="col-lg-12" style="display:none;">
                         <table width="100%" border="0"
                             cellspacing="0" cellpadding="5">
@@ -127,22 +115,15 @@
                                     <td width="41%">
                                         <div class="form-group input-group"
                                             style="position:relative;">
-                                            <label
-                                                for="validationCustom02">Internal
-                                                Note</label>
-                                            <div class="form-group"
-                                                style="overflow:hidden;">
-                                                <textarea name="internalnote" id="internalnote" onkeyup="saveinternalnote();" class="form-control"
-                                                    style="width:400px;" placeholder="Note"></textarea>
+                                            <label for="validationCustom02">Internal Note</label>
+                                            <div class="form-group" style="overflow:hidden;">
+                                                <textarea name="internalnote" id="internalnote" onkeyup="saveinternalnote();" class="form-control" style="width:400px;" placeholder="Note"></textarea>
                                             </div>
                                         </div>
                                     </td>
                                     <td width="59%">
                                         <div style="margin-top:5px;">
-                                            <button type="submit"
-                                                id="savingbutton"
-                                                class="btn btn-primary"
-                                                onclick="location.reload();">Save</button>
+                                            <button type="submit" id="savingbutton" class="btn btn-primary" onclick="location.reload();">Save</button>
                                         </div>
                                     </td>
                                 </tr>

@@ -3,8 +3,7 @@
         <div class="col-md-12">
             <div class="form-group">
                 <label for="validationCustom02">Day Itinerary order</label>
-                <input name="day_order" class="form-control" type="text"
-                    value="{{ old('day_order', $packageDayItem->day_order ?? '') }}" aria-required="true">
+                <input name="day_order" class="form-control" type="text" value="{{ old('day_order', $packageDayItem->day_order ?? '') }}" aria-required="true">
             </div>
         </div>
         <div class="col-md-6">
@@ -18,7 +17,6 @@
                         @endif
                     @endforeach
                 </select>
-
             </div>
         </div>
         <div class="col-md-6">
@@ -35,7 +33,6 @@
                 <label for="validationCustom02">Hotel Name
                 </label>
                <input name="name" type="text" class="form-control" id="servicename" value="{{ old('name', $packageDayItem->name ?? '') }}">
-
             </div>
         </div>
         <div class="col-md-12 master" style="display:none;">
@@ -46,18 +43,14 @@
                 <select name="hotel_id" id="hotel_id" class="form-control" onchange="loadhoteldata();">
                     <option value="">Select Hotel</option>
                 </select>
-
                 <input type="hidden" id="selected_hotel_id" value="{{ $selectedHotelId }}">
                 <input type="hidden" id="selected_room_type" value="{{ $selectedRoomType }}">
                 <input type="hidden" id="selected_meal_plan" value="{{ $selectedMealPlan }}">
-
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="form-group">
-                <label for="validationCustom02">Category
-                </label>
+                <label for="validationCustom02">Category </label>
                 <select name="hotel_category" id="hotelCategory" class="form-control">
                     <option value="1" {{ old('hotel_category', $packageDayItem->hotel_category ?? '') == 1 ? 'selected' : '' }}>1 Star</option>
                     <option value="2" {{ old('hotel_category', $packageDayItem->hotel_category ?? '') == 2 ? 'selected' : '' }} >2 Star</option>
@@ -76,7 +69,6 @@
                 </select>
             </div>
         </div>
-
         <div class="col-md-6 manual">
             <div class="form-group">
                 <label for="validationCustom02">Room Name
@@ -98,14 +90,12 @@
                 </select>
             </div>
         </div>
-
         <div class="col-md-6 manual">
             <div class="form-group">
                 <label>Meal Plan</label>
                 <input name="meal_plan" id="mealPlanManual" type="text" class="form-control" value="{{ $selectedMealPlan }}">
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="form-group">
                 <label for="validationCustom02">Hotel Option</label>
@@ -116,10 +106,9 @@
                 </select>
             </div>
         </div>
-
-        <div class="row"
-            style="background:#f7f7f7;  padding: 10px; width: 100%; margin: auto; border: 1px solid #cccccc; margin: 10px 10px; border-radius: 4px;">
-            <div style="margin-bottom:10px; width:100%;    padding-left: 10px;"><strong>Enter Number of Rooms</strong>
+        <div class="row" style="background:#f7f7f7;  padding: 10px; width: 100%; margin: auto; border: 1px solid #cccccc; margin: 10px 10px; border-radius: 4px;">
+            <div style="margin-bottom:10px; width:100%;    padding-left: 10px;">
+            <strong>Enter Number of Rooms</strong>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
@@ -128,7 +117,6 @@
                     <input name="single_room" type="Number" min="0" class="form-control" value="{{ old('single_room', $hotelDetail->single_room ?? 0) }}">
                 </div>
             </div>
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">Double
@@ -136,7 +124,6 @@
                     <input name="double_room" type="Number" min="0" class="form-control" value="{{ old('double_room', $hotelDetail->double_room ?? 0) }}">
                 </div>
             </div>
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">Triple
@@ -144,9 +131,6 @@
                     <input name="triple_room" type="Number" min="0" class="form-control" value="{{ old('double_room', $hotelDetail->double_room ?? 0) }}">
                 </div>
             </div>
-
-
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">Quad
@@ -154,7 +138,6 @@
                     <input name="quad_room" type="Number" min="0" class="form-control" value="{{ old('quad_room', $hotelDetail->quad_room ?? 0) }}">
                 </div>
             </div>
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">CWB
@@ -162,7 +145,6 @@
                     <input name="cwb_room" type="Number" min="0" class="form-control" value="{{ old('cwb_room', $hotelDetail->cwb_room ?? 0) }}">
                 </div>
             </div>
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">CNB
@@ -171,8 +153,7 @@
                 </div>
             </div>
         </div>
-        <div class="row"
-            style="background: rgb(254, 250, 235); border-color: #f7d038; padding: 10px; width: 100%; margin: auto; border: 1px solid #ffd17e; margin: 10px 10px; border-radius: 4px;">
+        <div class="row" style="background: rgb(254, 250, 235); border-color: #f7d038; padding: 10px; width: 100%; margin: auto; border: 1px solid #ffd17e; margin: 10px 10px; border-radius: 4px;">
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-in date* </label>
@@ -246,7 +227,6 @@
                 </div>
             </div>
         </div>
-
         <div class="col-md-12">
             <div class="form-group">
                 <label for="validationCustom02">Description</label>

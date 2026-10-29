@@ -11,15 +11,12 @@
         <div class="col-md-12">
             <div class="form-group">
                 <label for="validationCustom02">Day Itinerary order</label>
-                <input name="day_order" class="form-control" type="text" value="" required=""
-                    aria-required="true">
+                <input name="day_order" class="form-control" type="text" value="" required="" aria-required="true">
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="validationCustom02">Destination
-                </label>
-
+                <label for="validationCustom02">Destination </label>
                 <select name="destination_id" id="destination" class="form-control">
                    @foreach($destinationList as $id => $name)
                         <option value="{{ $id }}">
@@ -27,7 +24,6 @@
                         </option>
                     @endforeach
                 </select>
-
             </div>
         </div>
         <div class="col-md-6">
@@ -44,7 +40,6 @@
                 <label for="validationCustom02">Hotel Name
                 </label>
                 <input type="text" name="hotel_name" class="form-control">
-
             </div>
         </div>
         <div class="col-md-12 master" style="display:none;">
@@ -56,10 +51,8 @@
                     <option value="">Select Hotel</option>
                 </select>
                 <input type="hidden" name="hotelPriceId" id="hotelPriceId" value="0">
-
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="form-group">
                 <label for="validationCustom02">Category
@@ -73,7 +66,6 @@
                 </select>
             </div>
         </div>
-
         <div class="col-md-6 master" style="display:none;">
             <div class="form-group">
                 <label for="validationCustom02">Room Name</label>
@@ -82,8 +74,6 @@
                 </select>
             </div>
         </div>
-
-
         <div class="col-md-6 manual">
             <div class="form-group">
                 <label for="validationCustom02">Room Name
@@ -91,7 +81,7 @@
                 <input type="text" name="room_name" class="form-control">
             </div>
         </div>
-         <div class="col-md-6 master-section d-none">
+        <div class="col-md-6 master-section d-none">
             <div class="form-group">
                 <label>Room</label>
                 <select name="room_id" id="room_master" class="form-control"></select>
@@ -105,7 +95,6 @@
                 </select>
             </div>
         </div>
-
         <div class="col-md-6 manual">
             <div class="form-group">
                 <label for="validationCustom02">Meal Plan
@@ -114,7 +103,6 @@
                     class="form-control manual ui-autocomplete-input" value="" autocomplete="off">
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="form-group">
                 <label for="validationCustom02">Hotel Option</label>
@@ -125,9 +113,7 @@
                 </select>
             </div>
         </div>
-
-        <div class="row"
-            style="background:#f7f7f7;  padding: 10px; width: 100%; margin: auto; border: 1px solid #cccccc; margin: 10px 10px; border-radius: 4px;">
+        <div class="row" style="background:#f7f7f7;  padding: 10px; width: 100%; margin: auto; border: 1px solid #cccccc; margin: 10px 10px; border-radius: 4px;">
             <div style="margin-bottom:10px; width:100%;    padding-left: 10px;"><strong>Enter Number of Rooms</strong>
             </div>
             <div class="col-md-2">
@@ -137,7 +123,6 @@
                     <input name="singleRoom" type="Number" min="0" class="form-control" value="">
                 </div>
             </div>
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">Double
@@ -145,7 +130,6 @@
                     <input name="doubleRoom" type="Number" min="0" class="form-control" value="1">
                 </div>
             </div>
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">Triple
@@ -153,9 +137,6 @@
                     <input name="tripleRoom" type="Number" min="0" class="form-control" value="">
                 </div>
             </div>
-
-
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">Quad
@@ -163,7 +144,6 @@
                     <input name="quadRoom" type="Number" min="0" class="form-control" value="">
                 </div>
             </div>
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">CWB
@@ -171,7 +151,6 @@
                     <input name="cwbRoom" type="Number" min="0" class="form-control" value="">
                 </div>
             </div>
-
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="validationCustom02">CNB
@@ -180,13 +159,11 @@
                 </div>
             </div>
         </div>
-        <div class="row"
-            style="background: rgb(254, 250, 235); border-color: #f7d038; padding: 10px; width: 100%; margin: auto; border: 1px solid #ffd17e; margin: 10px 10px; border-radius: 4px;">
+        <div class="row" style="background: rgb(254, 250, 235); border-color: #f7d038; padding: 10px; width: 100%; margin: auto; border: 1px solid #ffd17e; margin: 10px 10px; border-radius: 4px;">
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="validationCustom02">Check-in date* </label>
-                    <input type="text" class="form-control hasDatepicker" required="" name="startDate"
-                        id="startDate" value="07-01-2026" aria-required="true">
+                   <input type="text" class="form-control hasDatepicker" required="" name="startDate" id="startDate" value="07-01-2026" aria-required="true">
                 </div>
             </div>
             <div class="col-md-6">
@@ -233,8 +210,9 @@
                     <table border="0" cellpadding="2" cellspacing="0">
                         <tbody>
                             <tr>
-                                <td colspan="2"><input type="checkbox" name="showTime" class="stip1"
-                                        value="1" style="width: 19px; height: 22px;"></td>
+                                <td colspan="2">
+                                    <input type="checkbox" name="showTime" class="stip1" value="1" style="width: 19px; height: 22px;">
+                                </td>
                                 <td>&nbsp;Show Time </td>
                             </tr>
                         </tbody>
@@ -249,11 +227,9 @@
                 <textarea name="description" id="description" rows="6" class="form-control" required=""></textarea>
             </div>
         </div>
-          <button type="submit" class="btn btn-primary savingbutton">
-                    Save
-                </button>
-            </div>
-        </form>
+        <button type="submit" class="btn btn-primary savingbutton"> Save </button>
+    </div>
+    </form>
 </div>
 
 <script>

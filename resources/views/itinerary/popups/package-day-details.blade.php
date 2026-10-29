@@ -18,8 +18,7 @@
                 </div>
                 <div class="col-md-12">
                     <div class="form-group">
-                        <label for="validationCustom02">Details
-                        </label>
+                        <label for="validationCustom02">Details</label>
                         <textarea name="description" rows="10" class="form-control">{{ old('description', $packageDayItem->description ?? '' ) }}</textarea>
                     </div>
                 </div>

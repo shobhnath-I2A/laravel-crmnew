@@ -10,26 +10,15 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title cardtitle">Hotel
-                                        <form action="{{ route('hotels.index') }}" class="newsearchsecform" style="left:54px;" method="get"
-                                            enctype="multipart/form-data">
-                                            <input type="text" name="keyword" class="form-control newsearchsec"
-                                                placeholder="Search by name" value="{{ request('keyword') }}" style="margin-top: 3px;">
+                                        <form action="{{ route('hotels.index') }}" class="newsearchsecform" style="left:54px;" method="get" enctype="multipart/form-data">
+                                            <input type="text" name="keyword" class="form-control newsearchsec" placeholder="Search by name" value="{{ request('keyword') }}" style="margin-top: 3px;">
                                         </form>
                                         <div class="float-right">
-                                            <a href="http://localhost:8081/crmreview/imports/hotel-import.xls"
-                                                class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray">Download
-                                                Format</a>
-                                            <button type="button"
-                                                class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray"
-                                                onclick="loadpop('Import Hotel Excel',this,'600px')" data-toggle="modal"
-                                                data-target=".bs-example-modal-center"
-                                                popaction="action=importhotelExcel">Import File</button>
-                                            <a href="http://localhost:8081/crmreview/exportHotel.php" target="_blank"
-                                                class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray">Export
-                                                Data</a>
-                                            <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
-                                                onclick="openSidebar('Add Hotel','{{ route('hotels.create') }}')"
-                                                data-backdrop="static">Add Hotel</button>
+                                            <a href="http://localhost:8081/crmreview/imports/hotel-import.xls" class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray">Download  Format</a>
+                                            <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray" onclick="loadpop('Import Hotel Excel',this,'600px')" data-toggle="modal"
+                                                data-target=".bs-example-modal-center" popaction="action=importhotelExcel">Import File</button>
+                                            <a href="http://localhost:8081/crmreview/exportHotel.php" target="_blank" class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray">Export Data</a>
+                                            <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" onclick="openSidebar('Add Hotel','{{ route('hotels.create') }}')" data-backdrop="static">Add Hotel</button>
                                         </div>
                                     </h4>
                                     <div class="table-responsive">
@@ -80,11 +69,7 @@
                                                         <td width="15%">{{ $hotel->destinationCity->name ?? '' }}</td>
                                                         <td width="1%" align="left">
                                                             <div align="center">
-                                                                <a class="dropdown-item"
-                                                                    style="cursor:pointer; font-size:12px; text-decoration:underline;"
-                                                                    onclick="openPopup('Update Price', '{{ route('hotels-rates.show', $hotel->id) }}')"
-                                                                    >
-                                                                    Update</a>
+                                                                <a class="dropdown-item" style="cursor:pointer; font-size:12px; text-decoration:underline;" onclick="openPopup('Update Price', '{{ route('hotels-rates.show', $hotel->id) }}')" > Update</a>
                                                             </div>
                                                         </td>
                                                         <td width="1%" align="left">

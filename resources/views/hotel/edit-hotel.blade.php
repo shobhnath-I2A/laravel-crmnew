@@ -1,11 +1,6 @@
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
-    <form class="custom-validation ajax-form"
-      action="{{ isset($hotel) ? route('hotels.update', $hotel->id) : route('hotels.store') }}"
-      method="POST"
-      enctype="multipart/form-data">
-
+    <form class="custom-validation ajax-form" action="{{ isset($hotel) ? route('hotels.update', $hotel->id) : route('hotels.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
-
     @isset($hotel)
         @method('PUT')
     @endisset
@@ -17,17 +12,13 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-
                         <div class="col-md-12">
                             <label>Hotel Name <span class="redmtext">*</span></label>
-                            <input type="text" name="name"
-                                class="form-control reqfield @error('name') is-invalid @enderror"
-                                value="{{ old('name', $hotel->name ?? '') }}" required>
+                            <input type="text" name="name" class="form-control reqfield @error('name') is-invalid @enderror" value="{{ old('name', $hotel->name ?? '') }}" required>
                             @error('name')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-
                         <div class="col-md-6">
                             <label>Category</label>
                             <select name="category"
@@ -80,29 +71,23 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-
                         <div class="col-md-6">
                             <label>Contact Person</label>
-                            <input type="text" name="contact_person" class="form-control"
-                                value="{{ old('contact_person', $hotel->contact_person ?? '') }}">
+                            <input type="text" name="contact_person" class="form-control" value="{{ old('contact_person', $hotel->contact_person ?? '') }}">
                         </div>
 
                         <div class="col-md-6">
                             <label>Email</label>
-                            <input type="email" name="contact_person_email" class="form-control"
-                                value="{{ old('contact_person_email', $hotel->contact_person_email ?? '') }}">
+                            <input type="email" name="contact_person_email" class="form-control" value="{{ old('contact_person_email', $hotel->contact_person_email ?? '') }}">
                         </div>
 
                         <div class="col-md-6">
                             <label>Phone</label>
-                            <input type="text" name="contact_person_phone" class="form-control"
-                                value="{{ old('contact_person_phone', $hotel->contact_person_phone ?? '') }}">
+                            <input type="text" name="contact_person_phone" class="form-control" value="{{ old('contact_person_phone', $hotel->contact_person_phone ?? '') }}">
                         </div>
-
                     </div>
                 </div>
             </div>
-
             {{-- Media & Status --}}
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
@@ -110,12 +95,10 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-
                         <div class="col-md-6">
                             <label>Hotel Photo</label>
                             <input type="file" name="image" class="form-control ">
                         </div>
-
                         <div class="col-md-6">
                             <label>Status</label>
                             <select name="status" class="form-control reqfield">
@@ -123,27 +106,22 @@
                                 <option value="0" {{ old('status', $hotel->status ?? '') == 0 ? 'selected' : '' }}>Inactive</option>
                             </select>
                         </div>
-
                         <div class="col-md-12">
                             <label>Hotel Link</label>
                             <input type="text" name="hotel_link" class="form-control" value="{{ old('hotel_link', $hotel->hotel_link ?? '') }}">
                         </div>
-
                     </div>
                 </div>
             </div>
-
             {{-- Buttons --}}
             <div class="text-end mb-3">
                 <button type="button" class="btn btn-secondary btn-lg" onclick="closeSidebar()">
                     Cancel
                 </button>
-
                 <button type="submit" class="btn btn-primary savingbutton">
                     Update
                 </button>
             </div>
-
         </div>
     </form>
 </div>

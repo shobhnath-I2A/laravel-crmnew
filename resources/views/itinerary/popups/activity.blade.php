@@ -12,9 +12,7 @@
         </button>
     </div>
     <div class="modal-body" id="popcontent">
-        <form class="custom-validation" action="frmaction.html" id="itineraries_validation" target="actoinfrm"
-            novalidate="novalidate" method="post" enctype="multipart/form-data">
-
+       <form class="custom-validation" action="frmaction.html" id="itineraries_validation" target="actoinfrm" novalidate="novalidate" method="post" enctype="multipart/form-data">
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
@@ -28,38 +26,28 @@
                         <div class="form-group">
                             <label for="validationCustom02">Destination
                             </label>
-
-                            <select name="destinationName" id="destinationName" class="form-control"
-                                onchange="loadhotel();" style="pointer-events: none;">
+                            <select name="destinationName" id="destinationName" class="form-control" onchange="loadhotel();" style="pointer-events: none;">
                                 <option value="">Select</option>
                                 <option value="Langkawi">Langkawi</option>
                                 <option value="Kuala Lumpur"> Kuala Lumpur</option>
                             </select>
-
                             <script>
                                 function loadhotel() {
                                     var destinationName = encodeURI($('#destinationName').val());
-
                                     $('#namemaster').load('loadactivity.php?destinationName=' + destinationName + '&eventobjectid=');
                                 }
                             </script>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="validationCustom02">Type</label>
-
-
-
                             <select name="pricetype" id="pricetype" class="form-control" onchange="changepricetype();">
                                 <option value="1">Manual</option>
                                 <option value="2">From Master</option>
                             </select>
-
                         </div>
                     </div>
-
                     <div class="col-md-12 manual">
                         <div class="form-group">
                             <label for="validationCustom02">Name
@@ -98,8 +86,6 @@
                             </script>
                         </div>
                     </div>
-
-
                     <div class="col-md-12 master" style="display:none;">
                         <div class="form-group">
                             <label for="validationCustom02">Name </label>
@@ -117,8 +103,6 @@
                                         // if you have one tinyMCE box on the page:
                                         tinyMCE.activeEditor.setContent(content);
                                     });
-
-
                                 }
 
                                 function changepricetype() {
@@ -138,25 +122,17 @@
                             </script>
                         </div>
                     </div>
-
-
-
-                    <div class="row"
-                        style="background: rgb(254, 250, 235); border-color: #f7d038; padding: 10px; width: 100%; margin: auto; border: 1px solid #ffd17e; margin: 10px 10px; border-radius: 4px;">
+                    <div class="row" style="background: rgb(254, 250, 235); border-color: #f7d038; padding: 10px; width: 100%; margin: auto; border: 1px solid #ffd17e; margin: 10px 10px; border-radius: 4px;">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="validationCustom02">Date* </label>
-                                <input type="text" class="form-control hasDatepicker" required="" name="startDate"
-                                    id="startDate" value="21-08-2025" aria-required="true">
+                                <input type="text" class="form-control hasDatepicker" required="" name="startDate" id="startDate" value="21-08-2025" aria-required="true">
                             </div>
                         </div>
-
-
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="validationCustom02">Start time</label>
                                 <select name="checkIn" class="form-control" autocomplete="off">
-
                                     <option value="2026-03-26 00:00:00">12:00 AM</option>
                                     <option value="2026-03-26 00:15:00">12:15 AM</option>
                                     <option value="2026-03-26 00:30:00">12:30 AM</option>
@@ -165,19 +141,15 @@
                                     <option value="2026-03-26 01:15:00">1:15 AM</option>
                                     <option value="2026-03-26 01:30:00">1:30 AM</option>
                                     <option value="2026-03-26 01:45:00">1:45 AM</option>
-
                                     <option value="2026-03-26 23:15:00">11:15 PM</option>
                                     <option value="2026-03-26 23:30:00">11:30 PM</option>
-
                                 </select>
                             </div>
                         </div>
-
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="validationCustom02">End time</label>
                                 <select name="checkOut" class="form-control" autocomplete="off">
-
                                     <option value="2026-03-26 00:00:00">12:00 AM</option>
                                     <option value="2026-03-26 00:15:00">12:15 AM</option>
                                     <option value="2026-03-26 00:30:00">12:30 AM</option>
@@ -185,156 +157,93 @@
                                     <option value="2026-03-26 01:00:00">1:00 AM</option>
                                     <option value="2026-03-26 01:15:00">1:15 AM</option>
                                     <option value="2026-03-26 01:30:00">1:30 AM</option>
-
                                     <option value="2026-03-26 22:45:00">10:45 PM</option>
                                     <option value="2026-03-26 23:00:00">11:00 PM</option>
                                     <option value="2026-03-26 23:15:00">11:15 PM</option>
                                     <option value="2026-03-26 23:30:00">11:30 PM</option>
-
                                 </select>
                             </div>
                         </div>
-
-
                         <div class="col-md-12">
                             <div class="form-group">
                                 <table border="0" cellpadding="2" cellspacing="0">
                                     <tbody>
                                         <tr>
-                                            <td colspan="2"><input type="checkbox" name="showTime" class="stip1"
-                                                    value="1" style="width: 19px; height: 22px;"></td>
+                                            <td colspan="2"><input type="checkbox" name="showTime" class="stip1" value="1" style="width: 19px; height: 22px;"></td>
                                             <td>&nbsp;Show Time </td>
                                         </tr>
                                     </tbody>
                                 </table>
-
                             </div>
                         </div>
-
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="validationCustom02">Description
-                            </label>
-                            <div id="mceu_15" class="mce-tinymce mce-container mce-panel" hidefocus="1"
-                                tabindex="-1" role="application"
-                                style="visibility: hidden; border-width: 1px; width: 100%;">
+                            <label for="validationCustom02">Description  </label>
+                           <div id="mceu_15" class="mce-tinymce mce-container mce-panel" hidefocus="1" tabindex="-1" role="application" style="visibility: hidden; border-width: 1px; width: 100%;">
                                 <div id="mceu_15-body" class="mce-container-body mce-stack-layout">
-                                    <div id="mceu_16"
-                                        class="mce-top-part mce-container mce-stack-layout-item mce-first">
+                                    <div id="mceu_16" class="mce-top-part mce-container mce-stack-layout-item mce-first">
                                         <div id="mceu_16-body" class="mce-container-body">
-                                            <div id="mceu_17"
-                                                class="mce-container mce-menubar mce-toolbar mce-first" role="menubar"
-                                                style="border-width: 0px 0px 1px;">
+                                            <div id="mceu_17" class="mce-container mce-menubar mce-toolbar mce-first" role="menubar" style="border-width: 0px 0px 1px;">
                                                 <div id="mceu_17-body" class="mce-container-body mce-flow-layout">
-                                                    <div id="mceu_18"
-                                                        class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-first mce-btn-has-text"
-                                                        tabindex="-1" aria-labelledby="mceu_18" role="menuitem"
-                                                        aria-haspopup="true"><button id="mceu_18-open"
-                                                            role="presentation" type="button" tabindex="-1"><span
-                                                                class="mce-txt">File</span> <i
-                                                                class="mce-caret"></i></button></div>
-                                                    <div id="mceu_19"
-                                                        class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-btn-has-text"
-                                                        tabindex="-1" aria-labelledby="mceu_19" role="menuitem"
-                                                        aria-haspopup="true"><button id="mceu_19-open"
-                                                            role="presentation" type="button" tabindex="-1"><span
-                                                                class="mce-txt">Edit</span> <i
-                                                                class="mce-caret"></i></button></div>
-                                                    <div id="mceu_20"
-                                                        class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-btn-has-text"
-                                                        tabindex="-1" aria-labelledby="mceu_20" role="menuitem"
-                                                        aria-haspopup="true"><button id="mceu_20-open"
-                                                            role="presentation" type="button" tabindex="-1"><span
-                                                                class="mce-txt">View</span> <i
-                                                                class="mce-caret"></i></button></div>
-                                                    <div id="mceu_21"
-                                                        class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-btn-has-text"
-                                                        tabindex="-1" aria-labelledby="mceu_21" role="menuitem"
-                                                        aria-haspopup="true"><button id="mceu_21-open"
-                                                            role="presentation" type="button" tabindex="-1"><span
-                                                                class="mce-txt">Insert</span> <i
-                                                                class="mce-caret"></i></button></div>
-                                                    <div id="mceu_22"
-                                                        class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-btn-has-text"
-                                                        tabindex="-1" aria-labelledby="mceu_22" role="menuitem"
-                                                        aria-haspopup="true"><button id="mceu_22-open"
-                                                            role="presentation" type="button" tabindex="-1"><span
-                                                                class="mce-txt">Format</span> <i
-                                                                class="mce-caret"></i></button></div>
-                                                    <div id="mceu_23"
-                                                        class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-last mce-btn-has-text"
-                                                        tabindex="-1" aria-labelledby="mceu_23" role="menuitem"
-                                                        aria-haspopup="true"><button id="mceu_23-open"
-                                                            role="presentation" type="button" tabindex="-1"><span
-                                                                class="mce-txt">Tools</span> <i
-                                                                class="mce-caret"></i></button></div>
+                                                    <div id="mceu_18" class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-first mce-btn-has-text" tabindex="-1" aria-labelledby="mceu_18" role="menuitem" aria-haspopup="true">
+                                                        <button id="mceu_18-open" role="presentation" type="button" tabindex="-1">
+                                                            <span class="mce-txt">File</span> <i class="mce-caret"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div id="mceu_19" class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-btn-has-text" tabindex="-1" aria-labelledby="mceu_19" role="menuitem" aria-haspopup="true">
+                                                        <button id="mceu_19-open" role="presentation" type="button" tabindex="-1">
+                                                            <span class="mce-txt">Edit</span> <i class="mce-caret"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div id="mceu_20" class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-btn-has-text" tabindex="-1" aria-labelledby="mceu_20" role="menuitem" aria-haspopup="true">
+                                                        <button id="mceu_20-open" role="presentation" type="button" tabindex="-1">
+                                                            <span class="mce-txt">View</span> <i class="mce-caret"></i>
+                                                        </button>
+                                                    </div>
+                                                   <div id="mceu_21" class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-btn-has-text" tabindex="-1" aria-labelledby="mceu_21" role="menuitem" aria-haspopup="true">
+                                                        <button id="mceu_21-open" role="presentation" type="button" tabindex="-1">
+                                                            <span class="mce-txt">Insert</span> <i class="mce-caret"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div id="mceu_22" class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-btn-has-text" tabindex="-1" aria-labelledby="mceu_22" role="menuitem" aria-haspopup="true">
+                                                        <button id="mceu_22-open" role="presentation" type="button" tabindex="-1"><span class="mce-txt">Format</span> <i class="mce-caret"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div id="mceu_23" class="mce-widget mce-btn mce-menubtn mce-flow-layout-item mce-last mce-btn-has-text" tabindex="-1" aria-labelledby="mceu_23" role="menuitem" aria-haspopup="true">
+                                                        <button id="mceu_23-open" role="presentation" type="button" tabindex="-1"><span class="mce-txt">Tools</span> <i class="mce-caret"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div id="mceu_24"
-                                                class="mce-toolbar-grp mce-container mce-panel mce-last"
-                                                hidefocus="1" tabindex="-1" role="group">
+                                            <div id="mceu_24" class="mce-toolbar-grp mce-container mce-panel mce-last" hidefocus="1" tabindex="-1" role="group">
                                                 <div id="mceu_24-body" class="mce-container-body mce-stack-layout">
-                                                    <div id="mceu_25"
-                                                        class="mce-container mce-toolbar mce-stack-layout-item mce-first mce-last"
-                                                        role="toolbar">
-                                                        <div id="mceu_25-body"
-                                                            class="mce-container-body mce-flow-layout">
-                                                            <div id="mceu_26"
-                                                                class="mce-container mce-flow-layout-item mce-first mce-btn-group"
-                                                                role="group">
+                                                   <div id="mceu_25" class="mce-container mce-toolbar mce-stack-layout-item mce-first mce-last" role="toolbar">
+                                                        <div id="mceu_25-body" class="mce-container-body mce-flow-layout">
+                                                            <div id="mceu_26" class="mce-container mce-flow-layout-item mce-first mce-btn-group" role="group">
                                                                 <div id="mceu_26-body">
-                                                                    <div id="mceu_0"
-                                                                        class="mce-widget mce-btn mce-first mce-disabled"
-                                                                        tabindex="-1" role="button"
-                                                                        aria-label="Undo" aria-disabled="true"><button
-                                                                            id="mceu_0-button" role="presentation"
-                                                                            type="button" tabindex="-1"><i
-                                                                                class="mce-ico mce-i-undo"></i></button>
+                                                                    <div id="mceu_0" class="mce-widget mce-btn mce-first mce-disabled" tabindex="-1" role="button" aria-label="Undo" aria-disabled="true">
+                                                                        <button id="mceu_0-button" role="presentation" type="button" tabindex="-1"><i class="mce-ico mce-i-undo"></i></button>
                                                                     </div>
-                                                                    <div id="mceu_1"
-                                                                        class="mce-widget mce-btn mce-last mce-disabled"
-                                                                        tabindex="-1" role="button"
-                                                                        aria-label="Redo" aria-disabled="true"><button
-                                                                            id="mceu_1-button" role="presentation"
-                                                                            type="button" tabindex="-1"><i
-                                                                                class="mce-ico mce-i-redo"></i></button>
+                                                                    <div id="mceu_1" class="mce-widget mce-btn mce-last mce-disabled" tabindex="-1" role="button" aria-label="Redo" aria-disabled="true">
+                                                                        <button id="mceu_1-button" role="presentation" type="button" tabindex="-1"><i class="mce-ico mce-i-redo"></i></button>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="mceu_27"
-                                                                class="mce-container mce-flow-layout-item mce-btn-group"
-                                                                role="group">
+                                                           <div id="mceu_27" class="mce-container mce-flow-layout-item mce-btn-group" role="group">
                                                                 <div id="mceu_27-body">
-                                                                    <div id="mceu_2"
-                                                                        class="mce-widget mce-btn mce-menubtn mce-first mce-last mce-btn-has-text"
-                                                                        tabindex="-1" aria-labelledby="mceu_2"
-                                                                        role="button" aria-haspopup="true"><button
-                                                                            id="mceu_2-open" role="presentation"
-                                                                            type="button" tabindex="-1"><span
-                                                                                class="mce-txt">Formats</span> <i
-                                                                                class="mce-caret"></i></button></div>
+                                                                    <div id="mceu_2" class="mce-widget mce-btn mce-menubtn mce-first mce-last mce-btn-has-text" tabindex="-1" aria-labelledby="mceu_2" role="button" aria-haspopup="true">
+                                                                        <button id="mceu_2-open" role="presentation" type="button" tabindex="-1"><span class="mce-txt">Formats</span> <i class="mce-caret"></i> </button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="mceu_28"
-                                                                class="mce-container mce-flow-layout-item mce-btn-group"
-                                                                role="group">
+                                                            <div id="mceu_28" class="mce-container mce-flow-layout-item mce-btn-group" role="group">
                                                                 <div id="mceu_28-body">
-                                                                    <div id="mceu_3"
-                                                                        class="mce-widget mce-btn mce-first"
-                                                                        tabindex="-1" aria-pressed="false"
-                                                                        role="button" aria-label="Bold"><button
-                                                                            id="mceu_3-button" role="presentation"
-                                                                            type="button" tabindex="-1"><i
-                                                                                class="mce-ico mce-i-bold"></i></button>
+                                                                    <div id="mceu_3" class="mce-widget mce-btn mce-first" tabindex="-1" aria-pressed="false" role="button" aria-label="Bold">
+                                                                        <button id="mceu_3-button" role="presentation" type="button" tabindex="-1"><i class="mce-ico mce-i-bold"></i></button>
                                                                     </div>
-                                                                    <div id="mceu_4"
-                                                                        class="mce-widget mce-btn mce-last"
-                                                                        tabindex="-1" aria-pressed="false"
-                                                                        role="button" aria-label="Italic"><button
-                                                                            id="mceu_4-button" role="presentation"
-                                                                            type="button" tabindex="-1"><i
-                                                                                class="mce-ico mce-i-italic"></i></button>
+                                                                    <div id="mceu_4" class="mce-widget mce-btn mce-last" tabindex="-1" aria-pressed="false" role="button" aria-label="Italic">
+                                                                        <button id="mceu_4-button" role="presentation" type="button" tabindex="-1"><i class="mce-ico mce-i-italic"></i></button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -477,17 +386,10 @@
                     </div>
                 </div>
             </div>
-
             <div class="modal-footer" style=" position:relative;">
-
-                <button type="button" class="btn btn-danger waves-effect waves-light"
-                    style="position: absolute; left: 10px;" onclick=" dlt('2368712','108998');"><i
-                        class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
-
-                <input name="Save" type="submit" value="Save" id="savingbutton" class="btn btn-primary"
-                    style="float:right;">
+               <button type="button" class="btn btn-danger waves-effect waves-light" style="position: absolute; left: 10px;" onclick=" dlt('2368712','108998');"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
+              <input name="Save" type="submit" value="Save" id="savingbutton" class="btn btn-primary" style="float:right;">
             </div>
-
             <input name="action" type="hidden" id="action" value="addActivity">
             <input name="editId" type="hidden" id="editId" value="2368712">
             <input name="pid" type="hidden" id="editId" value="108998">
@@ -503,7 +405,6 @@
             }
 
             $(function() {
-
                 $('#startDate').datepicker({
                     dateFormat: 'dd-mm-yy',
                     minDate: 0,
@@ -525,7 +426,6 @@
         <script>
             $(document).ready(function() {
                 $('.custom-validation').validate({
-
                     submitHandler: function(form) {
                         // Form submission logic here, e.g., AJAX call
                         $('.custom-validation #savingbutton').prop('disabled', true).val('Saving...');

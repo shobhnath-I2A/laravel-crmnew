@@ -5,15 +5,12 @@
 {{ $packageDayItem ?? '' }}
 <div class="modal-body">
     <div class="row">
-
         <div class="col-md-12">
             <div class="form-group">
                 <label>Day Itinerary order ddd</label>
-                <input name="day_order" class="form-control" type="text"
-                    value="{{ old('day_order', $packageDayItem->day_order ?? '') }}">
+                <input name="day_order" class="form-control" type="text" value="{{ old('day_order', $packageDayItem->day_order ?? '') }}">
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="form-group">
                 <label>Destination</label>
@@ -26,7 +23,6 @@
                 </select>
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="form-group">
                 <label>Type</label>
@@ -36,7 +32,6 @@
                 </select>
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="form-group">
                 <label>Transfer Type</label>
@@ -54,37 +49,26 @@
                 @enderror
             </div>
         </div>
-
         @php
             $selectedTransferId = old('transfer_id', $packageDayItem->transfer_id ?? '');
         @endphp
-
         {{-- Manual Name --}}
         <div class="col-md-6 manual-box" style="{{ $sourceType == 1 ? 'display:none;' : '' }}">
             <div class="form-group">
                 <label>Name</label>
-                <input type="text" name="name" id="servicename" class="form-control"
-                    value="{{ old('name', $packageDayItem->name ?? '') }}" autocomplete="off" @if($sourceType == 1) disabled @endif>
+                <input type="text" name="name" id="servicename" class="form-control" value="{{ old('name', $packageDayItem->name ?? '') }}" autocomplete="off" @if($sourceType == 1) disabled @endif>
             </div>
         </div>
-
         {{-- Master Transfer --}}
        <div class="col-md-6 master-box" style="{{ $sourceType == 1 ? 'display:block;' : 'display:none;' }}">
             <div class="form-group">
                 <label>Transfer Master</label>
-
-                <select name="transfer_id" id="namemaster" class="form-control"
-                    data-selected="{{ $selectedTransferId }}" @if($sourceType != 1) disabled @endif>
-
+                <select name="transfer_id" id="namemaster" class="form-control" data-selected="{{ $selectedTransferId }}" @if($sourceType != 1) disabled @endif>
                     <option value="">Select Transfer</option>
-
                 </select>
             </div>
         </div>
-
-        <div class="row"
-            style="background:#fefaeb; border:1px solid #ffd17e; padding:10px; width:100%; margin:10px; border-radius:4px;">
-
+       <div class="row" style="background:#fefaeb; border:1px solid #ffd17e; padding:10px; width:100%; margin:10px; border-radius:4px;">
             <div class="col-md-4">
                 <div class="form-group">
                     <label>Date*</label>
@@ -95,7 +79,6 @@
                     @enderror
                 </div>
             </div>
-
             <div class="col-md-4">
                 <div class="form-group">
                     <label>Start time</label>
@@ -104,12 +87,7 @@
                             @php
                                 $time = \Carbon\Carbon::createFromTime(0, 0)->addMinutes($i);
                                 $timeValue = $time->format('H:i:s');
-                                $selectedTime = old(
-                                    'check_in_time',
-                                    !empty($packageDayItem->check_in_time)
-                                        ? \Carbon\Carbon::parse($packageDayItem->check_in_time)->format('H:i:s')
-                                        : '',
-                                );
+                              $selectedTime = old( 'check_in_time', !empty($packageDayItem->check_in_time) ? \Carbon\Carbon::parse($packageDayItem->check_in_time)->format('H:i:s') : '', );
                             @endphp
                             <option value="{{ $timeValue }}" {{ $selectedTime == $timeValue ? 'selected' : '' }}>
                                 {{ $time->format('h:i A') }}
@@ -118,7 +96,6 @@
                     </select>
                 </div>
             </div>
-
             <div class="col-md-4">
                 <div class="form-group">
                     <label>End time</label>
@@ -127,12 +104,7 @@
                             @php
                                 $time = \Carbon\Carbon::createFromTime(0, 0)->addMinutes($i);
                                 $timeValue = $time->format('H:i:s');
-                                $selectedTime = old(
-                                    'check_out_time',
-                                    !empty($packageDayItem->check_out_time)
-                                        ? \Carbon\Carbon::parse($packageDayItem->check_out_time)->format('H:i:s')
-                                        : '',
-                                );
+                                $selectedTime = old( 'check_out_time', !empty($packageDayItem->check_out_time) ? \Carbon\Carbon::parse($packageDayItem->check_out_time)->format('H:i:s') : '', );
                             @endphp
                             <option value="{{ $timeValue }}" {{ $selectedTime == $timeValue ? 'selected' : '' }}>
                                 {{ $time->format('h:i A') }}
@@ -141,7 +113,6 @@
                     </select>
                 </div>
             </div>
-
             <div class="col-md-12">
                 <label>
                     <input type="checkbox" name="show_time" value="1"
@@ -151,14 +122,12 @@
                 </label>
             </div>
         </div>
-
         <div class="col-md-12">
             <div class="form-group">
                 <label>Description</label>
                 <textarea name="description" rows="5" class="editorclass" id="description">{{ old('description', $packageDayItem->description ?? '') }}</textarea>
             </div>
         </div>
-
     </div>
 </div>
 <script>

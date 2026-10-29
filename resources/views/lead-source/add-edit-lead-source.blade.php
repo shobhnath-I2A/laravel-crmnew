@@ -3,22 +3,15 @@
         max-width: 25%;
     }
 </style>
-
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
-    <form class="custom-validation ajax-form"
-        action="{{ isset($leadSource) ? route('lead-source.update', $leadSource->id) : route('lead-source.store') }}"
-        method="POST" enctype="multipart/form-data">
-
+   <form class="custom-validation ajax-form" action="{{ isset($leadSource) ? route('lead-source.update', $leadSource->id) : route('lead-source.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @if (isset($leadSource))
             @method('PUT')
         @endif
-
         <div class="container-fluid">
             <div class="card-body">
-
                 <div class="row">
-
                     {{-- NAME --}}
                     <div class="col-md-12">
                         <label>Name <span class="redmtext">*</span></label>
@@ -29,7 +22,6 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
-
                     {{-- STATUS --}}
                     <div class="col-md-6">
                         <label>Status</label>
@@ -48,7 +40,6 @@
                     </div>
                 </div>
             </div>
-
             {{-- Buttons --}}
             <div class="text-end mb-3">
                 <button type="button" class="btn btn-secondary btn-lg" onclick="closePopup();">
@@ -58,7 +49,6 @@
                     Save
                 </button>
             </div>
-
         </div>
     </form>
 </div>

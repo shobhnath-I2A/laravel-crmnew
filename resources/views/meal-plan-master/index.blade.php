@@ -10,15 +10,11 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title cardtitle">Meal Plan
-                                        <form action="{{ route('meal-plan-master.index') }}" class="newsearchsecform" style="left:54px;" method="get"
-                                            enctype="multipart/form-data">
-                                            <input type="text" name="keyword" class="form-control newsearchsec"
-                                                placeholder="Search by name" value="{{ request('keyword') }}" style="margin-top: 3px;">
+                                       <form action="{{ route('meal-plan-master.index') }}" class="newsearchsecform" style="left:54px;" method="get" enctype="multipart/form-data">
+                                           <input type="text" name="keyword" class="form-control newsearchsec" placeholder="Search by name" value="{{ request('keyword') }}" style="margin-top: 3px;">
                                         </form>
                                         <div class="float-right">
-                                            <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
-                                                onclick="openPopup('Add Meal Plan','{{ route('meal-plan-master.create') }}')"
-                                                data-backdrop="static">Add Meal Plan</button>
+                                           <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" onclick="openPopup('Add Meal Plan','{{ route('meal-plan-master.create') }}')" data-backdrop="static">Add Meal Plan</button>
                                         </div>
                                     </h4>
                                     <div class="table-responsive">

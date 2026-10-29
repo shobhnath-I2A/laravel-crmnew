@@ -4,10 +4,7 @@
     }
 </style>
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
-    <form class="custom-validation ajax-form"
-        action="{{ isset($roomType) ? route('room-type.update', $roomType->id) : route('room-type.store') }}"
-        method="POST" enctype="multipart/form-data">
-
+   <form class="custom-validation ajax-form" action="{{ isset($roomType) ? route('room-type.update', $roomType->id) : route('room-type.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @if (isset($roomType))
             @method('PUT')

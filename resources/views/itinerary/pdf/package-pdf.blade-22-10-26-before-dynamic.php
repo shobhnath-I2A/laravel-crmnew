@@ -759,9 +759,7 @@ tfoot {
                 <table width="100%" cellspacing="0" cellpadding="0" border="0" style="min-width:100%;padding-right: 30px;">
                     <thead>
                         <tr>
-                            <td style="background:url(<br />
-<b>Warning</b>:  Undefined variable $fullurl in <b>C:\xampp\htdocs\Project\I2ACrm\staging\pdf\itineraries4.php</b> on line <b>44</b><br />
-pdf/images/sideCircle.png) no-repeat top left;background-size:250px 121px;padding:30px 0 30px 30px;font-weight:bold;font-size:36px;color:#6cc072;">Day Wise Details</td>
+                            <td style="background:url(http://localhost:8081/project/I2ACrm/staging/pdf/images/sideCircle.png) no-repeat top left;background-size:250px 121px;padding:30px 0 30px 30px;font-weight:bold;font-size:36px;color:#6cc072;">Day Wise Details</td>
                         </tr>
                     </thead>
                 </table>
@@ -1208,29 +1206,21 @@ pdf/images/sideCircle.png) no-repeat top left;background-size:250px 121px;paddin
             </div>
             <div class="clear"></div>
         </div>
-        <!-- end section1 Flight -->
-        <!-- section1 Activity -->
     </div>
-
     <div class="pdf_wrapper dayHead">
         <div class="around-padding borderNone">
             <div style="font-weight:bold;">
                 <div style="width:100%;font-size:32px;color:#000;line-height:1.1;margin-top:5px;">Day 5 <div style="    float: right;font-size: 20px; font-weight: bold; color: #000; line-height: 1.1; vertical-align: bottom; text-align: right;">Mon, 25 Aug 2025</div>
                 </div>
-
             </div>
         </div>
     </div>
     <!-- heading end -->
     <div class="pdf_wrapper">
-
         <div class="dayDetails around-padding">
             <h3>Aquaria KLCC followed by free day at leisure</h3>
             <p>Aquaria KLCC is a state of the art located in the heart of the city, beneath the Kuala Lumpur City Centre and a stone's throw from the iconic Twin Towers. An amazing showcase of 5,000 land bound and aquatic creature exhibits spread over a a sprawling 60,000sqft</p>
         </div>
-
-        <!-- section1 Activity -->
-
         <div class="img-desc around-padding">
             <h2>Activity</h2>
             <div class="img-box">
@@ -1260,21 +1250,11 @@ pdf/images/sideCircle.png) no-repeat top left;background-size:250px 121px;paddin
     </div>
     <!-- heading end -->
     <div class="pdf_wrapper">
-
         <div class="dayDetails around-padding">
             <h3>Departure from Kuala Lumpur (PVT)</h3>
             <p>Today after breakfast, check out from the hotel and get transferred to the airport to board your return flight to India. Tour ends with ever lasting memories.</p>
         </div>
-
-
-        <!-- section1 Activity -->
-
-
-
-        <!-- section1 Activity -->
-
         <div class="img-desc around-padding">
-
             <h2>Transportation</h2>
             <div class="img-box">
                 <div class="image">
@@ -1289,15 +1269,8 @@ pdf/images/sideCircle.png) no-repeat top left;background-size:250px 121px;paddin
             </div>
             <div class="clear"></div>
         </div>
-        <!-- end section1 Activity -->
-
-
     </div>
-
-
     </table>
-
-
     <div style="page-break-before: always;"></div>
     <table width="816px" cellspacing="0" cellpadding="0" border="0" style="background:#fff;font-family:sans-serif;font-size:14px;line-height:1.7;color:#000;">
         <tbody>
@@ -1314,7 +1287,6 @@ pdf/images/sideCircle.png) no-repeat top left;background-size:250px 121px;paddin
             </tr>
         </tbody>
     </table>
-
     <div class="pdf_wrapper around-padding">
         <p style="font-weight:bold;font-size:24px;color:#6cc072;display:block;margin:0;padding:0 0 5px;">Inclusions & Exclusions</p>
         <div style="margin-bottom:10px;">
@@ -1347,9 +1319,9 @@ pdf/images/sideCircle.png) no-repeat top left;background-size:250px 121px;paddin
                 <li><strong>Account Name: I2A Technologies Private Limited<br />
                         Account Number: 114505002013<br />
                         Bank Name: ICICI Bank Ltd<br />
-                        IFSC Code: ICIC0001145</strong></li>
+                        IFSC Code: ICIC0001145</strong>
+                </li>
             </ul>
-
             <p><strong><span style="background-color:#ffff00">All payments to be made in Current Account only. We do not accept cash collections or any other account payments.</span></strong></p>
         </div>
         <p style="font-weight:bold;font-size:24px;color:#6cc072;display:block;margin:0;padding:0 0 5px;">Useful Tips Before Booking</p>
@@ -1372,9 +1344,7 @@ pdf/images/sideCircle.png) no-repeat top left;background-size:250px 121px;paddin
                 <li>Please Note: Cancellation policy is subject to change. It depends on the hotel policy.</li>
                 <li>In peak season (example: long weekends, festival season, summer vacation etc.) most of the hotels charge 100% cancellation</li>
             </ul>
-
             <h3><strong>Airline Cancellation Policy:</strong></h3>
-
             <ul style="list-style-type:square">
                 <li>Your flights are non-refundable. In the event of cancellation, you will not get any refund for flights.</li>
             </ul>

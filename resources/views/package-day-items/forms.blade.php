@@ -2,19 +2,14 @@
     $isEdit = isset($packageDayItem) && $packageDayItem->exists;
     $type = strtolower($packageDayItem->type ?? 'accommodation');
 @endphp
-
 <style>
     .popup-box {
         max-width: 40%;
     }
 </style>
-
 <div class="modal-body">
-    <form method="POST" class="custom-validation ajax-form"
-        action="{{ $isEdit ? route('package-days-items.update', $packageDayItem->id) : route('package-days-items.store') }}">
-
+   <form method="POST" class="custom-validation ajax-form" action="{{ $isEdit ? route('package-days-items.update', $packageDayItem->id) : route('package-days-items.store') }}">
         @csrf
-
         @if ($isEdit)
             @method('PUT')
         @endif
@@ -30,7 +25,6 @@
             $hotelDetail = $packageDayItem->hotelDetail ?? null;
 
             $sourceType = old('source_type', $packageDayItem->source_type ?? 0);
-
             $selectedHotelId = old('hotel_id', $hotelDetail->hotel_id ?? '');
             $selectedRoomType = old('room_type', $hotelDetail->room_type ?? '');
             $selectedRoomName = old('room_name', $hotelDetail->room_name ?? '');
@@ -87,9 +81,7 @@
                     <i class="fa fa-trash"></i> Delete
                 </button>
             @endif
-
-            <input name="Save" type="submit" value="Save" class="btn btn-success" id="savingbutton"
-                style="float:right;">
+            <input name="Save" type="submit" value="Save" class="btn btn-success" id="savingbutton" style="float:right;">
         </div>
     </form>
 </div>
@@ -109,8 +101,6 @@
         $('#hotelRoommaster').html('<option value="">Select Room Type</option>');
         $('#mealPlanmaster').html('<option value="">Select Meal Plan</option>');
     }
-
-
 
     function changepricetype() {
         let sourceType = $('#source_type').val();
@@ -144,7 +134,6 @@
         }
 
         $('#hotel_id').html('<option value="">Loading...</option>');
-
         $.ajax({
             url: "{{ route('load.hotels') }}",
             type: "GET",
@@ -172,9 +161,7 @@
             $('#hotelRoommaster').html('<option value="">Select Room Type</option>');
             return;
         }
-
         $('#hotelRoommaster').html('<option value="">Loading...</option>');
-
         $.ajax({
             url: "{{ route('load.hotel.data') }}",
             type: "GET",
@@ -189,9 +176,7 @@
                         html += `<option value="${room.name}">${room.name}</option>`;
                     });
                 }
-
                 $('#hotelRoommaster').html(html);
-
                 if (selectedRoom) {
                     $('#hotelRoommaster').val(selectedRoom);
                 }
@@ -210,7 +195,6 @@
             type: "GET",
             success: function(html) {
                 $('#mealPlanmaster').html(html);
-
                 if (selectedMealPlan) {
                     $('#mealPlanmaster').val(selectedMealPlan);
                 }
@@ -250,7 +234,6 @@
             selectedHotel = '';
             selectedRoom = '';
             selectedMealPlan = '';
-
             changepricetype();
         });
 

@@ -4,16 +4,12 @@
     }
 </style>
 <div class="wrapper" style="margin-top: 0px; padding:15px;">
-    <form class="custom-validation ajax-form"
-        action="{{ isset($mealPlan) ? route('meal-plan-master.update', $mealPlan->id) : route('meal-plan-master.store') }}"
-        method="POST" enctype="multipart/form-data">
-
+    <form class="custom-validation ajax-form" action="{{ isset($mealPlan) ? route('meal-plan-master.update', $mealPlan->id) : route('meal-plan-master.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @if (isset($mealPlan))
             @method('PUT')
         @endif
         <div class="container-fluid">
-
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-12">
@@ -50,7 +46,6 @@
                     Save
                 </button>
             </div>
-
         </div>
     </form>
 </div>

@@ -10,15 +10,11 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title cardtitle"> Lead Source
-                                        <form action="{{ route('lead-source.index') }}" class="newsearchsecform" style="left:54px;" method="get"
-                                            enctype="multipart/form-data">
-                                            <input type="text" name="keyword" class="form-control newsearchsec"
-                                                placeholder="Search by name" value="{{ request('keyword') }}" style="margin-top: 3px;">
+                                      <form action="{{ route('lead-source.index') }}" class="newsearchsecform" style="left:54px;" method="get" enctype="multipart/form-data">
+                                           <input type="text" name="keyword" class="form-control newsearchsec" placeholder="Search by name" value="{{ request('keyword') }}" style="margin-top: 3px;">
                                         </form>
                                         <div class="float-right">
-                                            <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
-                                                onclick="openPopup('Add Lead Source','{{ route('lead-source.create') }}')"
-                                                data-backdrop="static">Add Lead Source</button>
+                                            <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" onclick="openPopup('Add Lead Source','{{ route('lead-source.create') }}')" data-backdrop="static">Add Lead Source</button>
                                         </div>
                                     </h4>
                                     <div class="table-responsive">
@@ -44,7 +40,6 @@
                                                                             <img src="{{ asset('assets/images/profilepic/16942404066793789211693635606.jpg')}}"  width="25" height="25">
                                                                         </td> --}}
                                                                         <td>{{ $source->name ?? '' }}</td>
-
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -53,8 +48,7 @@
                                                           <span class="badge {{ $source->status == 1 ? 'badge-success' : 'badge-danger' }}"> {{ $source->status == 1 ? 'Active' : 'Inactive' }} </span>
                                                         </td>
                                                         <td width="15%" align="left">
-                                                            <table border="0" cellpadding="0" cellspacing="0"
-                                                                class="addbynewbadges">
+                                                            <table border="0" cellpadding="0" cellspacing="0" class="addbynewbadges">
                                                                 <tbody>
                                                                     <tr>
                                                                         <td colspan="2">
@@ -70,10 +64,7 @@
                                                         </td>
                                                         <td width="12%" align="left">{{ $source->created_at }}</td>
                                                         <td width="1%">
-                                                            <a class="dropdown-item neweditpan"
-                                                            onclick="openPopup('Edit Lead Source', '{{ route('lead-source.edit', $source->id ) }}')">
-                                                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                                                            </a>
+                                                            <a class="dropdown-item neweditpan" onclick="openPopup('Edit Lead Source', '{{ route('lead-source.edit', $source->id ) }}')"> <i class="fa fa-pencil" aria-hidden="true"></i> </a>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -82,7 +73,8 @@
                                     </div>
                                     <div class="mt-3 pageingouter">
                                         <div style="float: left; font-size: 13px; padding: 7px 11px; border: 1px solid #ededed; background-color: #fff; color: #000;">
-                                            Total Records: <strong>{{ $leadSourceCount }}</strong></div>
+                                            Total Records: <strong>{{ $leadSourceCount }}</strong>
+                                        </div>
                                         <div class="d-flex justify-content-end">
                                             {{ $leadSource->links() }}
                                         </div>
@@ -95,5 +87,4 @@
             </div>
         </div>
     </div>
-
 @endsection

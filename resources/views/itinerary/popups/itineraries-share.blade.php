@@ -43,14 +43,14 @@
         </style>
         <ul class="nav nav-pills nav-bg-custom nav-justified intab" role="tablist" style=" text-transform:uppercase;">
             <li class="nav-item" style="text-transform:uppercase;">
-                <a class="nav-link active show" data-toggle="tab" href="#tb1" role="tab" aria-selected="true"><span
-                        class="d-none d-md-block">Share privately</span><span class="d-block d-md-none"><i
-                            class="mdi mdi-home-variant h5"></i></span></a>
+               <a class="nav-link active show" data-toggle="tab" href="#tb1" role="tab" aria-selected="true">
+                <span class="d-none d-md-block">Share privately</span><span class="d-block d-md-none"><i class="mdi mdi-home-variant h5"></i></span>
+            </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#tb2" role="tab" aria-selected="false"><span
-                        class="d-none d-md-block">Share publicly</span><span class="d-block d-md-none"><i
-                            class="mdi mdi-account h5"></i></span></a>
+                <a class="nav-link" data-toggle="tab" href="#tb2" role="tab" aria-selected="false">
+                    <span class="d-none d-md-block">Share publicly</span><span class="d-block d-md-none"><i class="mdi mdi-account h5"></i></span>
+                </a>
             </li>
         </ul>
 
@@ -70,9 +70,7 @@
                     <div class="row" style="padding: 0px 6px;  ">
                         <div class="col-md-12 col-xl-12">
                             <div class="form-group">
-                                <input id="clientkeywordsearch" type="search" class="form-control"
-                                    placeholder="Enter name, email, mobile" value="" disabled="disabled"
-                                    style="display: none;">
+                              <input id="clientkeywordsearch" type="search" class="form-control" placeholder="Enter name, email, mobile" value="" disabled="disabled" style="display: none;">
                                 <div style="margin-top:20px;" id="loadSearchClients">
                                     <table class="table table-hover mb-0">
                                         <thead></thead>
@@ -105,9 +103,7 @@
                     <div class="row" style="padding: 0px 6px;">
                         <div class="col-md-12 col-xl-12">
                             <div class="form-group" style="  border-bottom: 1px solid #dedcdc;">
-                                <input id="ccmails" name="ccmails" class="form-control" value=""
-                                    placeholder="CC Mail">
-
+                                <input id="ccmails" name="ccmails" class="form-control" value="" placeholder="CC Mail">
                             </div>
                         </div>
                     </div>
@@ -122,12 +118,8 @@
                         </div>
                     </div>
                     <p></p>
-
                     <div class="modal-footer" style=" position:relative; padding-right:0px;">
-                        <input name="Save" type="submit" value="Send" id="savingbuttondd"
-                            class="btn btn-success btn-lg waves-effect waves-light"
-                            onclick="this.form.submit(); this.disabled=true; this.value='Saving...';"
-                            style="float:right;">
+                      <input name="Save" type="submit" value="Send" id="savingbuttondd" class="btn btn-success btn-lg waves-effect waves-light" onclick="this.form.submit(); this.disabled=true; this.value='Saving...';" style="float:right;">
                     </div>
                     <input name="action" type="hidden" id="action" value="shareprivateclients">
                     <input name="pid" type="hidden" id="privateShareItineraryId" value="{{ $itinerary->id }}">
@@ -161,26 +153,24 @@
                 <div class="col-md-12 col-xl-12" style="padding:0px;">
                     <a id="withPriceWhatsapp" target="_blank" href="{{ $whatsappLink($withPriceUrl) }}"
                         style="position: absolute; right: 0px; top: -4px;">
-                        <button type="button" class="btn btn-light btn-sm"
-                            style="background-color:#46cd93; color:#fff;"> <i class="fa fa-whatsapp"
-                                aria-hidden="true"></i> WhatsApp</button></a>
+                        <button type="button" class="btn btn-light btn-sm" style="background-color:#46cd93; color:#fff;">
+                            <i class="fa fa-whatsapp" aria-hidden="true"></i> WhatsApp
+                        </button>
+                    </a>
                     <div style=" margin-bottom:5px;">With Price (Copy this link)</div>
                     <div class="form-group">
-                        <input id="withPriceUrl" class="form-control" readonly="readonly"
-                            value="{{ $withPriceUrl }}">
+                       <input id="withPriceUrl" class="form-control" readonly="readonly" value="{{ $withPriceUrl }}">
                     </div>
                 </div>
 
                 <div class="col-md-12 col-xl-12" style="padding:0px;">
-                    <a id="withoutPriceWhatsapp" target="_blank" href="{{ $whatsappLink($withoutPriceUrl) }}"
-                        style="position: absolute; right: 0px; top: -4px;">
-                        <button type="button" class="btn btn-light btn-sm"
-                            style="background-color:#46cd93; color:#fff;"> <i class="fa fa-whatsapp"
-                                aria-hidden="true"></i> WhatsApp</button></a>
+                    <a id="withoutPriceWhatsapp" target="_blank" href="{{ $whatsappLink($withoutPriceUrl) }}" style="position: absolute; right: 0px; top: -4px;">
+                        <button type="button" class="btn btn-light btn-sm"style="background-color:#46cd93; color:#fff;">
+                            <i class="fa fa-whatsapp" aria-hidden="true"></i> WhatsApp</button>
+                    </a>
                     <div style=" margin-bottom:5px; color:#FF0000;">Without Price (Copy this link)</div>
                     <div class="form-group">
-                        <input id="withoutPriceUrl" class="form-control" readonly="readonly"
-                            value="{{ $withoutPriceUrl }}">
+                        <input id="withoutPriceUrl" class="form-control" readonly="readonly" value="{{ $withoutPriceUrl }}">
                     </div>
                 </div>
             </div>

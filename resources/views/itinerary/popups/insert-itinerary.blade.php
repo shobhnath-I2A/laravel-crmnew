@@ -10,15 +10,12 @@
                             <div class="newoptionmenu">
                                 <div>
                                     <a href="{{ route('queries.show', $queryId) }}">
-                                        <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light"
-                                            style="margin-bottom:10px;">Back to query </button>
+                                      <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="margin-bottom:10px;">Back to query </button>
                                     </a>
                                 </div>
                                 <div>
                                     <form action="" method="post" enctype="multipart/form-data">
-                                        <input type="text" name="keyword" class="form-control"
-                                            placeholder="Search by query ID, name, destination" value=""
-                                            style="margin-top: 3px;">
+                                        <input type="text" name="keyword" class="form-control" placeholder="Search by query ID, name, destination" value="" style="margin-top: 3px;">
                                         <input name="qid" type="hidden" value="127873">
                                         <input name="ga" type="hidden" value="selectitinerary">
                                     </form>

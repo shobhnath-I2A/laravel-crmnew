@@ -9,32 +9,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, minimal-ui">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="auth-user-id" content="{{ auth()->id() }}">
-
     <link href="{{ asset('assets/images/favicon.png') }}" rel="icon" />
-
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/plugins/summernote-bs4.css') }}">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Fjalla+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
-
     <link href="{{ asset('assets/css/customstyle.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assets/css/pagestyle.css') }}" rel="stylesheet" type="text/css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
-
-
-
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
-
     @stack('styles')
 </head>
 
@@ -47,7 +38,6 @@
         <div id="ipWarning" style="background:#fff3cd; color:#856404; padding:10px; margin:10px;">
             {{ session('warning') }}
         </div>
-
         <script>
             setTimeout(() => {
                 document.getElementById('ipWarning')?.remove();
@@ -99,15 +89,12 @@
             </div>
         </div>
         {{-- end side bar popup forms --}}
-
     </div>
-
     @include('partials.footer')
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
     <script>
         window.toastr = window.toastr || {
             success: function() {},
@@ -115,7 +102,6 @@
             info: function() {},
             warning: function() {}
         };
-
         window.selectedfun = function () {
             var bulkAssign = document.getElementById('bulkassign');
             if (!bulkAssign) return 0;
@@ -124,7 +110,6 @@
             bulkAssign.style.display = checked > 0 ? 'block' : 'none';
             return checked;
         };
-
         window.loadpop = function (title, obj, width) {
             if (typeof window.jQuery !== 'undefined') {
                 var $ = window.jQuery;
@@ -137,36 +122,28 @@
             }
             console.warn('loadpop is unavailable because jQuery is not loaded yet.');
         };
-
         window.openusermenu = function () {
             return true;
         };
-
         document.addEventListener('DOMContentLoaded', function () {
             if (typeof window.jQuery === 'undefined') return;
-
             var $ = window.jQuery;
             $(document).on('change', '.checkBoxClass', function () {
                 window.selectedfun();
             });
-
             $(document).on('change', '#ckbCheckAll', function () {
                 $('.checkBoxClass').prop('checked', this.checked);
                 window.selectedfun();
             });
         });
     </script>
-
     <!-- Scripts -->
     @stack('scripts')
-
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/modernizr.min.js') }}"></script>
     <script src="{{ asset('assets/js/waves.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.slimscroll.js') }}"></script>
-
     <script src="{{ asset('assets/plugins/jquery.peity.min.js') }}"></script>
-
     <script src="{{ asset('assets/js/app.js') }}"></script>
     <script>
         window.PUSHER_APP_KEY = "{{ env('PUSHER_APP_KEY') }}";
@@ -174,15 +151,11 @@
     </script>
     <script src="{{ asset('assets/js/popup-notification.js?' . time()) }}"></script>
     {{-- <script src="{{ asset('assets/js/dashboard.js') }}"></script> --}}
-
     <script src="{{ asset('assets/tinymce/tinymce.min.js') }}"></script>
-
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
-
     <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
-
     <script>
         $.ajaxSetup({
             headers: {
@@ -439,5 +412,4 @@
     </script>
     {{-- End night mode toggle js --}}
 </body>
-
 </html>
