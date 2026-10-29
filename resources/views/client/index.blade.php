@@ -25,8 +25,7 @@
                             <div class="card-body" style="padding:0px;">
                                 <form action="frmaction.html" method="post" enctype="multipart/form-data"
                                     name="addeditfrm" target="actoinfrm" id="addeditfrm">
-                                    <div id="bulkassign"
-                                        style="display:none;padding: 11px 2px 5px; background-color: #e4f3ff; border-bottom: 2px solid rgb(221, 221, 221); border-radius: 3px; width: 100%; float: left; display: none;">
+                                    <div id="bulkassign" style="display:none;padding: 11px 2px 5px; background-color: #e4f3ff; border-bottom: 2px solid rgb(221, 221, 221); border-radius: 3px; width: 100%; float: left; display: none;">
                                         <table border="0" cellspacing="0" cellpadding="5">
                                             <tbody>
                                                 <tr>
@@ -35,19 +34,17 @@
                                                     </td>
                                                     <td style="font-size:13px;">Select All&nbsp;</td>
                                                     <td>
-                                                        <select id="assignToPerson" name="assignToPerson"
-                                                            class="form-control"
-                                                            style="padding: 5px; font-size: 12px; height: 30px; line-height: 20px; color: #000; font-weight: 600;"
-                                                            autocomplete="off">
+                                                        <select id="assignToPerson" name="assignToPerson" class="form-control" style="padding: 5px; font-size: 12px; height: 30px; line-height: 20px; color: #000; font-weight: 600;" autocomplete="off">
                                                             <option value="0">Select Client Group</option>
                                                         </select></td>
-                                                    <td><button type="submit" id="savingbutton" class="btn btn-primary"
-                                                            onclick="this.form.submit(); this.value='Saving...';"
-                                                            style="float:right;padding: 3px 10px;">
+                                                    <td>
+                                                        <button type="submit" id="savingbutton" class="btn btn-primary" onclick="this.form.submit(); this.value='Saving...';" style="float:right;padding: 3px 10px;">
                                                             Save
-                                                        </button></td>
-                                                    <td><input autocomplete="false" name="action" type="hidden"
-                                                            id="action" value="bulkclientaddtogroup"></td>
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <input autocomplete="false" name="action" type="hidden" id="action" value="bulkclientaddtogroup">
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -70,13 +67,10 @@
                                             @foreach ($clients as $client)
                                                 <tr>
                                                     <td width="1%">
-                                                        <input type="checkbox" name="assignall[]"
-                                                            class="checkBoxClass" id="assignqury" value="125645"
-                                                            onclick="selectedfun();" style="width: 16px; height: 16px;">
+                                                       <input type="checkbox" name="assignall[]" class="checkBoxClass" id="assignqury" value="125645" onclick="selectedfun();" style="width: 16px; height: 16px;">
                                                     </td>
-                                                    <td><a onclick="openSidebar('Edit Client','{{ route('clients.edit', $client->id) }}')"><strong>
-                                                        {{ $client->submit_name ?? '' }}  {{ $client->first_name ?? '' }} {{ $client->last_name ?? '' }}
-                                                        </strong></a>
+                                                    <td>
+                                                        <a onclick="openSidebar('Edit Client','{{ route('clients.edit', $client->id) }}')"><strong> {{ $client->submit_name ?? '' }}  {{ $client->first_name ?? '' }} {{ $client->last_name ?? '' }} </strong></a>
                                                     </td>
                                                     <td width="10%">{{ $client->mobile ?? '' }}</td>
                                                     <td width="1%">{{ $client->email ?? '' }}</td>
@@ -97,13 +91,11 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td width="1%"><a class="dropdown-item neweditpan"
-                                                            href="{{ route('clients.show', $client->id) }}"
-                                                            style="float:left;"><i class="fa fa-eye"
-                                                                aria-hidden="true"></i></a></td>
                                                     <td width="1%">
-                                                        <a class="dropdown-item neweditpan" onclick="openSidebar('Edit Client','{{ route('clients.edit', $client->id) }}')">
-                                                            <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        <a class="dropdown-item neweditpan" href="{{ route('clients.show', $client->id) }}" style="float:left;"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                    </td>
+                                                    <td width="1%">
+                                                       <a class="dropdown-item neweditpan" onclick="openSidebar('Edit Client','{{ route('clients.edit', $client->id) }}')"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
                                                     </td>
                                                 </tr>
                                             @endforeach

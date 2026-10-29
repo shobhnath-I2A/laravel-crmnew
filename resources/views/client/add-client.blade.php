@@ -32,16 +32,14 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Email <span class="redmtext">*</span></label>
-                                <input type="email" name="email" value="{{ old('email', $client->email ?? '') }}"
-                                class="form-control reqfield @error('email') is-invalid @enderror" required>
+                                <input type="email" name="email" value="{{ old('email', $client->email ?? '') }}" class="form-control reqfield @error('email') is-invalid @enderror" required>
                             @error('email')
                                 <div class="text-danger">{{ $message }} </div>
                             @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Email 2</label>
-                            <input type="email" name="email2" value="{{ old('email2', $client->email2 ?? '') }}"
-                                class="form-control ">
+                            <input type="email" name="email2" value="{{ old('email2', $client->email2 ?? '') }}" class="form-control ">
 
                         </div>
                     </div>
@@ -126,14 +124,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label class="form-label">Date of Birth</label>
-                             <input type="text" name="dob" value="{{ old('startDate', $client->dob ?? '') }}" id="dob" class="form-control reqfield"
-                                required>
+                             <input type="text" name="dob" value="{{ old('startDate', $client->dob ?? '') }}" id="dob" class="form-control reqfield" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Marriage Anniversary</label>
-
-                            <input type="text" name="marriage_anniversary" value="{{ old('endDate', $client->marriage_anniversary ?? '') }}" id="marriageAnniversary" class="form-control reqfield"
-                                >
+                            <input type="text" name="marriage_anniversary" value="{{ old('endDate', $client->marriage_anniversary ?? '') }}" id="marriageAnniversary" class="form-control reqfield">
                         </div>
                     </div>
                 </div>
@@ -153,7 +148,6 @@
 </div>
 <script>
     $(function() {
-
         $("#dob").datepicker({
             dateFormat: 'dd-mm-yy',
             maxDate: new Date(),
@@ -161,7 +155,6 @@
             changeYear: true,
             yearRange: "-90:+0"
         });
-
         $("#marriageAnniversary").datepicker({
             dateFormat: 'dd-mm-yy',
             maxDate: new Date(),
@@ -169,6 +162,5 @@
             changeYear: true,
             yearRange: "-90:+0"
         });
-
     });
 </script>

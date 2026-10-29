@@ -17,45 +17,36 @@
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Email</label>
                             {{ $query->email ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-4" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Country</label>
                         </div>
                     </div>
                     <div class="col-lg-3" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">State</label>
                         </div>
                     </div>
                     <div class="col-lg-5" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">City</label>
                         </div>
                     </div>
                 </div>
-
                 <h4 class="mt-3 header-title">Query Information</h4>
-
                 <div class="row" style="padding-left:10px;  ">
                     <div class="col-lg-3" style="display:none;">
-                        <div class="form-group input-group"
-                            style="position:relative;">
-                            <label for="validationCustom02">FROM
-                                CITY</label>
+                        <div class="form-group input-group" style="position:relative;">
+                            <label for="validationCustom02">FROM CITY</label>
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Origin </label>
                             {{ $query->origin ?? '' }}
                         </div>
@@ -63,15 +54,12 @@
                     <div class="col-lg-3">
                         <div class="form-group input-group"
                             style="position:relative;">
-                            <label for="validationCustom02">Destination
-                            </label>
+                            <label for="validationCustom02">Destination </label>
                             {{ $query->destination ?? '' }}
                         </div>
                     </div>
-
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02"> Date </label>
                             {{ $query->startDate ? \Carbon\Carbon::parse($query->startDate)->format('d-m-Y') : '' }}
                             To -
@@ -79,31 +67,25 @@
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
-                            <label for="validationCustom02">Travel Month
-                            </label>
+                        <div class="form-group input-group" style="position:relative;">
+                            <label for="validationCustom02">Travel Month </label>
                             {{ $query->travelMonth ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Lead Source
                             </label>
                             {{ $query->leadSource ?? '' }}
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
-                            <label
-                                for="validationCustom02">Services</label>
+                        <div class="form-group input-group" style="position:relative;">
+                            <label for="validationCustom02">Services</label>
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
+                        <div class="form-group input-group" style="position:relative;">
                             <label for="validationCustom02">Pax</label>
                             <strong> Adult: </strong> {{ $query->adult ?? '' }} -
                             <strong>Child:</strong> {{ $query->child ?? '' }} -
@@ -111,38 +93,26 @@
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group input-group"
-                            style="position:relative;">
-                            <label for="validationCustom02">Assign
-                                To</label>
-                            i2a Technologies
+                        <div class="form-group input-group" style="position:relative;">
+                            <label for="validationCustom02">Assign  To</label>  i2a Technologies
                         </div>
                     </div>
-
                     <div class="col-lg-12" style="display:none;">
                         <table width="100%" border="0"
                             cellspacing="0" cellpadding="5">
                             <tbody>
                                 <tr>
                                     <td width="41%">
-                                        <div class="form-group input-group"
-                                            style="position:relative;">
-                                            <label
-                                                for="validationCustom02">Internal
-                                                Note</label>
-                                            <div class="form-group"
-                                                style="overflow:hidden;">
-                                                <textarea name="internalnote" id="internalnote" onkeyup="saveinternalnote();" class="form-control"
-                                                    style="width:400px;" placeholder="Note"></textarea>
+                                        <div class="form-group input-group" style="position:relative;">
+                                            <label for="validationCustom02">Internal Note</label>
+                                            <div class="form-group" style="overflow:hidden;">
+                                                <textarea name="internalnote" id="internalnote" onkeyup="saveinternalnote();" class="form-control" style="width:400px;" placeholder="Note"></textarea>
                                             </div>
                                         </div>
                                     </td>
                                     <td width="59%">
                                         <div style="margin-top:5px;">
-                                            <button type="submit"
-                                                id="savingbutton"
-                                                class="btn btn-primary"
-                                                onclick="location.reload();">Save</button>
+                                            <button type="submit" id="savingbutton" class="btn btn-primary" onclick="location.reload();">Save</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -153,7 +123,6 @@
                             function saveinternalnote() {
                                 var internalnote = encodeURI($('#internalnote').val());
                                 $('#internote').load('actionpage.php?action=saveinternalnote&queryId=127504&internalnote=' + internalnote);
-
                             }
                         </script>
                     </div>
@@ -173,15 +142,11 @@
                     <div class="col-lg-12" style="padding-left:15px;">
                         <div class="row" style="padding: 10px 5px 0px 0px;">
                             <div class="col-lg-12" id="notefiledmaintop"style="display:none;">
-                                <form action="frmaction.html" method="post"enctype="multipart/form-data" name="addeditfrm" target="actoinfrm"
-                                    id="addeditfrm">
+                                <form action="frmaction.html" method="post"enctype="multipart/form-data" name="addeditfrm" target="actoinfrm" id="addeditfrm">
                                     <div class="form-group" style="overflow:hidden;">
-                                        <textarea name="details" id="notedetails" onkeyup="notedetailsfun();" class="form-control"
-                                            style="height:80px; border: 5px solid #ddd;" placeholder="Type Note Here">
-                                        </textarea>
+                                        <textarea name="details" id="notedetails" onkeyup="notedetailsfun();" class="form-control" style="height:80px; border: 5px solid #ddd;" placeholder="Type Note Here"></textarea>
                                         <div style="margin-top:5px; display:none;" id="noteaddbutton">
-                                            <button type="submit" id="savingbutton" class="btn btn-secondary" onclick="this.form.submit();$('#noteaddbutton').hide();"
-                                                style="float:right;">
+                                            <button type="submit" id="savingbutton" class="btn btn-secondary" onclick="this.form.submit();$('#noteaddbutton').hide();" style="float:right;">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                                 Save Note
                                             </button>
@@ -191,8 +156,7 @@
                                     <input name="queryid" type="hidden" value="127504">
                                 </form>
                             </div>
-                            <div class="col-lg-12" id="queryNotes"
-                                style="max-height:372px; overflow:auto;">
+                            <div class="col-lg-12" id="queryNotes" style="max-height:372px; overflow:auto;">
                                 <div style="text-align:center; color:#999999; padding-bottom:10px;">
                                     No Notes</div>
                             </div>
@@ -260,68 +224,46 @@
                                     </a>
                                 </td>
                             </tr>
-
                             <tr>
                                 <td width="1%" valign="middle">
                                     <a href="display.html?ga=itineraries&amp;view=1&amp;id=109034" target="_blank">
                                         <img src="" style="width:64px; height:46px;  ">
                                     </a>
                                 </td>
-                                <td valign="middle"><a target="_blank"
-                                        href="display.html?ga=itineraries&amp;view=1&amp;id=109034"
-                                        style="color: #000; font-weight: 600;">Mr.
-                                        Bibhuti Behera 's Trip to
-                                        Singapore,Malaysia For 6N/7D <div
-                                            style="color:#999999; font-size:11px; margin-top:2px;">
-                                            ID: 109034 - Singapore,Malaysia
-                                        </div></a></td>
+                                <td valign="middle">
+                                   <a target="_blank" href="display.html?ga=itineraries&amp;view=1&amp;id=109034" style="color: #000; font-weight: 600;">Mr. Bibhuti Behera 's Trip to Singapore,Malaysia For 6N/7D <div style="color:#999999; font-size:11px; margin-top:2px;"> ID: 109034 - Singapore,Malaysia </div></a>
+                                </td>
                                 <td valign="middle">₹ 133,400 </td>
                                 <td valign="middle">
-                                    <div
-                                        style="margin-bottom:0px; font-weight:600;">
-                                        Adarsh </div>
-                                    <div
-                                        style=" font-weight:600; font-size:11px; color:#999999;">
-                                        04/08/2025</div>
+                                    <div style="margin-bottom:0px; font-weight:600;">  Adarsh </div>
+                                    <div style=" font-weight:600; font-size:11px; color:#999999;"> 04/08/2025</div>
                                 </td>
-                                <td width="1%" valign="middle"><a
-                                        target="actoinfrm"
-                                        onclick="$('.savingbutton109034').attr('disabled','true');$('.savingbutton109034').text('Inserting...');"
-                                        href="actionpage.php?action=insertitinerary&amp;qid=127504&amp;id=109034">
-                                        <button type="button"
-                                            class="btn btn-info btn-lg waves-effect waves-light savingbutton109034"
-                                            id="savingbutton"
-                                            style="font-size: 14px; padding: 5px 10px;"><i
-                                                class="fa fa-plus"
-                                                aria-hidden="true"></i>
-                                            Select </button></a></td>
+                                <td width="1%" valign="middle">
+                                    <a target="actoinfrm" onclick="$('.savingbutton109034').attr('disabled','true');$('.savingbutton109034').text('Inserting...');" href="actionpage.php?action=insertitinerary&amp;qid=127504&amp;id=109034">
+                                       <button type="button" class="btn btn-info btn-lg waves-effect waves-light savingbutton109034" id="savingbutton" style="font-size: 14px; padding: 5px 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Select </button>
+                                    </a>
+                                </td>
                             </tr>
                             <tr>
-                                <td width="1%" valign="middle"><a
-                                        href="display.html?ga=itineraries&amp;view=1&amp;id=109019"
-                                        target="_blank"><img
-                                            src=""
-                                            style="width:64px; height:46px;  "></a>
+                                <td width="1%" valign="middle">
+                                    <a href="display.html?ga=itineraries&amp;view=1&amp;id=109019" target="_blank">
+                                        <img src="" style="width:64px; height:46px;  ">
+                                    </a>
                                 </td>
-                                <td valign="middle"><a target="_blank"
-                                        href="display.html?ga=itineraries&amp;view=1&amp;id=109019"
-                                        style="color: #000; font-weight: 600;">Trail's
-                                        To Singapore &amp; Bali With Flights
-                                        Updated-1<div
-                                            style="color:#999999; font-size:11px; margin-top:2px;">
+                                <td valign="middle">
+                                    <a target="_blank" href="display.html?ga=itineraries&amp;view=1&amp;id=109019" style="color: #000; font-weight: 600;">Trail's To Singapore &amp; Bali With Flights Updated-1
+                                        <div style="color:#999999; font-size:11px; margin-top:2px;">
                                             ID: 109019 - Singapore, bali
-                                        </div></a></td>
+                                        </div>
+                                    </a>
+                                </td>
                                 <td valign="middle">₹ 310,900 </td>
                                 <td valign="middle">
-                                    <div
-                                        style="margin-bottom:0px; font-weight:600;">
-                                        Anjali</div>
-                                    <div
-                                        style=" font-weight:600; font-size:11px; color:#999999;">
-                                        02/08/2025</div>
+                                    <div style="margin-bottom:0px; font-weight:600;"> Anjali</div>
+                                    <div style=" font-weight:600; font-size:11px; color:#999999;"> 02/08/2025</div>
                                 </td>
-                                <td width="1%" valign="middle"><a
-                                        target="actoinfrm"
+                                <td width="1%" valign="middle">
+                                    <a target="actoinfrm"
                                         onclick="$('.savingbutton109019').attr('disabled','true');$('.savingbutton109019').text('Inserting...');"
                                         href="actionpage.php?action=insertitinerary&amp;qid=127504&amp;id=109019">
                                         <button type="button"

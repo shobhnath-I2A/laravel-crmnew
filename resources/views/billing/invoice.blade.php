@@ -24,10 +24,8 @@
                     <tbody>
                         <tr>
                             <td width="50%" rowspan="3" align="left" valign="top"
-                                style=" border-bottom:1px solid #000;"><img
-                                    src="http://localhost:8081/project/I2ACrm/staging/profilepic/16942404066793789211693635606.jpg"
-                                    style="max-width:200px; height:auto;"><br><br>
-
+                                style=" border-bottom:1px solid #000;">
+                                <img  src="http://localhost:8081/project/I2ACrm/staging/profilepic/16942404066793789211693635606.jpg" style="max-width:200px; height:auto;"><br><br>
                                 <strong>Trekhops </strong><br>
                                 Address: I2A Technologies Private Limited Grugram <br>
                                 GSTN: <br>
@@ -60,8 +58,7 @@
                         <tr>
                             <td rowspan="4" align="left" valign="top" style="  border-bottom:1px solid #000;">
                                 <strong>Buyer </strong><br>
-                                Mr. Nandu Sai <br>
-                                <br>
+                                Mr. Nandu Sai <br><br>
                                 <strong>Email:</strong>
                                 shobhnath.s@i2a.co<br>
                                 <strong>Address:</strong>

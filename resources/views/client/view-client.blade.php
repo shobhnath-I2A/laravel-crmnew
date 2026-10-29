@@ -5,7 +5,6 @@
         <div class="dashboardleft" style=" background-color:#f9fbfc;border-right: 1px solid #ddd6 !important;">
             <div class="dashboardleftinnter">
                 <h4 class="card-title" style=" margin-top:0px; font-size: 18px; font-weight:700;">Client Account</h4>
-
             </div>
             <div class="listleftmenulink">
                 <a href="#clientsec">Client Details</a>
@@ -23,21 +22,11 @@
                     <div class="row">
                         <div class="col-md-12 col-xl-12" id="displayprofile">
                             <div class="systemcard">
-
-                                <div
-                                    style=" background-color:#FFFFFF; padding-bottom:20px; border-bottom:1px solid #ececec; position:relative;">
+                                <div style=" background-color:#FFFFFF; padding-bottom:20px; border-bottom:1px solid #ececec; position:relative;">
                                     <div class="float-right">
-                                        <a href="{{ route('clients.index') }}"
-                                            style="position: absolute; right: 50px; top: 10px;"><button type="button"
-                                                class="btn btn-primary btn-lg waves-effect waves-light"
-                                                style="margin-bottom:10px;">Back</button></a>
+                                        <a href="{{ route('clients.index') }}" style="position: absolute; right: 50px; top: 10px;"><button type="button" class="btn btn-primary btn-lg waves-effect waves-light" style="margin-bottom:10px;">Back</button></a>
                                     </div>
-
-                                    <a class="dropdown-item neweditpan"
-                                        style="cursor:pointer; position:absolute; right:0px; top:10px;z-index: 1;background-color: #c6e5f5;"
-                                       onclick="openSidebar('Edit Client','{{ route('clients.edit', $client->id) }}')"><i class="fa fa-pencil"
-                                            aria-hidden="true"></i></a>
-
+                                    <a class="dropdown-item neweditpan" style="cursor:pointer; position:absolute; right:0px; top:10px;z-index: 1;background-color: #c6e5f5;" onclick="openSidebar('Edit Client','{{ route('clients.edit', $client->id) }}')"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                         <tbody>
                                             <tr>
@@ -48,10 +37,8 @@
                                                     <div style="margin-bottom:0px; font-size:16px; font-weight:700;">
                                                         {{ $client->submit_name ?? '' }} {{ $client->first_name ?? '' }} {{ $client->last_name ?? '' }}
                                                     </div>
-                                                    <div style="margin-bottom:0px; font-size:14px; font-weight:400;">Type:
-                                                        B2C</div>
-                                                    <div style="margin-bottom:0px; font-size:13px; font-weight:400;">
-                                                        Created: <strong>{{ \Carbon\Carbon::parse($client->created_at)->format('d-m-Y') }}</strong></div>
+                                                    <div style="margin-bottom:0px; font-size:14px; font-weight:400;">Type: B2C</div>
+                                                    <div style="margin-bottom:0px; font-size:13px; font-weight:400;">Created: <strong>{{ \Carbon\Carbon::parse($client->created_at)->format('d-m-Y') }}</strong></div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -135,27 +122,16 @@
                                 <div style=" background-color: #FFFFFF; padding-bottom: 10px; position: relative; ">
                                     <div style="font-size:16px; font-weight:600; margin-bottom:5px; position:relative;">
                                         Queries
-
-                                        <a href="#" onclick="createqueryfromclient('125615');"
-                                            style="position:absolute; right:0px;"><button type="button"
-                                                class="btn btn-secondary btn-lg waves-effect waves-light"
-                                                style="margin-bottom: 10px; border-radius:20px; padding: 5px 15px; width: 100%;text-align:left;"><i
-                                                    class="fa fa-plus" aria-hidden="true"></i> Add Query</button></a>
+                                       <a href="#" onclick="createqueryfromclient('125615');" style="position:absolute; right:0px;"><button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="margin-bottom: 10px; border-radius:20px; padding: 5px 15px; width: 100%;text-align:left;"><i class="fa fa-plus" aria-hidden="true"></i> Add Query</button></a>
                                     </div>
                                 </div>
-
                                 <table class="table table-hover mb-0">
-
                                     <thead>
                                         <tr>
                                             <th>ID</th>
                                             <th>Destination</th>
-                                            <th>
-                                                <div align="left">From</div>
-                                            </th>
-                                            <th>
-                                                <div align="left">To</div>
-                                            </th>
+                                            <th><div align="left">From</div></th>
+                                            <th><div align="left">To</div></th>
                                             <th>Requirement</th>
                                             <th>Status</th>
                                             <th>Date</th>
@@ -177,9 +153,7 @@
                                             <th width="10%">Amount</th>
                                             <th width="10%">Received</th>
                                             <th width="10%">Pending</th>
-                                            <th width="15%">
-                                                <div align="left">Date</div>
-                                            </th>
+                                            <th width="15%"><div align="left">Date</div></th>
                                             <th width="1%">&nbsp;</th>
                                         </tr>
                                     </thead>
@@ -221,9 +195,7 @@
                                             <th>Last Name</th>
                                             <th>Gender</th>
                                             <th>Date of Birth </th>
-                                            <th width="1%">
-                                                <div align="right">Action</div>
-                                            </th>
+                                            <th width="1%"><div align="right">Action</div></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -231,16 +203,12 @@
                                 </table>
                                 <div style="padding:20px; text-align:center;">No Document Found</div>
                             </div>
-
                             <div class="systemcard" id="vendorPayment">
                                 <div style=" background-color: #FFFFFF; padding-bottom: 10px; position: relative;">
                                     <div style="font-size:16px; font-weight:600; margin-bottom:5px;">Vendor Payment</div>
                                 </div>
                                 <div style="width:100%; overflow:auto;">
-                                    <table class="table table-hover mb-0"
-                                        style="border:1px solid #ddd; display:1none !important; font-size:12px;"
-                                        id="headerTable">
-
+                                   <table class="table table-hover mb-0" style="border:1px solid #ddd; display:1none !important; font-size:12px;" id="headerTable">
                                         <thead>
                                             <tr>
                                                 <th>Sr.</th>
