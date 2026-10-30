@@ -127,8 +127,7 @@
                                                 @foreach($statuses as $status)
                                                 <td width="10%">
                                                     <a href="{{ route('queries.index', array_merge(request()->except(['statusId', 'page']), ['statusId' => $status->id])) }}">
-                                                        <div class="statusbox {{ request('statusId') == $status->id ? 'active-status' : '' }}"
-                                                            style="background-color:{{ $status->color }}">
+                                                        <div class="statusbox {{ request('statusId') == $status->id ? 'active-status' : '' }}" style="background-color:{{ $status->color }}">
                                                             @if(request('statusId') == $status->id)
                                                                 <div class="ripple" style="animation-delay:0s"></div>
                                                             @endif
@@ -176,8 +175,7 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td width="3%" align="left" valign="top" style="padding-right:10px;">
-                                                                    <input type="checkbox" name="query_ids[]" class="checkBoxClass" id="assignqury{{ $query->id }}" value="{{ $query->id }}" onclick="selectedfun();"
-                                                                        style="width: 16px; height: 16px;">
+                                                                    <input type="checkbox" name="query_ids[]" class="checkBoxClass" id="assignqury{{ $query->id }}" value="{{ $query->id }}" onclick="selectedfun();" style="width: 16px; height: 16px;">
                                                                 </td>
                                                                 <td width="14%" align="left" valign="top" style="padding-right:20px;">
                                                                     <div style="font-size:15px; font-weight:500;line-height: 16px; margin-bottom:3px; font-weight:600;">
@@ -198,8 +196,7 @@
                                                                     <div style="font-size:13px; color:#686868;">{{ $query->mobile }}
                                                                     </div>
                                                                 </td>
-                                                                <td width="17%" align="left" valign="top"
-                                                                    style="padding-right:20px;">
+                                                                <td width="17%" align="left" valign="top" style="padding-right:20px;">
                                                                     <div style="font-size:13px; color:#686868;">{{ $query->mobile }}
                                                                     </div>
                                                                 </td>
@@ -209,26 +206,23 @@
                                                                         <span style="color:#686868;">Origin<br />
                                                                         </span><span
                                                                             style="max-width:180px; overflow:hidden;overflow-wrap: break-word;">
-                                                                            <span class="badge badge-boxed  badge-soft-success"
-                                                                                style=" background-color: #737373 !important; color:#fff; font-size: 11px; padding: 5px 6px;">{{ $query->originCity->name ?? '' }}</span>
+                                                                            <span class="badge badge-boxed  badge-soft-success" style=" background-color: #737373 !important; color:#fff; font-size: 11px; padding: 5px 6px;">{{ $query->originCity->name ?? '' }}</span>
                                                                         </span></div>
-                                                                    <div style="font-size:13px; line-height: 16px;"><span
-                                                                            style="color:#686868;">Destination<br />
-                                                                        </span><span
-                                                                            style="max-width:180px; overflow:hidden;overflow-wrap: break-word;">
-                                                                            <span class="badge badge-boxed  badge-soft-success"
-                                                                                style=" background-color: #737373 !important; color:#fff; font-size: 11px; padding: 5px 6px;">{{ $query->destinationCity->name ?? '' }}</span>
-                                                                        </span></div>
+                                                                    <div style="font-size:13px; line-height: 16px;">
+                                                                        <span style="color:#686868;">Destination<br />
+                                                                        </span>
+                                                                        <span style="max-width:180px; overflow:hidden;overflow-wrap: break-word;">
+                                                                            <span class="badge badge-boxed  badge-soft-success" style=" background-color: #737373 !important; color:#fff; font-size: 11px; padding: 5px 6px;">{{ $query->destinationCity->name ?? '' }}</span>
+                                                                        </span>
+                                                                    </div>
                                                                 </td>
-                                                                <td width="15%" align="left" valign="top"
-                                                                    style="padding-right:20px;">
+                                                                <td width="15%" align="left" valign="top" style="padding-right:20px;">
                                                                     <div style="font-size:12px; line-height: 16px; margin-bottom:3px;">
                                                                         <span style="color:#686868;"><i class="fa fa-calendar" aria-hidden="true"></i></span> {{ $query->startDate }}</div>
                                                                     <div style="font-size:12px; line-height: 16px;">
                                                                         <span  style="color:#686868;">Till</span> {{ $query->endDate }}</div>
                                                                 </td>
                                                                 <td align="left" valign="top" style="font-size:13px; line-height: 16px;">No Task</span>
-
                                                                     <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size:12px;color:#686868;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:200px;">
                                                                         <i class="fa fa-sticky-note" aria-hidden="true" style=" color:#ffa500;"></i> &nbsp;package send
                                                                     </div>
