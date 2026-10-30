@@ -52,9 +52,7 @@
                     </div>
                 </div>
             </div>
-
             <!-- TRAVEL DETAILS -->
-
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-light">
                     <strong>Travel Details</strong>
@@ -63,18 +61,13 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="querytype" id="domestic"
-                                    value="Domestic" {{ old('querytype', $query->querytype ?? '') == 'Domestic' ? 'checked' : '' }}>
-
+                                <input class="form-check-input" type="radio" name="querytype" id="domestic" value="Domestic" {{ old('querytype', $query->querytype ?? '') == 'Domestic' ? 'checked' : '' }}>
                                 <label class="form-check-label" for="domestic">
                                     Domestic
                                 </label>
                             </div>
-
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="querytype" id="international"
-                                    value="International" {{ old('querytype', $query->querytype ?? '') == 'International' ? 'checked' : '' }}>
-
+                                <input class="form-check-input" type="radio" name="querytype" id="international" value="International" {{ old('querytype', $query->querytype ?? '') == 'International' ? 'checked' : '' }}>
                                 <label class="form-check-label" for="international">
                                     International
                                 </label>

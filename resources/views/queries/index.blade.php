@@ -1,12 +1,6 @@
 @extends('layouts.app')
 @section('content')
     </div>
-    <style>
-        .table td, .table th { vertical-align: top; }
-        .statusbox { margin-right: 5px; padding: 10px; text-align: center; background-color: #000000; font-size: 13px; color: #fff; border-radius: 4px; text-transform: uppercase; }
-        .notes { font-size: 12px; background-color: #FFFFCC; border: 1px solid #FFCC33; padding: 0px 5px; color: #ff6a00; font-weight: 600; float: left; margin-top: 2px; border-radius: 2px; }
-    </style>
-
     <div class="wrapper">
         <div class="container-fluid">
             <div class="main-content">
@@ -43,15 +37,12 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12 col-xl-12" style="margin-left: 5px; margin-top: 35px;">
-                            <div class="card"
-                                style="min-height:500px;    border-radius: 0px; margin-bottom:0px; background-color:transparent;">
+                            <div class="card" style="min-height:500px; border-radius: 0px; margin-bottom:0px; background-color:transparent;">
                                 <div class="card-body" style="padding:0px;">
-                                    <div class="hideinmobile searchquerymain"
-                                        style="  margin-bottom: 10px; float: left; width: 100%; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6; background-color: #f3f3f3; padding: 8px;">
+                                    <div class="hideinmobile searchquerymain" style="margin-bottom: 10px; float: left; width: 100%; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6; background-color: #f3f3f3; padding: 8px;">
                                         <div class="row" style="margin-right: 0px; margin-left: 0px;">
                                             <div class="col-md-3 col-xl-3 ">
-                                                <form action="{{ route('queries.index') }}" method="get"
-                                                    class="querytabsleadsearch">
+                                                <form action="{{ route('queries.index') }}" method="get" class="querytabsleadsearch">
                                                     <table border="0" cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
@@ -97,7 +88,8 @@
                                                             </td>
                                                             <td style="padding-left:5px;">
                                                                 <a href="{{ route('queries.index') }}">
-                                                                    <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="padding: 6px 10px;">All</button></a>
+                                                                    <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="padding: 6px 10px;">All</button>
+                                                                </a>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -105,9 +97,7 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div style="margin-bottom: 0px; padding: 10px; padding-right: 20px;"
-                                        class="querytabslead">
+                                    <div style="margin-bottom: 0px; padding: 10px; padding-right: 20px;" class="querytabslead">
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                             <tr>
                                                 {{-- All Queries --}}
@@ -200,8 +190,7 @@
                                                                     <div style="font-size:13px; color:#686868;">{{ $query->mobile }}
                                                                     </div>
                                                                 </td>
-                                                                <td width="17%" align="left" valign="top"
-                                                                    style="padding-right:20px;">
+                                                                <td width="17%" align="left" valign="top" style="padding-right:20px;">
                                                                     <div style="font-size:13px; line-height: 16px;">
                                                                         <span style="color:#686868;">Origin<br />
                                                                         </span><span
@@ -241,8 +230,7 @@
                                                                                 <i class="fa fa-whatsapp" aria-hidden="true"></i>
                                                                             </button>
                                                                         </a>
-                                                                        <a popaction="action=composemail&queryId=127368" onclick="loadpop('Compose Mail',this,'900px')"
-                                                                            data-toggle="modal" data-target=".bs-example-modal-center">
+                                                                        <a popaction="action=composemail&queryId=127368" onclick="loadpop('Compose Mail',this,'900px')" data-toggle="modal" data-target=".bs-example-modal-center">
                                                                             <button type="button" class="btn btn-secondary">
                                                                                 <i class="fa fa-envelope-o" aria-hidden="true"></i>
                                                                             </button>
@@ -441,6 +429,6 @@
                     });
                 });
             });
-            </script>
+        </script>
     </div>
 @endsection

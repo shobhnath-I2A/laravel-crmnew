@@ -330,3 +330,8 @@ html {
     height: 12px !important;
     border-radius: 100%;
 }
+/* QUERY INDEX PAGE CSS*/
+
+.table td, .table th { vertical-align: top; }
+.statusbox { margin-right: 5px; padding: 10px; text-align: center; background-color: #000000; font-size: 13px; color: #fff; border-radius: 4px; text-transform: uppercase; }
+.notes { font-size: 12px; background-color: #FFFFCC; border: 1px solid #FFCC33; padding: 0px 5px; color: #ff6a00; font-weight: 600; float: left; margin-top: 2px; border-radius: 2px; }
