@@ -145,6 +145,8 @@ Route::middleware(['auth', 'verified', 'restrict.ip'])->group(function () {
 
     Route::post('/queries/assign-user', [QueryController::class, 'assignUser'])
         ->name('queries.assign-user');
+    Route::post('/queries/bulk-assign-user', [QueryController::class, 'bulkAssignUser'])
+        ->name('queries.bulk-assign-user');
     Route::post('/query/add-note', [QueryController::class, 'addNote'])
         ->name('query.addNote');
 

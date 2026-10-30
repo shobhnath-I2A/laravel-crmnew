@@ -32,13 +32,6 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <a href="getloadfromdocs.php" target="actoinfrm">
-                                        <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray" style="margin-bottom:10px;" onclick="$('#loadleads').show();">
-                                            Load Leads <img src="loadleads.webp" style="width:16px;display:none;" id="loadleads" />
-                                        </button>
-                                    </a>
-                                </div>
-                                <div>
                                     @if(auth()->user()->canAdd('Query'))
                                         <a onclick="openSidebar('Create Query','{{ route('queries.create') }}')">
                                             <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="margin-bottom:10px;">Add Query</button>
@@ -57,48 +50,45 @@
                                         style="  margin-bottom: 10px; float: left; width: 100%; border-top: 1px solid #dee2e6; border-bottom: 2px solid #dee2e6; background-color: #f3f3f3; padding: 8px;">
                                         <div class="row" style="margin-right: 0px; margin-left: 0px;">
                                             <div class="col-md-3 col-xl-3 ">
-                                                <form action="" method="get" enctype="multipart/form-data"
-                                                    class="querytabsleadsearch ">
+                                                <form action="{{ route('queries.index') }}" method="get"
+                                                    class="querytabsleadsearch">
                                                     <table border="0" cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input type="text" class="form-control" id="startDate" name="startDate" placeholder="From" value="" style="width:130px;">
+                                                                <input type="date" class="form-control" id="startDate" name="startDate" placeholder="From" value="{{ request('startDate') }}" style="width:130px;">
                                                             </td>
                                                             <td style="padding-left:5px;">
-                                                                <input type="text" class="form-control" id="endDate" name="endDate" placeholder="From" value="" style="width:130px;">
+                                                                <input type="date" class="form-control" id="endDate" name="endDate" placeholder="To" value="{{ request('endDate') }}" style="width:130px;">
                                                             </td>
                                                             <td style="padding-left:5px;">
-                                                                <input type="text" name="keyword" class="form-control" placeholder="Search by ID, name, email, mobile" value="" style=" width:250px;">
+                                                                <input type="text" name="keyword" class="form-control" placeholder="Search by ID, name, email, mobile" value="{{ request('keyword') }}" style="width:250px;">
                                                                 <input name="page" type="hidden" value="1" />
-                                                                <input name="ga" type="hidden" value="query" />
+                                                                @if(request()->filled('statusId'))
+                                                                    <input name="statusId" type="hidden" value="{{ request('statusId') }}" />
+                                                                @endif
                                                             </td>
                                                             <td style="padding-left:5px;">
-                                                                <select name="searchcity" class="form-control"
-                                                                    style="width:160px;">
+                                                                <select name="searchcity" class="form-control" style="width:160px;">
                                                                     <option value="">All Destinations</option>
-                                                                    <option value="7942">Affligem</option>
-                                                                    <option value="33466">Abramut</option>
-                                                                    <option value="37541">Singapore</option>
+                                                                    @foreach($destinations as $destination)
+                                                                        <option value="{{ $destination->id }}" {{ (string) request('searchcity') === (string) $destination->id ? 'selected' : '' }}>{{ $destination->name }}</option>
+                                                                    @endforeach
                                                                 </select>
                                                             </td>
                                                             <td style="padding-left:5px;">
-                                                                <select name="searchusers" class="form-control"
-                                                                    style="width:130px;">
+                                                                <select name="searchusers" class="form-control" style="width:130px;">
                                                                     <option value="">All Users</option>
-                                                                    <option value="4021">Zuhair Abbas </option>
-                                                                    <option value="4070">Yuvraj Singh</option>
-                                                                    <option value="4061">Yatin y</option>
-                                                                    <option value="4053">Yashika Sharma</option>
-                                                                    <option value="4074">Adarsh Ojha</option>
+                                                                    @foreach($users as $user)
+                                                                        <option value="{{ $user->id }}" {{ (string) request('searchusers') === (string) $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                                                                    @endforeach
                                                                 </select>
                                                             </td>
                                                             <td style="padding-left:5px;">
-                                                                <select name="searchsource" class="form-control"
-                                                                    id="searchsource" style="width:140px;">
+                                                                <select name="searchsource" class="form-control" id="searchsource" style="width:140px;">
                                                                     <option value="">All Source</option>
-                                                                    <option value="1">Walk-In</option>
-                                                                    <option value="2">Website</option>
-                                                                    <option value="18">WhatsApp</option>
+                                                                    @foreach($leadSources as $source)
+                                                                        <option value="{{ $source->name }}" {{ request('searchsource') === $source->name ? 'selected' : '' }}>{{ $source->name }}</option>
+                                                                    @endforeach
                                                                 </select>
                                                             </td>
                                                             <td style="padding-left:5px;">
@@ -106,7 +96,7 @@
                                                                     <i class="fa fa-search" aria-hidden="true"></i> Search</button>
                                                             </td>
                                                             <td style="padding-left:5px;">
-                                                                <a href="display.html?ga=query">
+                                                                <a href="{{ route('queries.index') }}">
                                                                     <button type="button" class="btn btn-secondary btn-lg waves-effect waves-light" style="padding: 6px 10px;">All</button></a>
                                                             </td>
                                                         </tr>
@@ -122,9 +112,8 @@
                                             <tr>
                                                 {{-- All Queries --}}
                                                 <td width="5%">
-                                                    <a href="{{ route('queries.index') }}">
-                                                        <div class="statusbox {{ !request('statusId') ? 'active-status' : '' }}"
-                                                            style="background-color:#343a40;">
+                                                    <a href="{{ route('queries.index', request()->except(['statusId', 'page'])) }}">
+                                                        <div class="statusbox {{ !request('statusId') ? 'active-status' : '' }}" style="background-color:#343a40;">
                                                             @if(!request('statusId'))
                                                                 <div class="ripple" style="animation-delay:0s"></div>
                                                             @endif
@@ -137,7 +126,7 @@
                                                 </td>
                                                 @foreach($statuses as $status)
                                                 <td width="10%">
-                                                    <a href="{{ route('queries.index', ['statusId' => $status->id]) }}">
+                                                    <a href="{{ route('queries.index', array_merge(request()->except(['statusId', 'page']), ['statusId' => $status->id])) }}">
                                                         <div class="statusbox {{ request('statusId') == $status->id ? 'active-status' : '' }}"
                                                             style="background-color:{{ $status->color }}">
                                                             @if(request('statusId') == $status->id)
@@ -154,27 +143,28 @@
                                             </tr>
                                         </table>
                                     </div>
-                                    <form action="frmaction.html" method="post" enctype="multipart/form-data" name="addeditfrm" target="actoinfrm" id="addeditfrm" style="padding:0px 10px 20px;">
+                                    <form action="{{ route('queries.bulk-assign-user') }}" method="post" id="addeditfrm" style="padding:0px 10px 20px;">
+                                        @csrf
                                         <div id="bulkassign" style="display:none;padding: 5px 2px; background-color: #f0f0f0; border-bottom: 2px solid #ddd; border-radius: 3px; margin-bottom: 10px;">
                                             <table border="0" cellspacing="0" cellpadding="5">
                                                 <tr>
                                                     <td style="font-size:13px;"><input type="checkbox" id="ckbCheckAll" style="width: 16px; height: 16px;" /></td>
                                                     <td style="font-size:13px;">Select All&nbsp;</td>
                                                     <td>
-                                                        <select id="assignToPerson" name="assignToPerson" class="form-control" style="padding: 5px; font-size: 12px; height: 30px; line-height: 20px; color: #000; font-weight: 600;" autocomplete="off">
-                                                            <option value="0">Assign To</option>
-                                                            <option value="4041"> Aaron AK</option>
-                                                            <option value="4036"> Abby ak</option>
-                                                            <option value="4074">Adarsh Ojha</option>
+                                                        <select id="assignToPerson" name="user_id" class="form-control" style="padding: 5px; font-size: 12px; height: 30px; line-height: 20px; color: #000; font-weight: 600;" autocomplete="off">
+                                                            <option value="">Assign To</option>
+                                                            @foreach($users as $user)
+                                                                <option value="{{ $user->id }}">{{ Auth::id() == $user->id ? 'Assign to me' : $user->name }}</option>
+                                                            @endforeach
                                                         </select>
                                                     </td>
                                                     <td>
-                                                        <button type="submit" id="savingbutton" class="btn btn-primary" onclick="this.form.submit(); this.value='Saving...';" style="float:right;padding: 3px 10px;">
+                                                        <button type="submit" id="savingbutton" class="btn btn-primary" style="float:right;padding: 3px 10px;">
                                                             Save
                                                         </button>
                                                     </td>
                                                     <td>
-                                                        <input autocomplete="false" name="action" type="hidden" id="action" value="bulkassignquery" />
+                                                        <input autocomplete="off" name="bulk_action" type="hidden" id="bulk_action" value="bulkassignquery" />
                                                     </td>
                                                 </tr>
                                             </table>
@@ -186,7 +176,7 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td width="3%" align="left" valign="top" style="padding-right:10px;">
-                                                                    <input type="checkbox" name="assignall[]" class="checkBoxClass" id="assignqury" value="127368"  onclick="selectedfun();"
+                                                                    <input type="checkbox" name="query_ids[]" class="checkBoxClass" id="assignqury{{ $query->id }}" value="{{ $query->id }}" onclick="selectedfun();"
                                                                         style="width: 16px; height: 16px;">
                                                                 </td>
                                                                 <td width="14%" align="left" valign="top" style="padding-right:20px;">
@@ -281,13 +271,11 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td width="3%" align="center" valign="top" style="padding-right:10px;"> </td>
-                                                                <td width="14%" align="left" valign="top"
-                                                                    style="padding-right:20px;">
+                                                                <td width="14%" align="left" valign="top" style="padding-right:20px;">
                                                                     <div style="font-size:12px; line-height: 16px; margin-bottom:3px;color:#686868;">Requirement</div>
                                                                     <div class="blueicons" style="font-size:12px; font-weight:600;">Full package</div>
                                                                 </td>
-                                                                <td width="20%" align="left" valign="top"
-                                                                    style="padding-right:20px;">
+                                                                <td width="20%" align="left" valign="top" style="padding-right:20px;">
                                                                     <div style="color:#303030; font-size:12px; margin-bottom:3px;">
                                                                        {{ $query->email }}
                                                                     </div>
@@ -295,7 +283,8 @@
                                                                 </td>
                                                                 <td width="17%" align="left" valign="top" style="padding-right:20px;">
                                                                     <div style="color:#303030; font-size:12px; margin-bottom:3px;">
-                                                                        Travellers</div>
+                                                                        Travellers
+                                                                    </div>
                                                                     <div style="font-size:13px; line-height: 16px;">{{ $query->adult}} <span style="color:#686868; font-size:11px;">Adult</span>
                                                                         {{ $query->child }} <span style="color:#686868; font-size:11px;">Clild</span>
                                                                         {{ $query->infant}} <span style="color:#686868; font-size:11px;">Infant</span>
@@ -306,19 +295,13 @@
                                                                         Assigned to
                                                                     </div>
                                                                     <div style="font-size:12px;">
-                                                                        <select id="assignTo{{ $query->id }}"
-                                                                                name="assignTo"
-                                                                                class="form-control"
-                                                                                style="padding:3px;font-size:12px;height:25px;line-height:15px;color:#000;font-weight:600;"
-                                                                                onchange="changeAssignTo('{{ $query->id }}', this.value);">
-
+                                                                        <select id="assignTo{{ $query->id }}" name="assignTo" class="form-control" style="padding:3px;font-size:12px;height:25px;line-height:15px;color:#000;font-weight:600;" onchange="changeAssignTo('{{ $query->id }}', this.value);">
                                                                             @foreach($users as $user)
                                                                                 <option value="{{ $user->id }}"
                                                                                     {{ $query->assignTo == $user->id ? 'selected' : '' }}>
                                                                                     {{ Auth::id() == $user->id ? 'Assign to me' : $user->name }}
                                                                                 </option>
                                                                             @endforeach
-
                                                                         </select>
                                                                     </div>
                                                                 </td>
@@ -364,9 +347,11 @@
                                                 </div>
                                             </div>
                                         @empty
-                                        <tr>
-                                        <td colspan="6" class="text-center">No records found</td>
-                                        </tr>
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td colspan="6" class="text-center">No Records Found</td>
+                                            </tr>
+                                        </table>
                                         @endforelse
                                     </form>
                                    <div class="mt-3 pageingouter">
@@ -398,6 +383,70 @@
                     }
                 });
             }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var form = document.getElementById('addeditfrm');
+                var button = document.getElementById('savingbutton');
+                var userSelect = document.getElementById('assignToPerson');
+                var bulkPanel = document.getElementById('bulkassign');
+
+                if (!form || !button || !userSelect) return;
+
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    var queryIds = Array.prototype.map.call(
+                        form.querySelectorAll('.checkBoxClass:checked'),
+                        function (checkbox) { return checkbox.value; }
+                    );
+                    var userId = userSelect.value;
+
+                    if (queryIds.length === 0) {
+                        if (window.toastr) window.toastr.error('Please select at least one query');
+                        return;
+                    }
+                    if (!userId) {
+                        if (window.toastr) window.toastr.error('Please select a user');
+                        return;
+                    }
+
+                    var formData = new FormData();
+                    formData.append('_token', form.querySelector('input[name="_token"]').value);
+                    formData.append('user_id', userId);
+                    queryIds.forEach(function (queryId) {
+                        formData.append('query_ids[]', queryId);
+                    });
+
+                    button.disabled = true;
+                    button.textContent = 'Saving...';
+
+                    fetch(form.getAttribute('action'), {
+                        method: 'POST',
+                        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        body: formData
+                    }).then(function (response) {
+                        return response.json().catch(function () {
+                            throw new Error('Something went wrong');
+                        }).then(function (data) {
+                            if (!response.ok) throw new Error(data.message || 'Something went wrong');
+                            return data;
+                        });
+                    }).then(function (data) {
+                        if (window.toastr) window.toastr.success(data.message || 'Queries assigned successfully');
+                        form.querySelectorAll('.checkBoxClass, #ckbCheckAll').forEach(function (checkbox) {
+                            checkbox.checked = false;
+                        });
+                        if (bulkPanel) bulkPanel.style.display = 'none';
+                        userSelect.value = '';
+                        window.location.reload();
+                    }).catch(function (error) {
+                        if (window.toastr) window.toastr.error(error.message);
+                    }).finally(function () {
+                        button.disabled = false;
+                        button.textContent = 'Save';
+                    });
+                });
+            });
             </script>
     </div>
 @endsection

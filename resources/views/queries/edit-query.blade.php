@@ -245,8 +245,7 @@
             </div>
             <!-- FOOTER BUTTONS -->
             <div class="text-end mb-3">
-                <button type="button" onclick="closeSidebar()"
-                    class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray valid">
+                <button type="button" onclick="closeSidebar()"class="btn btn-secondary btn-lg waves-effect waves-light btn-primary-gray valid">
                     Cancel
                 </button>
                 <button type="submit" class="btn btn-primary">

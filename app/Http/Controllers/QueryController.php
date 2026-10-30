@@ -12,6 +12,8 @@ use App\Models\Query;
 use App\Models\QueryStatus;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Models\Destination;
+use App\Models\LeadSource;
 use App\Models\Itinerary;
 use App\Models\PackageDayItem;
 use App\Models\QueryNote;
@@ -46,13 +48,47 @@ class QueryController extends Controller
             }
 
             if ($request->filled('startDate')) {
-                $startDate = Carbon::createFromFormat('d-m-Y', $request->startDate);
-                $queryBuilder->whereDate('startDate', '>=', $startDate->format('Y-m-d'));
+                try {
+                    $startDate = Carbon::createFromFormat('d-m-Y', $request->startDate);
+                    $queryBuilder->whereDate('startDate', '>=', $startDate->format('Y-m-d'));
+                } catch (Exception $e) {
+                    // Ignore an invalid date filter.
+                }
             }
 
             if ($request->filled('endDate')) {
-                $endDate = Carbon::createFromFormat('d-m-Y', $request->endDate);
-                $queryBuilder->whereDate('startDate', '<=', $endDate->format('Y-m-d'));
+                try {
+                    $endDate = Carbon::createFromFormat('d-m-Y', $request->endDate);
+                    $queryBuilder->whereDate('startDate', '<=', $endDate->format('Y-m-d'));
+                } catch (Exception $e) {
+                    // Ignore an invalid date filter.
+                }
+            }
+
+            if ($request->filled('searchcity')) {
+                $queryBuilder->where('destination', $request->searchcity);
+            }
+
+            if ($request->filled('searchusers')) {
+                $queryBuilder->where('assignTo', $request->searchusers);
+            }
+
+            if ($request->filled('searchsource')) {
+                $queryBuilder->where('leadSource', $request->searchsource);
+            }
+
+            if ($request->filled('keyword')) {
+                $keyword = trim($request->keyword);
+                $queryBuilder->where(function ($query) use ($keyword) {
+                    $query->where('submitName', 'like', '%' . $keyword . '%')
+                        ->orWhere('name', 'like', '%' . $keyword . '%')
+                        ->orWhere('email', 'like', '%' . $keyword . '%')
+                        ->orWhere('mobile', 'like', '%' . $keyword . '%');
+
+                    if (ctype_digit($keyword)) {
+                        $query->orWhere('id', (int) $keyword);
+                    }
+                });
             }
 
             $queries = $queryBuilder
@@ -72,13 +108,47 @@ class QueryController extends Controller
             }
 
             if ($request->filled('startDate')) {
-                $startDate = Carbon::createFromFormat('d-m-Y', $request->startDate);
-                $countQuery->whereDate('startDate', '>=', $startDate->format('Y-m-d'));
+                try {
+                    $startDate = Carbon::createFromFormat('d-m-Y', $request->startDate);
+                    $countQuery->whereDate('startDate', '>=', $startDate->format('Y-m-d'));
+                } catch (Exception $e) {
+                    // Ignore an invalid date filter.
+                }
             }
 
             if ($request->filled('endDate')) {
-                $endDate = Carbon::createFromFormat('d-m-Y', $request->endDate);
-                $countQuery->whereDate('startDate', '<=', $endDate->format('Y-m-d'));
+                try {
+                    $endDate = Carbon::createFromFormat('d-m-Y', $request->endDate);
+                    $countQuery->whereDate('startDate', '<=', $endDate->format('Y-m-d'));
+                } catch (Exception $e) {
+                    // Ignore an invalid date filter.
+                }
+            }
+
+            if ($request->filled('searchcity')) {
+                $countQuery->where('destination', $request->searchcity);
+            }
+
+            if ($request->filled('searchusers')) {
+                $countQuery->where('assignTo', $request->searchusers);
+            }
+
+            if ($request->filled('searchsource')) {
+                $countQuery->where('leadSource', $request->searchsource);
+            }
+
+            if ($request->filled('keyword')) {
+                $keyword = trim($request->keyword);
+                $countQuery->where(function ($query) use ($keyword) {
+                    $query->where('submitName', 'like', '%' . $keyword . '%')
+                        ->orWhere('name', 'like', '%' . $keyword . '%')
+                        ->orWhere('email', 'like', '%' . $keyword . '%')
+                        ->orWhere('mobile', 'like', '%' . $keyword . '%');
+
+                    if (ctype_digit($keyword)) {
+                        $query->orWhere('id', (int) $keyword);
+                    }
+                });
             }
 
             $totalQueries = (clone $countQuery)->count();
@@ -102,12 +172,22 @@ class QueryController extends Controller
                     ->get(['id', 'name']);
             }
 
+            $destinations = Destination::where('status', 1)
+                ->orderBy('name')
+                ->get(['id', 'name']);
+
+            $leadSources = LeadSource::where('status', 1)
+                ->orderBy('name')
+                ->get(['id', 'name']);
+
             return view('queries.index', compact(
                 'queries',
                 'statuses',
                 'statusCounts',
                 'totalQueries',
-                'users'
+                'users',
+                'destinations',
+                'leadSources'
             ));
         } catch (Exception $e) {
 
@@ -119,6 +199,8 @@ class QueryController extends Controller
                 'statusCounts' => collect(),
                 'totalQueries' => 0,
                 'users' => collect(),
+                'destinations' => collect(),
+                'leadSources' => collect(),
                 'error' => 'Unable to fetch queries at this time.'
             ]);
         }
@@ -821,6 +903,63 @@ class QueryController extends Controller
             ], 500);
         }
     }
+    public function bulkAssignUser(Request $request)
+    {
+        try {
+            $queryIds = $request->input('query_ids', $request->input('assignall', []));
+            if (!is_array($queryIds)) {
+                $queryIds = [$queryIds];
+            }
+
+            $validated = validator([
+                'query_ids' => $queryIds,
+                'user_id' => $request->input('user_id'),
+            ], [
+                'query_ids' => 'required|array|min:1',
+                'query_ids.*' => 'integer|exists:queries,id',
+                'user_id' => 'required|integer|exists:users,id',
+            ])->validate();
+
+            $loginUser = auth()->user();
+            if ($loginUser->role_id == 3 && (int) $validated['user_id'] !== (int) $loginUser->id) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Sales Executive cannot assign queries to other users.'
+                ], 403);
+            }
+
+            Query::whereIn('id', $validated['query_ids'])
+                ->update(['assignTo' => $validated['user_id']]);
+
+            $message = count($validated['query_ids']) . ' queries assigned successfully';
+            if (!$request->expectsJson() && !$request->ajax()) {
+                return redirect()->route('queries.index')->with('success', $message);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if (!$request->expectsJson() && !$request->ajax()) {
+                return redirect()->route('queries.index')->withErrors(['bulk_assign' => 'Please select queries and a valid user.']);
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Please select queries and a valid user.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error bulk assigning queries: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Bulk assignment failed'
+            ], 500);
+        }
+    }
+
     public function addNote(Request $request)
     {
         $request->validate([
